@@ -3,13 +3,10 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import Button from 'react-bootstrap/Button';
 
 ReactDOM.render(
   <React.StrictMode>
     <App />
-    <p className="App">Hello!</p>
-    <Button />
   </React.StrictMode>,
   document.getElementById('root')
 );
