@@ -1,5 +1,6 @@
 import React from 'react';
 import NavBar from './NavBar';
+import Footer from './Footer';
 const Home = () => {
     return (    
         <>
@@ -7,6 +8,7 @@ const Home = () => {
             <div class="content-body">
                 
             </div>
+            <Footer/>
         </>
     );
 
