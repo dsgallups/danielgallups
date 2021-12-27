@@ -6,14 +6,19 @@ const NavBar = () => {
             <div className="title">
                 Daniel Gallups
             </div>
-            <div className="navbar-item">
-                <a href="/">Home</a>
-            </div>
-            <div className="navbar-item">
-                <a href="/about">About</a>
-            </div>
-            <div className="navbar-item">
-                <a href="/contact">Contact</a>
+            <div className="navbar-items">
+                <div className="navbar-item">
+                    <a href="/">Home</a>
+                </div>
+                <div className="navbar-item">
+                    <a href="/basics">Basics</a>
+                </div>
+                <div className="navbar-item">
+                    <a href="/ctf">CTFs</a>
+                </div>
+                <div className="navbar-item">
+                    <a href="/policy">Policy</a>
+                </div>
             </div>
         </div>
     );
