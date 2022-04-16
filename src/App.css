@@ -8,6 +8,10 @@ html, body {
   display: flex;
   margin: 0 auto;
   flex-direction: column;
-  max-width: 80%;
+
+  /*This is good for it*/
+  width: 80%;
+  max-width: 1200px;
+  
   align-items: center;
 }
