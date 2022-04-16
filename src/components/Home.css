@@ -2,3 +2,42 @@
     color:black;
     font-size: 15px;
 }
+
+.content-body {
+    display: flex;
+}
+
+.picture {
+    display: flex;
+    width: 30%;
+}
+
+img {
+    object-fit: contain;
+    height: 100%;
+    width: 100%;
+    border-radius: 5px;
+}
+
+
+.content-body {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 80%;
+    margin-top:1.5em;
+}
+
+.summary {
+    width: 40%;
+}
+.header {
+    font-size: 3em;
+}
+.subheader {
+    font-size: 1em;
+}
+.paragraph {
+    font-size: 1.3em;
+}

@@ -2,8 +2,7 @@
     background-color: rgb(31, 31, 31);
     display: flex;
     justify-content: space-between;
-    width:80%;
-    margin: 0 auto;
+    width: 100%;
 }
 
 .title {

@@ -19,6 +19,9 @@ const NavBar = () => {
                 <div className="navbar-item">
                     <a href="/policy">Policy</a>
                 </div>
+                <div className="navbar-item">
+                    <a href="/contact">Resume</a>
+                </div>
             </div>
         </div>
     );
