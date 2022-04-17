@@ -25,19 +25,21 @@ img {
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
-    width: 80%;
+    width: 90%;
     margin-top:1.5em;
 }
 
 .summary {
-    width: 40%;
+    width: 65%;
 }
 .header {
     font-size: 3em;
 }
 .subheader {
     font-size: 1em;
+    margin-bottom:1.5em;
 }
 .paragraph {
     font-size: 1.3em;
+    margin-bottom:1em;
 }
