@@ -5,13 +5,15 @@ import Face from '../resources/face.jpg';
 import ReactComment from './ReactComment';
 import Typist from 'react-typist';
 import './Home.css';
-import { useRef } from 'react';
 import { Parallax, ParallaxLayer } from '@react-spring/parallax';
+import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
+import Resume from '../resources/DanielGallupsResume.pdf';
+
 const Home = () => {
     return (
         <div>
-            <Parallax pages={2}>
-                <ParallaxLayer offset={0} speed={2.5} factor={1}>
+            <Parallax pages={3}>
+                <ParallaxLayer offset={0} speed={1} factor={1}>
                     <div class="constrict-80p">
                         <NavBar page={this} />
                         <div class="content-body">
@@ -35,11 +37,37 @@ const Home = () => {
                     </div>
                 </ParallaxLayer>
 
-                <ParallaxLayer offset={1} speed={.5} factor={1}
+                <ParallaxLayer offset={1} speed={1} factor={1}
                     style={{ background: '#f00' }} 
                 >
-                Test
+                    <div class="skills-layout">
+                        <div class="skills-header">
+                        </div>
+                        <div class="skills-body">
+                            <div class="skills-body-left">
+                                <div class="skills-body-left-top">
+                                </div>
+                                <div class="skills-body-left-bottom">
+                                </div>
+                            </div>
+                            <div class="skills-body-divider">
+                            </div>
+                            <div class="skills-body-right">
+                                <div class="skills-body-right-top">
+                                </div>
+                                <div class="skills-body-right-bottom">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </ParallaxLayer>
+
+                <ParallaxLayer offset={2} speed={1} factor={1}
+                    style={{ background: '#0f0'}}>
+                    <Document file={Resume}>
+                        <Page pageNumber={1} />
+                    </Document>
+                </ParallaxLayer> 
             </Parallax>
         </div>
     );
