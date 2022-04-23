@@ -12,10 +12,10 @@ import Resume from '../resources/DanielGallupsResume.pdf';
 const Home = () => {
     return (
         <div>
+            <NavBar page={this} />
             <Parallax pages={3}>
                 <ParallaxLayer offset={0} speed={1} factor={1}>
                     <div class="constrict-80p">
-                        <NavBar page={this} />
                         <div class="content-body">
                             <div class="picture">
                                 <img src={Face} alt="face" class="face" />
@@ -46,6 +46,10 @@ const Home = () => {
                         <div class="skills-body">
                             <div class="skills-body-left">
                                 <div class="skills-body-left-top">
+                                    <div class="skills-body-left-top-header">
+                                    </div>
+                                    <div class="skills-body-left-top-body">
+                                    </div>
                                 </div>
                                 <div class="skills-body-left-bottom">
                                 </div>
@@ -62,7 +66,11 @@ const Home = () => {
                     </div>
                 </ParallaxLayer>
 
-                <ParallaxLayer offset={2} speed={1} factor={1}
+                <ParallaxLayer offset={3} speed={1} factor={1}>
+
+                </ParallaxLayer>
+
+                <ParallaxLayer offset={4} speed={1} factor={1}
                     style={{ background: '#0f0'}}>
                     <Document file={Resume}>
                         <Page pageNumber={1} />

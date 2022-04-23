@@ -33,13 +33,13 @@ img {
     width: 65%;
 }
 .header {
-    font-size: 3em;
+    font-size: 3vw;
 }
 .subheader {
-    font-size: 1em;
+    font-size: 2vw;
     margin-bottom:1.5em;
 }
 .paragraph {
-    font-size: 1.3em;
+    font-size: 1.3vw;
     margin-bottom:1em;
 }
