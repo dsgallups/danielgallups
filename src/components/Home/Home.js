@@ -2,6 +2,7 @@ import React from 'react';
 import NavBar from '../NavBar/NavBar';
 import Footer from '../Footer/Footer';
 import Face from '../../resources/face.jpg';
+import Headshot from '../../resources/headshot.jpg';
 import ReactComment from '../ReactComment';
 import Typist from 'react-typist';
 import './Home.css';
@@ -11,39 +12,55 @@ import Resume from '../../resources/DanielGallupsResume.pdf';
 
 
 const Home = () => {
+    const alignStart = { display: 'flex', alignItems: 'flex-start'};
     return (
         <div>
             <NavBar page={this} />
-            <Parallax pages={3}>
-                <ParallaxLayer offset={0} speed={3} factor={1} className="layer-1-background" style={{ height: '2100px' }}>
+            <Parallax pages={4} >
+            <ParallaxLayer offset={0} speed={1} factor={5} className="layer-1-background" style={{ ...alignStart, height: '3240px', backgroundRepeat: "repeat" }}>
+            </ParallaxLayer>
+            <div className="max-width-for-content">
+                <ParallaxLayer offset={.15} speed={2} factor={1} style={{...alignStart, justifyContent: 'flex-start'}}>
+                    <img src={Headshot} alt="face" className="face"/>
                 </ParallaxLayer>
-                <ParallaxLayer offset={0} speed={0} factor={1}>
-                    <div className="constrict-80p">
-                        <div className="content-body">
-                            <div className="picture">
-                                <img src={Face} alt="face" className="face" />
-                            </div>
-                            <div className="summary">
-                                    <div className="header">Hi, I'm Dan</div>
-                                    <div className="subheader">A glimpse into my world</div>
-                                    <div className="paragraph">Cybersecurity Student at <span style={{color:"#ceb888"}}>Purdue University</span>.</div> 
-                                    <Typist avgTypingDelay={25} cursor={{show: false}}>
-                                        <Typist.Delay ms={3000} />
-                                        <div className="paragraph">If you aren't here to check out my talents, perhaps you should try finding my secret webpage...</div>
-                                    </Typist>
-
-                                    <ReactComment text="Nice try, but it's not here :("/>
-                                    <div className="update">Last updated: April 23rd, 2022</div>
-                                </div>
-                        </div>
-                        <Footer/>
+                <ParallaxLayer offset={.05} speed={2} factor={1} style={{...alignStart, justifyContent: 'flex-start'}}>
+                    <div className="textbox intro">
+                        Hi, I'm Dan.
                     </div>
                 </ParallaxLayer>
-
-                <ParallaxLayer offset={.8} speed={1} factor={1}>
-                    <div className="scroll-down">
+                <ParallaxLayer offset={.4} speed={1.2} factor={1} horizontal={false} style={{...alignStart, justifyContent: 'flex-start'}}>
+                    <div className="textbox summary">
+                        I am a <span style={{color:"#ceb888"}}>Purdue University</span> Cybersecurity Student. 
+                    </div>
+                </ParallaxLayer>
+                <ParallaxLayer offset={.55} speed={3} factor={1} style={{...alignStart, justifyContent: 'flex-end'}}>
+                    <div className="textbox secret">
+                        <Typist avgTypingDelay={25} cursor={{show: false}}>
+                            <Typist.Delay ms={0} />
+                            If you aren't here to check out my talents, perhaps you should try finding my secret webpage...
+                        </Typist>
+                        <ReactComment text="Nice try, but it's not here :("/>
+                    </div>
+                </ParallaxLayer>
+                <ParallaxLayer offset={.15} speed={0} factor={1} style={{...alignStart, justifyContent: 'flex-end'}}>
+                    <div className="textbox-dark general">
+                        <div className="general-header">The Gist:</div>
+                      e  <ul>
+                            <li>Fullstack Developer with experience with MERN stack</li>
+                            <li>Looking for Summer Internship Opportunities</li>
+                            <li>Below, you will find my interests, projects, and contact information.</li>
+                        </ul>
+                    </div>
+                </ParallaxLayer>
+                <ParallaxLayer offset={.35} speed={5} factor={1} style={{...alignStart, justifyContent: 'flex-start'}}>
+                    <div className="textbox update">
+                        Last updated: April 23rd, 2022
+                    </div>
+                </ParallaxLayer>
+                <ParallaxLayer offset={.8} speed={1} factor={1} style={{...alignStart}}>
+                    <div className="textbox scroll-down">
                         <span className="scroll-text">
-                            Scroll Down To Check Out My Skills
+                            Check Out My Skills
                         </span>
                         <div className="scroll-arrow">
                             V
@@ -51,7 +68,14 @@ const Home = () => {
                     </div>
                 </ParallaxLayer>
 
-                <ParallaxLayer offset={.99} speed={2} factor={1}
+                <ParallaxLayer sticky={{start:1, end: 1.5}} style={{...alignStart, justifyContent: 'flex-start'}}>\
+                    <div className="textbox skills-header">
+                        Skills and Interests
+                    </div>
+                </ParallaxLayer>
+            </div>
+                {/*
+                <ParallaxLayer offset={1} speed={2} factor={1}
                     style={{ background: '#FFFFFF' }} 
                 >
                     <div className="skills-layout">
@@ -105,6 +129,7 @@ const Home = () => {
                         </div>
                     </div>
                 </ParallaxLayer>
+                
 
                 <ParallaxLayer offset={3} speed={1} factor={1}>
 
@@ -116,6 +141,7 @@ const Home = () => {
                         <Page pageNumber={1} />
                     </Document>
                 </ParallaxLayer> 
+                                    */}
             </Parallax>
         </div>
     );
