@@ -10,3 +10,7 @@ Second section
 
 Third section
     - Provable experience
+
+
+Color Palette:
+https://coolors.co/bfdbf7-e1e5f2-ffffff-db504a-585b56

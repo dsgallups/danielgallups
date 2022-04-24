@@ -1,11 +1,20 @@
 html, body {
   max-width: 100%;
-  overflow-x: hidden;
+  overflow: hidden;
   margin: 0;
   padding: 0;
   height: 100%;
 }
+.constrict-80p {
+  display: flex;
+  margin: 0 auto;
 
+  /*This is good for it*/
+  width: 80%;
+  max-width: 1200px;
+  
+  align-items: center;
+}
 /* Hide scrollbar for Chrome, Safari and Opera */
 body::-webkit-scrollbar {
   display: none;

@@ -4,14 +4,3 @@ html, body {
   color: white;
 }
 
-.constrict-80p {
-  display: flex;
-  margin: 0 auto;
-  flex-direction: column;
-
-  /*This is good for it*/
-  width: 80%;
-  max-width: 1200px;
-  
-  align-items: center;
-}
