@@ -17,7 +17,7 @@ const Home = () => {
             <Parallax pages={3}>
                 <ParallaxLayer offset={0} speed={3} factor={1} className="layer-1-background" style={{ height: '2100px' }}>
                 </ParallaxLayer>
-                <ParallaxLayer offset={0} speed={1} factor={1}>
+                <ParallaxLayer offset={0} speed={0} factor={1}>
                     <div className="constrict-80p">
                         <div className="content-body">
                             <div className="picture">
@@ -28,11 +28,12 @@ const Home = () => {
                                     <div className="subheader">A glimpse into my world</div>
                                     <div className="paragraph">Cybersecurity Student at <span style={{color:"#ceb888"}}>Purdue University</span>.</div> 
                                     <Typist avgTypingDelay={25} cursor={{show: false}}>
-                                    <div className="paragraph">If you aren't here to check out my talents, perhaps you should try finding my secret webpage...</div>
+                                        <Typist.Delay ms={3000} />
+                                        <div className="paragraph">If you aren't here to check out my talents, perhaps you should try finding my secret webpage...</div>
                                     </Typist>
 
                                     <ReactComment text="Nice try, but it's not here :("/>
-                                    <div className="update">Last updated: April 16th, 2022</div>
+                                    <div className="update">Last updated: April 23rd, 2022</div>
                                 </div>
                         </div>
                         <Footer/>
@@ -51,7 +52,7 @@ const Home = () => {
                 </ParallaxLayer>
 
                 <ParallaxLayer offset={.99} speed={2} factor={1}
-                    style={{ background: '#232323' }} 
+                    style={{ background: '#FFFFFF' }} 
                 >
                     <div className="skills-layout">
                         <div className="skills-header">
