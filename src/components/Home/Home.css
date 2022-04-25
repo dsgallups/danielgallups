@@ -209,9 +209,6 @@ img {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 5px;
-    padding-left: 5%;
-    padding-right: 5%;
     background-color: #DB504A;
     border-radius: 5px;
 }
@@ -224,6 +221,8 @@ img {
 }
 .resume-document {
     margin-top: 5px;
+    width: 70%;
+    padding-left:3px;
 }
 .resume-container a {
     text-decoration: none;

@@ -8,7 +8,7 @@ import Typist from 'react-typist';
 import './Home.css';
 import { Parallax, ParallaxLayer } from '@react-spring/parallax';
 import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
-import Resume from '../../resources/DanielGallupsResume.pdf';
+import Resume from '../../resources/DanielGallupsResume.png';
 import MediumIcon from '../../resources/icons8-medium.svg';
 import GithubIcon from '../../resources/icons8-github.svg';
 import LinkedInIcon from '../../resources/icons8-linkedin.svg';
@@ -258,7 +258,7 @@ const Home = () => {
                                     <span>No longer are the days of inaccurate college scheduling! Pathfinder enables students
                                     to optimize their plans of study. Features include quicker paths to graduation,
                                     search for certificates based on fewest credits, and much more.</span>
-                                    <a href="#"><div>Click here to learn more >></div></a>
+                                    <a href="#"><div>Click here to learn more &gt;&gt;</div></a>
                                 </div>
                             </div>
 
@@ -272,7 +272,7 @@ const Home = () => {
                                         If you're asking these questions, you're probably not a student at Purdue. But if you are,
                                         join us at iamboredatpurdue to find comfort in your boredom!
                                     </span>
-                                    <a href="#"><div>Click here to learn more >></div></a>
+                                    <a href="#"><div>Click here to learn more &gt;&gt;</div></a>
                                 </div>
                             </div>
 
@@ -285,7 +285,7 @@ const Home = () => {
                                     <span>If you're like me, then you would think that chess absolutely deserves a new piece.
                                         Behold! Boilerchess is a 9x9 tiled game that incorporates a new piece: The Boiler.
                                     </span>
-                                    <a href="#"><div>Click here to learn more >></div></a>
+                                    <a href="#"><div>Click here to learn more &gt;&gt;</div></a>
                                 </div>
                             </div>
                         </div>
@@ -295,11 +295,9 @@ const Home = () => {
                 <ParallaxLayer offset={2} speed={1.2} style={{...alignStart, justifyContent: 'center'}}>
                     <div className="resume-container">
                         <div className="resume-header">Resume</div>
-                        <Document file={Resume} onLoadSuccess={onDocumentLoadSuccess} className="resume-document">
-                            <Page pageNumber={pageNumber} />
-                        </Document>
+                        <img src={Resume} alt="Resume" className="resume-document"/>
                         <p>
-                            <a href={Resume}>Download</a>
+                            <a href='https://danielgallupsbucket.s3.us-east-2.amazonaws.com/DanielGallupsResume.pdf'>Download</a>
                         </p>
                     </div>
                 </ParallaxLayer>
