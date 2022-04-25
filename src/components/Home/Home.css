@@ -32,10 +32,14 @@ img {
     font-size: calc(24px + 1.2vw);
 }
 .small-header {
-    font-size: calc(14px + 1vw);
+    font-size: calc(14px + .5vw);
+    font-weight: 600;
 }
 .regular-text {
     font-size: calc(12px + .25vw);
+}
+.small-text {
+    font-size: calc(8px + .5vw);
 }
 .intro {
     margin: 0 auto;
@@ -67,13 +71,7 @@ img {
     margin-left: 4px;
     margin-right: 4px;
 }
-.header {
-    font-size: 3vw;
-}
-.subheader {
-    font-size: 2vw;
-    margin-bottom:1.5em;
-}
+
 
 .scroll-down {
     margin: 0 auto;
@@ -92,16 +90,10 @@ img {
     max-width: 450px;
     margin-right:2%;
 }
-.general-header {
-    font-size: calc(14px + 0.5vw);
-    width: 100%;
-    font-weight: 600;
-    border-bottom: 1px solid white;
-}
+
 /* Skills and Interests section */
 .skills-header {
     margin: 0 auto;
-    font-size: 3em;
     margin-top:10px;
 }
 .skill-container {
@@ -115,14 +107,11 @@ img {
 .skill-header {
     display: flex;
     flex-direction: column;
-    font-size: calc(14px + 0.5vw);
     align-items: center;
     border-bottom: 1px solid black;
     margin-bottom:10px;
 }
-.skill-body {
-    font-size: calc(8px + 0.5vw);
-}
+
 .sdev {
     margin-left:10%;
 }
@@ -185,18 +174,9 @@ img {
     align-items: center;
     border-bottom: 1px solid black;
 }
-.project-title {
-    font-size: calc(14px + 0.5vw);
-    font-weight: 600;
-}
 .project-body {
-    font-size: calc(8px + 0.5vw);
     padding: 10px;
-}
-
-/* ew */
-.project-body div {
-    text-align: center;
+    text-align: center
 }
 
 
