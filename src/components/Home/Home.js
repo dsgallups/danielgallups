@@ -1,13 +1,10 @@
-import { React, useRef, useState, useEffect } from 'react';
+import { React, useRef } from 'react';
 import NavBar from '../NavBar/NavBar';
-import Footer from '../Footer/Footer';
-import Face from '../../resources/face.jpg';
 import Headshot from '../../resources/headshot-dan.jpg';
 import ReactComment from '../ReactComment';
 import Typist from 'react-typist';
 import './Home.css';
 import { Parallax, ParallaxLayer } from '@react-spring/parallax';
-import { Document, Page } from 'react-pdf/dist/esm/entry.webpack';
 import Resume from '../../resources/DanielGallupsResume.png';
 import MediumIcon from '../../resources/icons8-medium.svg';
 import GithubIcon from '../../resources/icons8-github.svg';
@@ -16,98 +13,15 @@ import InstagramIcon from '../../resources/icons8-instagram.svg';
 import PathfinderIcon from '../../resources/pathfinder-logo.png';
 import PurdueIcon from '../../resources/Purdue_Boilermakers_logo.svg';
 import ChessBoardIcon from '../../resources/Chess_Board.svg';
-const keys = {37: 1, 38: 1, 39: 1, 40: 1};
-function preventDefault(e) {
-    e.preventDefault();
-}
 
-// modern Chrome requires { passive: false } when adding event
-var supportsPassive = false;
-try {
-  document.getElementById('parallax').addEventListener("test", null, Object.defineProperty({}, 'passive', {
-    get: function () { supportsPassive = true; } 
-  }));
-} catch(e) {}
-var wheelOpt = supportsPassive ? { passive: false } : false;
-var wheelEvent = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel';
-
-function preventDefaultForScrollKeys(e) {
-    if (keys[e.keyCode]) {
-        preventDefault(e);
-        return false;
-    }
-}
-// call this to Disable
-function disableScroll() {
-    document.getElementById('parallax').addEventListener('DOMMouseScroll', preventDefault, false); // older FF
-    document.getElementById('parallax').addEventListener(wheelEvent, preventDefault, wheelOpt); // modern desktop
-    document.getElementById('parallax').addEventListener('touchmove', preventDefault, wheelOpt); // mobile
-    document.getElementById('parallax').addEventListener('keydown', preventDefaultForScrollKeys, false);
-}
-// call this to Enable
-function enableScroll() {
-    document.getElementById('parallax').removeEventListener('DOMMouseScroll', preventDefault, false);
-    document.getElementById('parallax').removeEventListener(wheelEvent, preventDefault, wheelOpt); 
-    document.getElementById('parallax').removeEventListener('touchmove', preventDefault, wheelOpt);
-    document.getElementById('parallax').removeEventListener('keydown', preventDefaultForScrollKeys, false);
-  }
 const Home = () => {
 
     const ref = useRef();
     const alignStart = { display: 'flex', alignItems: 'flex-start'};
 
-    const [numPages, setNumPages] = useState(null);
-    const [pageNumber, setPageNumber] = useState(1);
-  
-    function onDocumentLoadSuccess({ numPages }) {
-      setNumPages(numPages);
-    }
-
-    /*let lastScroll = 0;
-    let currentPage = 0;
-    let ticking = false;
-    let calls = 0;
-    const handleScroll = (e) => {
-        let currentScroll = document.getElementById('parallax').scrollTop;
-        if (!ticking) {
-            console.log('----------------------------------------');
-            disableScroll();
-            ticking = true;
-            console.log('last scroll: ', lastScroll);
-            console.log('current scroll: ', currentScroll);
-            if (e.wheelDelta < 0 || e.deltaY > 0) {
-                console.log("scrolling down");
-                currentPage = currentPage >= 4 ? 4 : currentPage + 1;
-            } else if (e.wheelDelta > 0 || e.deltaY < 0) {
-                console.log("scrolling up");
-                currentPage = currentPage <= 0 ? 0 : currentPage - 1;
-            }
-            
-            setTimeout(() => ref.current.scrollTo(currentPage), 300);
-            setTimeout(() => {
-                lastScroll = currentScroll;
-                ticking = false;
-                enableScroll();
-                calls = 0;
-            }, 2000);
-        }
-
-        //const position = .pageYOffset;
-        //setScrollPosition(position);
-        
-    }
-    useEffect(() => {
-        document.getElementById('parallax').addEventListener('scroll', handleScroll, { passive: false });
-        document.getElementById('parallax').addEventListener('wheel', (e) => {
-            console.log(ref.current);
-            handleScroll(e);}, { passive: false });
-        return () => {
-            document.getElementById('parallax').removeEventListener('scroll', handleScroll);
-        }
-    });*/
     return (
         <div>
-            <NavBar page={this} />
+            <NavBar page={this} ref={ref} />
             <Parallax pages={3.5} ref={ref} id="parallax" >
             <ParallaxLayer offset={0} speed={1} factor={7} className="layer-1-background" style={{ ...alignStart, backgroundRepeat: "repeat" }}>
             </ParallaxLayer>
@@ -116,19 +30,19 @@ const Home = () => {
                     <img src={Headshot} alt="face" className="face"/>
                 </ParallaxLayer>
                 <ParallaxLayer offset={.05} speed={2} factor={1} style={{...alignStart, justifyContent: 'flex-start'}}>
-                    <div className="textbox intro">
+                    <div className="textbox large-header intro">
                         Hi, I'm Dan.{/*} <button onClick={(e) => {
                             console.log('clicked', document.getElementById('parallax').scrollTop);
                         ref.current.scrollTo(1)}}>Scroll</button>*/}
                     </div>
                 </ParallaxLayer>
                 <ParallaxLayer offset={.4} speed={1.2} factor={1} horizontal={false} style={{...alignStart, justifyContent: 'flex-start'}}>
-                    <div className="textbox-dark summary">
+                    <div className="textbox textbox-dark summary">
                         I am a Cybersecurity Student at <span style={{color:"#ceb888"}}>Purdue University</span>. 
                     </div>
                 </ParallaxLayer>
                 <ParallaxLayer offset={.55} speed={3} factor={1} style={{...alignStart, justifyContent: 'flex-end'}}>
-                    <div className="textbox secret">
+                    <div className="textbox regular-text secret">
                         <Typist avgTypingDelay={25} cursor={{show: false}}>
                             <Typist.Delay ms={0} />
                             If you aren't here to check out my talents, perhaps you should try finding my secret webpage...
@@ -142,10 +56,10 @@ const Home = () => {
                     </div>
                 </ParallaxLayer>
                 <ParallaxLayer offset={.15} speed={0} factor={1} style={{...alignStart, justifyContent: 'flex-end'}}>
-                    <div className="textbox-dark general">
-                        <div className="general-header">The Gist:</div>
-                        <ul>
-                            <li>Fullstack Developer with experience with MERN stack</li>
+                    <div className="textbox general-container">
+                        <div className="small-header" style={{width:"100%",fontWeight:'600',borderBottom:'1px solid white'}}>The Gist:</div>
+                        <ul className="regular-text">
+                            <li>Fullstack Developer</li>
                             <li>Looking for Summer Internship Opportunities</li>
                             <li>I am currently updating my website with projects, so stay tuned</li>
                             <li>Below, you will find my interests, projects, and contact information.</li>
@@ -154,10 +68,10 @@ const Home = () => {
                 </ParallaxLayer>
                 <ParallaxLayer offset={.6} speed={.8} style={{...alignStart, justifyContent: 'flex-start'}}>
                     <div className="textbox socials">
-                        <a href="https://github.com/dsgallups" target="_blank" className="social-icon"><img src={GithubIcon} alt="github"/></a>
-                        <a href="https://www.linkedin.com/in/daniel-gallups-942a38170/" target="_blank" className="social-icon"><img src={LinkedInIcon} alt="linkedin"/></a>
-                        <a href="https://medium.com/@dsgallups" target="_blank" className="social-icon"><img src={MediumIcon} alt="medium"/></a>
-                        <a href='https://www.instagram.com/danielgallups/' target="_blank" className="social-icon"><img src={InstagramIcon} alt="instagram"/></a>
+                        <a href="https://github.com/dsgallups" target="_blank" rel="noreferrer" className="social-icon"><img src={GithubIcon} alt="github"/></a>
+                        <a href="https://www.linkedin.com/in/daniel-gallups-942a38170/" rel="noreferrer" target="_blank" className="social-icon"><img src={LinkedInIcon} alt="linkedin"/></a>
+                        <a href="https://medium.com/@dsgallups" target="_blank" rel="noreferrer" className="social-icon"><img src={MediumIcon} alt="medium"/></a>
+                        <a href='https://www.instagram.com/danielgallups/' target="_blank" rel="noreferrer" className="social-icon"><img src={InstagramIcon} alt="instagram"/></a>
                     </div>
                 </ParallaxLayer>
                 <ParallaxLayer offset={.8} speed={1} factor={1} style={{...alignStart}}>
@@ -251,7 +165,7 @@ const Home = () => {
                         <div className="projects-body">
                             <div className="project-container">
                                 <div className="project-header">
-                                    <img src={PathfinderIcon} style={{width: '80px', height: '80px', marginBottom: '-10px'}}/>
+                                    <img src={PathfinderIcon} alt="Pathfinder Logo" style={{width: '80px', height: '80px', marginBottom: '-10px'}}/>
                                     <div className="project-title">Pathfinder</div>
                                 </div>
                                 <div className="project-body">

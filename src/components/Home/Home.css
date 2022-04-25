@@ -1,13 +1,3 @@
-
-.content-body {
-    display: flex;
-    font-weight: 600;
-}
-
-.picture {
-    display: flex;
-    width: 30%;
-}
 .max-width-for-content {
     max-width: 1200px;
     position: relative;
@@ -35,17 +25,22 @@ img {
 }
 .textbox-dark {
     background-color: #232323;
-    border: 1px solid white;
-    border-radius: 3px;
-    padding: 5px;
     color: white;
+    border: 1px solid white;
+}
+.large-header {
+    font-size: calc(24px + 1.2vw);
+}
+.small-header {
+    font-size: calc(14px + 1vw);
+}
+.regular-text {
+    font-size: calc(12px + .25vw);
 }
 .intro {
-    font-size: calc(16px + 2vw);
     margin: 0 auto;
 }
 .summary {
-    
     font-size: calc(14px + 0.5vw);
     height: calc(14px + 0.7vw);
     /*border: 1px solid black;*/
@@ -54,7 +49,6 @@ img {
 .secret {
     background-color: #BFDBF7;
     width: 30%;
-    font-size: calc(12px + 0.5vw);
     margin-right: 15%;
 }
 .update {
@@ -92,10 +86,11 @@ img {
 .scroll-text {
     display: flex;
 }
-.general {
+.general-container {
     background-color: #DB504A;
-    max-width: 340px;
-    margin-right:5%;
+    color: white;
+    max-width: 450px;
+    margin-right:2%;
 }
 .general-header {
     font-size: calc(14px + 0.5vw);
