@@ -13,4 +13,4 @@ Third section
 
 
 Color Palette:
-https://coolors.co/bfdbf7-e1e5f2-ffffff-db504a-585b56
+https://coolors.co/bfdbf7-e1e5f2-ffffff-db504a-232323

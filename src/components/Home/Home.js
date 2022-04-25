@@ -13,6 +13,14 @@ const keys = {37: 1, 38: 1, 39: 1, 40: 1};
 function preventDefault(e) {
     e.preventDefault();
 }
+
+// modern Chrome requires { passive: false } when adding event
+var supportsPassive = false;
+try {
+  document.getElementById('parallax').addEventListener("test", null, Object.defineProperty({}, 'passive', {
+    get: function () { supportsPassive = true; } 
+  }));
+} catch(e) {}
 var wheelOpt = supportsPassive ? { passive: false } : false;
 var wheelEvent = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel';
 
@@ -24,63 +32,63 @@ function preventDefaultForScrollKeys(e) {
 }
 // call this to Disable
 function disableScroll() {
-    window.addEventListener('DOMMouseScroll', preventDefault, false); // older FF
-    window.addEventListener(wheelEvent, preventDefault, wheelOpt); // modern desktop
-    window.addEventListener('touchmove', preventDefault, wheelOpt); // mobile
-    window.addEventListener('keydown', preventDefaultForScrollKeys, false);
+    document.getElementById('parallax').addEventListener('DOMMouseScroll', preventDefault, false); // older FF
+    document.getElementById('parallax').addEventListener(wheelEvent, preventDefault, wheelOpt); // modern desktop
+    document.getElementById('parallax').addEventListener('touchmove', preventDefault, wheelOpt); // mobile
+    document.getElementById('parallax').addEventListener('keydown', preventDefaultForScrollKeys, false);
 }
 // call this to Enable
 function enableScroll() {
-    window.removeEventListener('DOMMouseScroll', preventDefault, false);
-    window.removeEventListener(wheelEvent, preventDefault, wheelOpt); 
-    window.removeEventListener('touchmove', preventDefault, wheelOpt);
-    window.removeEventListener('keydown', preventDefaultForScrollKeys, false);
+    document.getElementById('parallax').removeEventListener('DOMMouseScroll', preventDefault, false);
+    document.getElementById('parallax').removeEventListener(wheelEvent, preventDefault, wheelOpt); 
+    document.getElementById('parallax').removeEventListener('touchmove', preventDefault, wheelOpt);
+    document.getElementById('parallax').removeEventListener('keydown', preventDefaultForScrollKeys, false);
   }
 const Home = () => {
     const ref = useRef();
-    console.log("hello");
     const alignStart = { display: 'flex', alignItems: 'flex-start'};
-    const [scrollPosition, setScrollPosition] = useState(0);
     let lastScroll = 0;
     let currentPage = 0;
     let ticking = false;
+    let calls = 0;
     const handleScroll = (e) => {
-        disableScroll();
         let currentScroll = document.getElementById('parallax').scrollTop;
-        console.log('is ticking?: ', ticking);
         if (!ticking) {
+            console.log('----------------------------------------');
+            disableScroll();
             ticking = true;
             console.log('last scroll: ', lastScroll);
             console.log('current scroll: ', currentScroll);
-            if (currentScroll >= lastScroll) {
+            if (e.wheelDelta < 0 || e.deltaY > 0) {
                 console.log("scrolling down");
                 currentPage = currentPage >= 4 ? 4 : currentPage + 1;
-            } else if (currentScroll < lastScroll) {
+            } else if (e.wheelDelta > 0 || e.deltaY < 0) {
                 console.log("scrolling up");
                 currentPage = currentPage <= 0 ? 0 : currentPage - 1;
             }
-            ref.current.scrollTo(currentPage);
-            console.log('currentScroll', currentPage);
+            
+            setTimeout(() => ref.current.scrollTo(currentPage), 300);
             setTimeout(() => {
+                lastScroll = currentScroll;
                 ticking = false;
                 enableScroll();
-            }, 3000);
-            //stuff.preventDefault();
+                calls = 0;
+            }, 2000);
         }
 
-        lastScroll = currentScroll;
         //const position = .pageYOffset;
         //setScrollPosition(position);
         
     }
-    useEffect(() => {
+    /*useEffect(() => {
         document.getElementById('parallax').addEventListener('scroll', handleScroll, { passive: false });
-        //document.getElementById('parallax').addEventListener('wheel', handleScroll, {passive: true});
+        document.getElementById('parallax').addEventListener('wheel', (e) => {
+            console.log(ref.current);
+            handleScroll(e);}, { passive: false });
         return () => {
             document.getElementById('parallax').removeEventListener('scroll', handleScroll);
-            //document.getElementById('parallax').removeEventListener('wheel', handleScroll);
         }
-    });
+    });*/
     return (
         <div>
             <NavBar page={this} />
@@ -95,7 +103,7 @@ const Home = () => {
                     <div className="textbox intro">
                         Hi, I'm Dan. <button onClick={(e) => {
                             console.log('clicked', document.getElementById('parallax').scrollTop);
-                            handleScroll(e)}}>Scroll</button>
+                            ref.current.scrollTo(1)}}>Scroll</button>
                     </div>
                 </ParallaxLayer>
                 <ParallaxLayer offset={.4} speed={1.2} factor={1} horizontal={false} style={{...alignStart, justifyContent: 'flex-start'}}>
@@ -139,12 +147,12 @@ const Home = () => {
                     </div>
                 </ParallaxLayer>
             </div>
-                <ParallaxLayer sticky={{start:1, end: 2}} style={{...alignStart, justifyContent: 'flex-start'}}>\
+                <ParallaxLayer sticky={{start:1, end: 1.3}} style={{...alignStart, justifyContent: 'flex-start'}}>\
                     <div className="textbox skills-header">
                         Skills and Interests
                     </div>
                 </ParallaxLayer>
-                <ParallaxLayer offset={1.2} speed={.6} factor={1} style={{...alignStart, justifyContent: 'flex-start'}}>
+                <ParallaxLayer offset={1.2} speed={.4} factor={1} style={{...alignStart, justifyContent: 'flex-start'}}>
                     <div className="textbox skill-container sdev">
                         <div className="skill-header">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
@@ -174,7 +182,7 @@ const Home = () => {
                         </div>
                     </div>
                 </ParallaxLayer>
-                <ParallaxLayer offset={1.2} speed={1.4} factor={1} style={{...alignStart, justifyContent: 'flex-end'}}>
+                <ParallaxLayer offset={1.2} speed={1.6} factor={1} style={{...alignStart, justifyContent: 'flex-end'}}>
                     <div className="textbox skill-container csec">
                         <div className="skill-header">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
@@ -189,7 +197,7 @@ const Home = () => {
                         </div>
                     </div>
                 </ParallaxLayer>
-                <ParallaxLayer offset={1.2} speed={1.6} factor={1} style={{...alignStart, justifyContent: 'flex-end'}}>
+                <ParallaxLayer offset={1.2} speed={1.2} factor={1} style={{...alignStart, justifyContent: 'flex-end'}}>
                     <div className="textbox skill-container dvis">
                         <div className="skill-header">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
@@ -207,6 +215,22 @@ const Home = () => {
                 <ParallaxLayer offset={1.15} speed={3} factor={1} style={{...alignStart, justifyContent: 'flex-end'}}>
                     <div className="dotted-divider"></div>
                 </ParallaxLayer>
+               
+
+                {/*Third page*/}
+                {/*<ParallaxLayer offset={3} speed={1} style={{...alignStart, justifyContent: 'flex-end'}}>
+                    <div className="project-background"></div>
+                </ParallaxLayer>
+                
+                <ParallaxLayer offset={3.1} speed={1} style={{...alignStart, justifyContent: 'flex-end'}}>
+                    <div className="projects-container">
+                        <div className="project-header">
+                            Projects
+                        </div>
+                    </div>
+                        </ParallaxLayer>*/}
+
+
                 {/*
                 <ParallaxLayer offset={1} speed={2} factor={1}
                     style={{ background: '#FFFFFF' }} 
