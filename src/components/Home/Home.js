@@ -206,13 +206,11 @@ const Home = () => {
                     </div>
                 </ParallaxLayer>
 
-                <ParallaxLayer offset={2} speed={1.2} style={{...alignStart, justifyContent: 'center'}}>
-                    <div className="resume-container">
-                        <div className="resume-header">Resume</div>
-                        <img src={Resume} alt="Resume" className="resume-document"/>
-                        <p>
-                            <a href='https://danielgallupsbucket.s3.us-east-2.amazonaws.com/DanielGallupsResume.pdf'>Download</a>
-                        </p>
+                <ParallaxLayer offset={2} speed={1.2} style={{...alignStart, justifyContent: 'center', width: '80%', margin: '0 auto'}}>
+                    <div className="resume-frame">
+                        <div className="resume-container">
+                            <a href='https://danielgallupsbucket.s3.us-east-2.amazonaws.com/DanielGallupsResume.pdf' target="_blank" className="resume-document"><img src={Resume} alt="Resume"/></a>
+                        </div>
                     </div>
                 </ParallaxLayer>
             </Parallax>
