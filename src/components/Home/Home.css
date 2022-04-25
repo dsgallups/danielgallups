@@ -17,9 +17,9 @@ img {
     object-fit: contain;
     height: 100%;
     width: 100%;
-    border-radius: 100%;
 }
 .face {
+    border-radius: 100%;
     width: 30%;
     max-width: 200px;
     margin-left: 20%;
@@ -60,9 +60,19 @@ img {
 .update {
     font-size: .8em;
     height: 1em;
-    margin-left:20%;
+    margin-left:0%;
 }
-
+.socials {
+    display: flex;
+    justify-content: space-around;
+    margin-left: 20%;
+    background-color: #7AB8F6;
+}
+.social-icon {
+    padding:0px;
+    margin-left: 4px;
+    margin-right: 4px;
+}
 .header {
     font-size: 3vw;
 }
@@ -136,10 +146,104 @@ img {
     height: 400px;
     border-left: 2px dotted white;
 }
-
+/* Projects section */
 .projects-container {
+    max-width: 5000px;
+    margin: 0 auto;
+    height: 600px;
     background-color: #BFDBF7;
 }
+.projects-header {
+    margin-top:1vw;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: calc(50px + 1.5vw);
+    border-bottom: 3px dashed black;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.projects-body {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: flex-start;
+    align-content: flex-start;
+    margin-top: 20px;
+}
+
+.project-container {
+    background-color: white;
+    width: 20%;
+    min-width: 300px;
+    max-width: 500px;
+    border-radius: 5px;
+    box-shadow: 4px 5px 2px rgb(58, 58, 58);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px;
+}
+.project-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 1px solid black;
+}
+.project-title {
+    font-size: calc(14px + 0.5vw);
+    font-weight: 600;
+}
+.project-body {
+    font-size: calc(8px + 0.5vw);
+    padding: 10px;
+}
+
+/* ew */
+.project-body div {
+    text-align: center;
+}
+
+
+.resume-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+    padding-left: 5%;
+    padding-right: 5%;
+    background-color: #DB504A;
+    border-radius: 5px;
+}
+.resume-header {
+    color: white;
+    font-size: calc(40px + 1.5vw);
+    padding-left:10px;
+    padding-right:10px;
+    border-bottom: 1px solid white;
+}
+.resume-document {
+    margin-top: 5px;
+}
+.resume-container a {
+    text-decoration: none;
+    color: rgb(228, 228, 228);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .layer-1-background {
     background-size: 100%;

@@ -25,6 +25,7 @@ const NavBar = () => {
                             <a href="/contact">Resume</a>
                         </div>
                     </div>
+                    <div style={{fontWeight:'800'}}>This Website Under Active Development</div>
                 </div>
             </div>
         </div>
