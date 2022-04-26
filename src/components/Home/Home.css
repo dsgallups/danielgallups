@@ -48,7 +48,7 @@ img {
     font-size: calc(14px + 0.5vw);
     height: calc(14px + 0.7vw);
     /*border: 1px solid black;*/
-    margin-left: 15%;
+    margin-left: 10%;
 }
 .secret {
     background-color: #444444;
