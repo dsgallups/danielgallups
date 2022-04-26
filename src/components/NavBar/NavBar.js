@@ -1,6 +1,7 @@
 
 import './NavBar.css';
-const NavBar = () => {
+const NavBar = (props) => {
+    let myRef = props.thisRef;
     return (
         <div className="navbar">
             <div className="constrict-80p">
@@ -10,22 +11,18 @@ const NavBar = () => {
                     </div>
                     <div className="navbar-items">
                         <div className="navbar-item">
-                            <a href="/">Home</a>
+                            <button onClick={ref.current.scrollTo(0)}>Home</button>
                         </div>
                         <div className="navbar-item">
-                            <a href="/basics">Basics</a>
+                            <button onClick={ref.current.scrollTo(1)}>Interests</button>
                         </div>
                         <div className="navbar-item">
-                            <a href="/ctf">CTFs</a>
+                            <button onClick={ref.current.scrollTo(1.8)}>Projects</button>
                         </div>
                         <div className="navbar-item">
-                            <a href="/policy">Policy</a>
-                        </div>
-                        <div className="navbar-item">
-                            <a href="/contact">Resume</a>
+                            <button onClick={ref.current.scrollTo(2)}>Resume</button>
                         </div>
                     </div>
-                    <div style={{fontWeight:'800'}}>This Website is Under Active Development</div>
                 </div>
             </div>
         </div>

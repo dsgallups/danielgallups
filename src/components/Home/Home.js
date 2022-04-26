@@ -1,5 +1,5 @@
 import { React, useRef } from 'react';
-import NavBar from '../NavBar/NavBar';
+import '../NavBar/NavBar.css';
 import Headshot from '../../resources/headshot-dan.jpg';
 import ReactComment from '../ReactComment';
 import Typist from 'react-typist';
@@ -20,12 +20,50 @@ import SoftwareIcon from '../../resources/software.svg';
 
 const Home = () => {
 
-    const ref = useRef();
+    let ref = useRef();
     const alignStart = { display: 'flex', alignItems: 'flex-start'};
 
+   
+
+    const handleScroll = (page) => {
+        console.log("clicked, scrolling to", page);
+        if ('current' in ref && ref.current !== undefined) {
+            console.log('current in ref!');
+            console.log(ref);
+            ref.current.scrollTo(page);
+        }
+    }
     return (
         <div>
-            <NavBar page={this} ref={ref} />
+            {/*
+            
+            THE NAVBAR CANNOT BE A CHILD COMPONENT BECAUSE REACT DOESN'T PASS REFS
+            <NavBar page={this} thisRef={ref} />*/}
+            {console.log("hi")}
+            {console.log(ref)}
+            <div className="navbar">
+                <div className="constrict-80p">
+                    <div className="navbar-flex">
+                        <div className="title">
+                            Daniel Gallups
+                        </div>
+                        <div className="navbar-items">
+                            <div className="navbar-item">
+                                <button onClick={() => handleScroll(0)}>Home</button>
+                            </div>
+                            <div className="navbar-item">
+                                <button onClick={() => handleScroll(1)}>Interests</button>
+                            </div>
+                            <div className="navbar-item">
+                                <button onClick={() => handleScroll(1.35)}>Projects</button>
+                            </div>
+                            <div className="navbar-item">
+                                <button onClick={() => handleScroll(2)}>Resume</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <Parallax pages={3.5} ref={ref} id="parallax" >
             <ParallaxLayer offset={0} speed={1} factor={7} className="layer-1-background" style={{ ...alignStart, backgroundRepeat: "repeat" }}>
             </ParallaxLayer>
@@ -35,9 +73,7 @@ const Home = () => {
                 </ParallaxLayer>
                 <ParallaxLayer offset={.05} speed={2} factor={1} style={{...alignStart, justifyContent: 'flex-start'}}>
                     <div className="textbox large-header intro">
-                        Hi, I'm Dan.{/*} <button onClick={(e) => {
-                            console.log('clicked', document.getElementById('parallax').scrollTop);
-                        ref.current.scrollTo(1)}}>Scroll</button>*/}
+                        Hi, I'm Dan.
                     </div>
                 </ParallaxLayer>
                 <ParallaxLayer offset={.4} speed={1.2} factor={1} horizontal={false} style={{...alignStart, justifyContent: 'flex-start'}}>
@@ -56,7 +92,7 @@ const Home = () => {
                 </ParallaxLayer>
                 <ParallaxLayer offset={.87} speed={5} factor={1} style={{...alignStart, justifyContent: 'flex-end'}}>
                     <div className="textbox update">
-                        Last updated: April 23rd, 2022
+                        Last updated: April 25th, 2022
                     </div>
                 </ParallaxLayer>
                 <ParallaxLayer offset={.15} speed={0} factor={1} style={{...alignStart, justifyContent: 'flex-end'}}>
@@ -65,8 +101,8 @@ const Home = () => {
                         <ul className="regular-text">
                             <li>Fullstack Developer</li>
                             <li>Looking for Summer Internship Opportunities</li>
-                            <li>I am currently updating my website with projects, so stay tuned</li>
                             <li>Below, you will find my interests, projects, and contact information.</li>
+                            <li style={{fontWeight: '600'}}>I am currently updating my website, so stay tuned!</li>
                         </ul>
                     </div>
                 </ParallaxLayer>
@@ -166,7 +202,7 @@ const Home = () => {
 
                             <div className="project-container">
                                 <div className="project-header">
-                                    <img src={PurdueIcon} style={{width: '80px', height: '80px', marginBottom: '-10px'}}/>
+                                    <img src={PurdueIcon} alt="Purdue Icon" style={{width: '80px', height: '80px', marginBottom: '-10px'}}/>
                                     <div className="small-header">iamboredatpurdue</div>
                                 </div>
                                 <div className="project-body small-text">
@@ -180,7 +216,7 @@ const Home = () => {
 
                             <div className="project-container">
                                 <div className="project-header">
-                                    <img src={ChessBoardIcon} style={{width: '80px', height: '80px', marginTop: '5px', marginBottom: '0px'}}/>
+                                    <img src={ChessBoardIcon} alt="Chessboard Icon" style={{width: '80px', height: '80px', marginTop: '5px', marginBottom: '0px'}}/>
                                     <div className="small-header">Boilerchess</div>
                                 </div>
                                 <div className="project-body small-text">
