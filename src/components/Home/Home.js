@@ -41,7 +41,7 @@ const Home = () => {
     return (
         <>
             <Breakpoint at ='isMobile'>
-                <div style={{textAlign:'center',color:'white'}}>
+                <div style={{textAlign:'center',color:'white',marginTop:'20px'}}>
                     MOBILE VERSION TO BE WRITTEN!
                 </div>
             </Breakpoint>
