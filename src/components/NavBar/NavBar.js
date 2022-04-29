@@ -1,7 +1,7 @@
 
 import './NavBar.css';
 const NavBar = (props) => {
-    let myRef = props.thisRef;
+    let handleScroll = props.handleScroll;
     return (
         <div className="navbar">
             <div className="constrict-80p">
@@ -11,16 +11,16 @@ const NavBar = (props) => {
                     </div>
                     <div className="navbar-items">
                         <div className="navbar-item">
-                            <button onClick={ref.current.scrollTo(0)}>Home</button>
+                            <button onClick={() => handleScroll(0)}>Home</button>
                         </div>
                         <div className="navbar-item">
-                            <button onClick={ref.current.scrollTo(1)}>Interests</button>
+                            <button onClick={() => handleScroll(1)}>Interests</button>
                         </div>
                         <div className="navbar-item">
-                            <button onClick={ref.current.scrollTo(1.8)}>Projects</button>
+                            <button onClick={() => handleScroll(1.35)}>Projects</button>
                         </div>
                         <div className="navbar-item">
-                            <button onClick={ref.current.scrollTo(2)}>Resume</button>
+                            <button onClick={() => handleScroll(2)}>Resume</button>
                         </div>
                     </div>
                 </div>
