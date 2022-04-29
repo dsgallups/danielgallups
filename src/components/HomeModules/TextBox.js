@@ -5,7 +5,7 @@
     There should be nothing here but structure for a textbox.
 */
 
-const Textbox = ({ section }) => {
+const TextBox = ({ section }) => {
     return (
         <div className={"textbox " + section.className}>
             {section.body}
@@ -13,4 +13,4 @@ const Textbox = ({ section }) => {
     );
 }
 
-export default Textbox;
+export default TextBox;

@@ -18,7 +18,7 @@ import DataIcon from '../../resources/data.svg';
 import SecurityIcon from '../../resources/security.svg';
 import SoftwareIcon from '../../resources/software.svg';
 import Breakpoint from '../Breakpoint';
-import Textbox from '../HomeModules/Textbox';
+import TextBox from '../HomeModules/TextBox';
 import { defineHidden } from '@react-spring/shared';
 import Social from '../HomeModules/Social';
 import NavBar from '../NavBar/NavBar';
@@ -162,26 +162,32 @@ const Home = () => {
     return (
         <>
             <Breakpoint at ='isMobile'>
-                <>
-                <div style={{textAlign:'center'}}>
-                    MOBILE VERSION TO BE WRITTEN!
+                <div className="mobile-flex layer-1-background">
+                    <TextBox section={sections.intro}/>
+                    <TextBox section={sections.summary}/>
+                    <div className="textbox socials">
+                        <Social platform={sections.github}/>
+                        <Social platform={sections.linkedin}/>
+                        <Social platform={sections.medium}/>
+                        <Social platform={sections.instagram}/>
+                    </div>
+
+                    <div className="interests-container">
+                        <div className="interests-header">{sections["interests header"].body}</div>
+                        <div className="interests-body">
+                            <SkillBox section={sections["software dev"]}/>
+                            <SkillBox section={sections["math"]}/>
+                            <SkillBox section={sections["cybersecurity"]}/>
+                            <SkillBox section={sections["data"]}/>
+                        </div>
+                    </div>
+
+                    <div className="projects-container">
+                        <div className="projects-header">{sections.projects.title}</div>
+                    </div>
+
+                 
                 </div>
-                <Textbox section={sections.intro}/>
-                <div className="textbox socials">
-                    <a href="https://github.com/dsgallups" target="_blank" rel="noreferrer" className="social-icon"><img src={GithubIcon} alt="github"/></a>
-                    <a href="https://www.linkedin.com/in/daniel-gallups-942a38170/" rel="noreferrer" target="_blank" className="social-icon"><img src={LinkedInIcon} alt="linkedin"/></a>
-                    <a href="https://medium.com/@dsgallups" target="_blank" rel="noreferrer" className="social-icon"><img src={MediumIcon} alt="medium"/></a>
-                    <a href='https://www.instagram.com/danielgallups/' target="_blank" rel="noreferrer" className="social-icon"><img src={InstagramIcon} alt="instagram"/></a>
-                </div>
-                <div className="textbox textbox-dark summary">
-                    I am a Cybersecurity Student at <span style={{color:"#ceb888"}}>Purdue University</span>. 
-                </div>
-                <div className="textbox general-container">
-                    <div className="small-header" style={{width:"100%",fontWeight:'600',borderBottom:'1px solid white'}}>The Gist:</div>
-                    <ul className="regular-text">
-                    </ul>
-                </div>
-                </>
             </Breakpoint>
             <Breakpoint at ="isDesktop">
                 <>
@@ -193,10 +199,10 @@ const Home = () => {
                         <img src={Headshot} alt="face" className="face"/>
                     </ParallaxLayer>
                     <ParallaxLayer offset={.05} speed={2} factor={1} style={{...alignStart, justifyContent: 'flex-start'}}>
-                        <Textbox section={sections.intro}/>
+                        <TextBox section={sections.intro}/>
                     </ParallaxLayer>
                     <ParallaxLayer offset={.4} speed={1.2} factor={1} horizontal={false} style={{...alignStart, justifyContent: 'flex-start'}}>
-                        <Textbox section={sections.summary}/>
+                        <TextBox section={sections.summary}/>
                     </ParallaxLayer>
                     <ParallaxLayer offset={.55} speed={3} factor={1} style={{...alignStart, justifyContent: 'flex-end'}}>
                         <div className="textbox regular-text secret">
@@ -208,7 +214,7 @@ const Home = () => {
                         </div>
                     </ParallaxLayer>
                     <ParallaxLayer offset={.87} speed={5} factor={1} style={{...alignStart, justifyContent: 'flex-end'}}>
-                        <Textbox section={sections.update}/>
+                        <TextBox section={sections.update}/>
                     </ParallaxLayer>
                     <ParallaxLayer offset={.15} speed={0} factor={1} style={{...alignStart, justifyContent: 'flex-end'}}>
                         <div className="textbox general-container">
@@ -238,7 +244,7 @@ const Home = () => {
                     </ParallaxLayer>
                 </div>
                     <ParallaxLayer sticky={{start:1, end: 1.2}} style={{...alignStart, justifyContent: 'flex-start'}}>
-                        <Textbox section={sections["interests header"]}/>
+                        <TextBox section={sections["interests header"]}/>
                     </ParallaxLayer>
                     <ParallaxLayer offset={1.2} speed={.4} factor={1} style={{...alignStart, justifyContent: 'flex-start'}}>
                         <SkillBox section={sections["software dev"]}/>
