@@ -80,9 +80,9 @@ const Home = () => {
             "title": "The Gist",
             "body": [
                 "Fullstack Developer",
-                "Looking for Summer Internship Opportunities",
+                "Skilled in MERN stack, networking, and cybersecurity.",
+                "Current project is this website. This website is in active development, so things may change quickly.",
                 "Below, you will find my interests, projects, and contact information.",
-                "I am currently updating my website, so stay tuned!"
             ]
         },
         "github": {
