@@ -58,7 +58,7 @@ const Home = () => {
         },
         "summary": {
             "body": ["I am a Cybersecurity Student at ", <span style={{color:"#ceb888"}}>Purdue University</span>, "."],
-            "className": "textbox-dark summary",
+            "className": "textbox-dark summary regular-text",
             "isDark": true
         },
         "secret": {
@@ -153,6 +153,7 @@ const Home = () => {
             }
         },
         "resume": {
+            title: "Resume",
             link: "https://danielgallupsbucket.s3.us-east-2.amazonaws.com/DanielGallupsResume.pdf",
             icon: Resume
         }
@@ -166,19 +167,28 @@ const Home = () => {
     }
     return (
         <>
-            <Breakpoint at ='isMobile'>
+            <Breakpoint at='isMobile'>
                 <div className="mobile-flex layer-1-background">
                     <TextBox section={sections.intro}/>
-                    <TextBox section={sections.summary}/>
                     <div className="textbox socials">
                         <Social platform={sections.github}/>
                         <Social platform={sections.linkedin}/>
                         <Social platform={sections.medium}/>
                         <Social platform={sections.instagram}/>
                     </div>
+                    <TextBox section={sections.summary}/>
+
+                    <div className="projects-container">
+                        <div className="projects-header large-header">{sections.projects.title}</div>
+                        <div className="projects-body">
+                            <ProjectBox section={sections.projects.body.pathfinder}/>
+                            <ProjectBox section={sections.projects.body.iamboredatpurdue}/>
+                            <ProjectBox section={sections.projects.body.boilerchess} add={{marginTop: '5px', marginBottom:'0px'}}/>
+                        </div>
+                    </div>
 
                     <div className="interests-container">
-                        <div className="interests-header">{sections["interests header"].body}</div>
+                        <div className="interests-header large-header">{sections["interests header"].body}</div>
                         <div className="interests-body">
                             <SkillBox section={sections["software dev"]}/>
                             <SkillBox section={sections["math"]}/>
@@ -187,8 +197,13 @@ const Home = () => {
                         </div>
                     </div>
 
-                    <div className="projects-container">
-                        <div className="projects-header">{sections.projects.title}</div>
+                    
+                    
+                    <div className="resume-container">
+                        <div className="resume-header large-header">{sections.resume.title}</div>
+                        <a href={sections.resume.link} target="_blank" className="resume-document" rel="noreferrer">
+                            <img src={sections.resume.icon} alt="Resume"/>
+                        </a>
                     </div>
 
                  
