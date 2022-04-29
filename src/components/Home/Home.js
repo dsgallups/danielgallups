@@ -148,6 +148,21 @@ const Home = () => {
                     body: "If you're like me, then you would think that chess absolutely deserves a new piece. Behold! Boilerchess is a 9x9 tiled game that incorporates a new piece: The Boiler.",
                     link: "https://github.com/dsgallups/CNIT251-Final-Project",
                     alt: "boilerchess Icon"
+                },
+                "it": {
+                    icon: PurdueIcon,
+                    title: "IT Infrastructure",
+                    body: "At Purdue, we had to build four different network topologies using several technologies. These requirements included physical routing, Cisco iOS, STP, DHCP, VyOS, and HP Aruba iOS. Additionally, we had to implement virtual networks using VMware, Windows AD, BIND, and postfix.",
+                    link: "#",
+                    alt: "Networking Icon"
+
+                },
+                "cyberforensics": {
+                    icon: PurdueIcon,
+                    title: "Cyberforensics Analysis",
+                    body: "Purdue introduces students to the field of Cyberforensics. As a TA, I redesigned and developed a semester-long case study analyzing a suspect's workstation, behavior, and network activity.",
+                    link: "#",
+                    alt: "Cyberforensics Icon"
                 }
 
             }
@@ -212,8 +227,8 @@ const Home = () => {
             <Breakpoint at ="isDesktop">
                 <>
                 <NavBar handleScroll={handleScroll} />
-                <Parallax pages={3.5} ref={ref} id="parallax" >
-                <ParallaxLayer offset={0} speed={1} factor={7} className="layer-1-background" style={{ ...alignStart, backgroundRepeat: "repeat" }}/>
+                <Parallax pages={5} ref={ref} id="parallax" >
+                <ParallaxLayer offset={0} speed={1} factor={9} className="layer-1-background" style={{ ...alignStart, backgroundRepeat: "repeat" }}/>
                 <div className="max-width-for-content">
                     <ParallaxLayer offset={.15} speed={2} factor={1} style={{...alignStart, justifyContent: 'flex-start'}}>
                         <img src={Headshot} alt="face" className="face"/>
@@ -285,7 +300,7 @@ const Home = () => {
 
                     {/*Third page*/}
                     
-                    <ParallaxLayer offset={1.8} speed={1.2} style={{...alignStart, justifyContent: 'flex-end'}}>
+                    <ParallaxLayer offset={2} speed={1.2} style={{...alignStart, justifyContent: 'flex-end'}}>
                         <div className="projects-container">
                             <div className="projects-header">
                                 {sections.projects.title}
@@ -294,11 +309,13 @@ const Home = () => {
                                 <ProjectBox section={sections.projects.body.pathfinder}/>
                                 <ProjectBox section={sections.projects.body.iamboredatpurdue}/>
                                 <ProjectBox section={sections.projects.body.boilerchess} add={{marginTop: '5px', marginBottom:'0px'}}/>
+                                <ProjectBox section={sections.projects.body.it}/>
+                                <ProjectBox section={sections.projects.body.cyberforensics}/>
                             </div>
                         </div>
                     </ParallaxLayer>
 
-                    <ParallaxLayer offset={2} speed={1.2} style={{...alignStart, justifyContent: 'center', width: '80%', margin: '0 auto'}}>
+                    <ParallaxLayer offset={3} speed={1.2} style={{...alignStart, justifyContent: 'center', width: '80%', margin: '0 auto'}}>
                         <div className="resume-frame">
                             <div className="resume-container">
                                 <a href={sections.resume.link} target="_blank" className="resume-document" rel="noreferrer"><img src={sections.resume.icon} alt="Resume"/></a>

@@ -17,10 +17,10 @@ const NavBar = (props) => {
                             <button onClick={() => handleScroll(1)}>Interests</button>
                         </div>
                         <div className="navbar-item">
-                            <button onClick={() => handleScroll(1.35)}>Projects</button>
+                            <button onClick={() => handleScroll(2)}>Projects</button>
                         </div>
                         <div className="navbar-item">
-                            <button onClick={() => handleScroll(2)}>Resume</button>
+                            <button onClick={() => handleScroll(3)}>Resume</button>
                         </div>
                     </div>
                 </div>
