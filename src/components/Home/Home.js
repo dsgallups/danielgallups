@@ -201,6 +201,8 @@ const Home = () => {
                             <ProjectBox section={sections.projects.body.pathfinder}/>
                             <ProjectBox section={sections.projects.body.iamboredatpurdue}/>
                             <ProjectBox section={sections.projects.body.boilerchess} add={{marginTop: '5px', marginBottom:'0px'}}/>
+                            <ProjectBox section={sections.projects.body.it}/>
+                            <ProjectBox section={sections.projects.body.cyberforensics} add={{marginTop: '5px', marginBottom: '0px'}}/>
                         </div>
                     </div>
 

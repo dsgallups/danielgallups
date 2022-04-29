@@ -4,7 +4,7 @@
 @media only screen and (max-width: 864px) {
     html, body {
         scrollbar-width: thin !important;
-        overflow:visible !important;
+        overflow: visible !important;
     }
     .large-header {
         font-size: 11.5vw;
@@ -340,6 +340,7 @@
         flex-direction: column;
         align-items: center;
         margin: 10px;
+        margin-bottom:40px;
     }
     .project-header {
         display: flex;
