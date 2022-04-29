@@ -24,6 +24,8 @@ import Social from '../HomeModules/Social';
 import NavBar from '../NavBar/NavBar';
 import SkillBox from '../HomeModules/SkillBox';
 import ProjectBox from '../HomeModules/ProjectBox';
+import NetworkIcon from '../../resources/NetworkIcon.svg';
+import HardDriveIcon from '../../resources/HardDriveIcon.svg';
 /*
     TODO:
     - Time to refactor code
@@ -150,7 +152,7 @@ const Home = () => {
                     alt: "boilerchess Icon"
                 },
                 "it": {
-                    icon: PurdueIcon,
+                    icon: NetworkIcon,
                     title: "IT Infrastructure",
                     body: "At Purdue, we had to build four different network topologies using several technologies. These requirements included physical routing, Cisco iOS, STP, DHCP, VyOS, and HP Aruba iOS. Additionally, we had to implement virtual networks using VMware, Windows AD, BIND, and postfix.",
                     link: "#",
@@ -158,7 +160,7 @@ const Home = () => {
 
                 },
                 "cyberforensics": {
-                    icon: PurdueIcon,
+                    icon: HardDriveIcon,
                     title: "Cyberforensics Analysis",
                     body: "Purdue introduces students to the field of Cyberforensics. As a TA, I redesigned and developed a semester-long case study analyzing a suspect's workstation, behavior, and network activity.",
                     link: "#",
@@ -310,7 +312,7 @@ const Home = () => {
                                 <ProjectBox section={sections.projects.body.iamboredatpurdue}/>
                                 <ProjectBox section={sections.projects.body.boilerchess} add={{marginTop: '5px', marginBottom:'0px'}}/>
                                 <ProjectBox section={sections.projects.body.it}/>
-                                <ProjectBox section={sections.projects.body.cyberforensics}/>
+                                <ProjectBox section={sections.projects.body.cyberforensics} add={{marginTop: '5px', marginBottom: '0px'}}/>
                             </div>
                         </div>
                     </ParallaxLayer>
