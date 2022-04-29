@@ -23,6 +23,7 @@ import { defineHidden } from '@react-spring/shared';
 import Social from '../HomeModules/Social';
 import NavBar from '../NavBar/NavBar';
 import SkillBox from '../HomeModules/SkillBox';
+import ProjectBox from '../HomeModules/ProjectBox';
 /*
     TODO:
     - Time to refactor code
@@ -39,6 +40,7 @@ const Home = () => {
             - icon: the icon to represent the section
             - link: the link to the section
             - isDark: is the section going to be dark?
+            - alt: Alternate name for missing image
         
         The following modules accepts sections as a parameter:
             Textbox
@@ -130,19 +132,22 @@ const Home = () => {
                     icon: PathfinderIcon,
                     title: "Pathfinder",
                     body: "No longer are the days of inaccurate college scheduling! Pathfinder enables students to optimize their plans of study. Features include quicker paths to graduation, search for certificates based on fewest credits, and much more.",
-                    link: "https://github.com/dsgallups/Pathfinder"
+                    link: "https://github.com/dsgallups/Pathfinder",
+                    alt: "Pathfinder Icon"
                 },
                 "iamboredatpurdue": {
                     icon: PurdueIcon,
                     title: "iamboredatpurdue",
-                    body: "Where is the bell tower? Why don't I have any homework? Why would I ever leave this place? If you\'re asking these questions, you\'re probably not a student at Purdue. But if you are, join us at iamboredatpurdue to find comfort in your boredom!",
-                    link: "https://github.com/dsgallups/iamboredatpurdue"
+                    body: "Where is the bell tower? Why don't I have any homework? Why would I ever leave this place? If you're asking these questions, you're probably not a student at Purdue. But if you are, join us at iamboredatpurdue to find comfort in your boredom!",
+                    link: "https://github.com/dsgallups/iamboredatpurdue",
+                    alt: "iamboredatpurdue Icon"
                 },
                 "boilerchess": {
                     icon: ChessBoardIcon,
                     title: "BoilerChess",
                     body: "If you're like me, then you would think that chess absolutely deserves a new piece. Behold! Boilerchess is a 9x9 tiled game that incorporates a new piece: The Boiler.",
-                    link: "https://github.com/dsgallups/CNIT251-Final-Project"
+                    link: "https://github.com/dsgallups/CNIT251-Final-Project",
+                    alt: "boilerchess Icon"
                 }
 
             }
@@ -271,38 +276,9 @@ const Home = () => {
                                 {sections.projects.title}
                             </div>
                             <div className="projects-body">
-                                <div className="project-container">
-                                    <div className="project-header">
-                                        <img src={sections.projects.body.pathfinder.icon} alt="Pathfinder Logo" style={{width: '80px', height: '80px', marginBottom: '-10px'}}/>
-                                        <div className="small-header">{sections.projects.body.pathfinder.title}</div>
-                                    </div>
-                                    <div className="project-body small-text">
-                                        <span>{sections.projects.body.pathfinder.body}</span>
-                                        <a href={sections.projects.body.pathfinder.link} target="_blank" rel="noreferrer"><div>Click here to learn more &gt;&gt;</div></a>
-                                    </div>
-                                </div>
-
-                                <div className="project-container">
-                                    <div className="project-header">
-                                        <img src={sections.projects.body.iamboredatpurdue.icon} alt="Purdue Icon" style={{width: '80px', height: '80px', marginBottom: '-10px'}}/>
-                                        <div className="small-header">{sections.projects.body.iamboredatpurdue.title}</div>
-                                    </div>
-                                    <div className="project-body small-text">
-                                        <span>{sections.projects.body.iamboredatpurdue.body}</span>
-                                        <a href={sections.projects.body.iamboredatpurdue.link} target="_blank" rel="noreferrer"><div>Click here to learn more &gt;&gt;</div></a>
-                                    </div>
-                                </div>
-
-                                <div className="project-container">
-                                    <div className="project-header">
-                                        <img src={sections.projects.body.boilerchess.icon} alt="Chessboard Icon" style={{width: '80px', height: '80px', marginTop: '5px', marginBottom: '0px'}}/>
-                                        <div className="small-header">{sections.projects.body.boilerchess.title}</div>
-                                    </div>
-                                    <div className="project-body small-text">
-                                        <span>{sections.projects.body.boilerchess.body}</span>
-                                        <a href={sections.projects.body.boilerchess.link} target="_blank" rel="noreferrer"><div>Click here to learn more &gt;&gt;</div></a>
-                                    </div>
-                                </div>
+                                <ProjectBox section={sections.projects.body.pathfinder}/>
+                                <ProjectBox section={sections.projects.body.iamboredatpurdue}/>
+                                <ProjectBox section={sections.projects.body.boilerchess} add={{marginTop: '5px', marginBottom:'0px'}}/>
                             </div>
                         </div>
                     </ParallaxLayer>
@@ -310,7 +286,7 @@ const Home = () => {
                     <ParallaxLayer offset={2} speed={1.2} style={{...alignStart, justifyContent: 'center', width: '80%', margin: '0 auto'}}>
                         <div className="resume-frame">
                             <div className="resume-container">
-                                <a href={sections.resume.link} target="_blank" className="resume-document"><img src={sections.resume.icon} alt="Resume"/></a>
+                                <a href={sections.resume.link} target="_blank" className="resume-document" rel="noreferrer"><img src={sections.resume.icon} alt="Resume"/></a>
                             </div>
                         </div>
                     </ParallaxLayer>
