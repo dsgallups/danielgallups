@@ -122,7 +122,9 @@
         border-bottom: 1px solid black;
         margin-bottom:10px;
     }
-    
+    .skill-header-dark {
+        border-bottom: 1px solid white;
+    }
     .sdev {
         margin-left:10%;
         background-color: #ceb888;

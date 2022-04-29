@@ -5,10 +5,10 @@
     There should be nothing here but structure for a textbox.
 */
 
-const Textbox = (props) => {
+const Textbox = ({ section }) => {
     return (
-        <div className={"textbox " + props.className}>
-            {props.children}
+        <div className={"textbox " + section.className}>
+            {section.body}
         </div>
     );
 }
