@@ -4,6 +4,9 @@ const NavBar = (props) => {
     let handleScroll = props.handleScroll;
     return (
         <div className="navbar">
+            <div className="notice">
+                This Website is Old! My port to WASM is under development.
+            </div>
             <div className="constrict-80p">
                 <div className="navbar-flex">
                     <div className="title">

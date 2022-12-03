@@ -3,8 +3,19 @@
     border-bottom: 1px solid black;
     display: flex;
     justify-content: space-between;
+    flex-direction:column;
     width: 100%;
     padding-bottom:10px;
+}
+.notice {
+    text-align: center;
+    color: red;
+    display: flex;
+    align-self: center;
+    border: 1px solid black;
+    padding: 5px;
+    border-radius: 5px;
+    margin-top: 10px;
 }
 .navbar-flex {
     display: flex;
