@@ -81,7 +81,7 @@ const Home = () => {
             "body": [
                 "Fullstack Developer",
                 "Skilled in MERN stack, networking, and cybersecurity.",
-                "Current project is this website. This website is in active development, so things may change quickly.",
+                "Built in React",
                 "Below, you will find my interests, projects, and contact information.",
             ]
         },
@@ -186,7 +186,7 @@ const Home = () => {
         <>
             <Breakpoint at='isMobile'>
                 <div className="mobile-flex layer-1-background">
-                    <TextBox section={sections.intro}/>
+                    {/*<TextBox section={sections.intro}/>*/}
                     <div className="textbox socials">
                         <Social platform={sections.github}/>
                         <Social platform={sections.linkedin}/>
@@ -238,7 +238,7 @@ const Home = () => {
                         <img src={Headshot} alt="face" className="face"/>
                     </ParallaxLayer>
                     <ParallaxLayer offset={.05} speed={2} factor={1} style={{...alignStart, justifyContent: 'flex-start'}}>
-                        <TextBox section={sections.intro}/>
+                        {/*<TextBox section={sections.intro}/>*/}
                     </ParallaxLayer>
                     <ParallaxLayer offset={.4} speed={1.2} factor={1} horizontal={false} style={{...alignStart, justifyContent: 'flex-start'}}>
                         <TextBox section={sections.summary}/>
