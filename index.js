@@ -19,6 +19,10 @@ app.get('/static/:type/:fileName', (req, res) => {
         case "css":
             res.sendFile(__dirname + "/content/static/css/" + req.params.fileName);
             break;
+        case "js":
+            res.sendFile(__dirname + "/content/static/js/" + req.params.fileName);
+        case "roboto":
+            res.sendFile(__dirname + "/content/static/roboto/" + req.params.fileName);
         default:
             res.sendStatus(404);
     }
