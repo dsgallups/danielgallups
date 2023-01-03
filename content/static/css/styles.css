@@ -1,0 +1,52 @@
+@font-face {
+    font-family: "Roboto-Thin";
+    src: url("/static/roboto/Roboto-Thin.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Roboto-Strong";
+    src: url("/static/roboto/Roboto-Regular.ttf") format("truetype");
+}
+
+html {
+    font-family: "Roboto-Thin";
+}
+
+.page {
+    display: flex;
+    width: 100%;
+    margin: 0 auto;
+    justify-content: center;
+}
+
+.page-1 .content {
+    width: 100%;
+    max-width: 1500px;
+    display: flex;
+    align-self: center;
+    flex-direction: column;
+    margin-top:10%;
+}
+
+.page-1 .content .name {
+    font-family: "Roboto-Strong";
+    font-size:52px;
+
+}
+
+.page-1 .content .skills-intro {
+    margin-top:10px;
+    font-family: "Roboto-Thin";
+    font-size:52px;
+}
+.page-1 .content .skills-intro .skill-replaceable {
+    color: #AAAA00;
+}
+
+
+
+
+
+.wireframe {
+    border: 1px solid red;
+}

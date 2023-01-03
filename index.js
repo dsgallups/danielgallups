@@ -1,4 +1,5 @@
 const express = require('express');
+const { fstat } = require('fs');
 
 const app = express();
 
@@ -21,8 +22,10 @@ app.get('/static/:type/:fileName', (req, res) => {
             break;
         case "js":
             res.sendFile(__dirname + "/content/static/js/" + req.params.fileName);
+            break;
         case "roboto":
             res.sendFile(__dirname + "/content/static/roboto/" + req.params.fileName);
+            break;
         default:
             res.sendStatus(404);
     }
