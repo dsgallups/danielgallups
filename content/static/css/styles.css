@@ -34,15 +34,16 @@ html {
 
 }
 
-.page-1 .content .skills-intro {
+.page-1 .content #skills-intro {
     margin-top:10px;
     font-family: "Roboto-Thin";
     font-size:52px;
 }
-.page-1 .content .skills-intro .skill-replaceable {
+/*
+.page-1 .content #skills-intro #skill-replaceable {
     color: #AAAA00;
 }
-
+*/
 
 
 
