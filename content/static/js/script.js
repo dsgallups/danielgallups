@@ -9,44 +9,42 @@
  * page 2 is what happens when they scroll once
  * Elements that do not belong to a page are unbounded.
  */
-const allSkills = [
-    'Problem Solver',
-    'Problem Creator',
-    'Cybersecurity Analyst',
-    'Data Analyst',
-    'DNN Researcher',
-    'Software Developer',
-    'Penetration Tester',
-    'CTF Competitor',
-    'Code Documenter',
-    'Forensic Analyst',
-    'Rockstar',
-    'IT Specialist',
-    'Printer Fixer',
-    'Intelligence Gatherer',
-    'Code Writer',
-    'Coffee Maker',
-]
-
-let skills = allSkills.slice();
-
-const colorsOnWhite = [
-    '#CC0',
-    '#0DD',
-    '#F0F'
-]
-
-const main = () => {
-    console.log("working");
-}
 
 const pageOneTypeWriter = () => {
-    const staticText = "I'm your";
+    const allSkills = [
+        'Problem Solver',
+        'Problem Creator',
+        'Cybersecurity Analyst',
+        'Data Analyst',
+        'DNN Researcher',
+        'Software Developer',
+        'Penetration Tester',
+        'CTF Competitor',
+        'Code Documenter',
+        'Forensic Analyst',
+        'Rockstar',
+        'IT Specialist',
+        'Printer Fixer',
+        'Intelligence Gatherer',
+        'Code Writer',
+        'Coffee Maker',
+        'Unit Tester',
+        'Backend Engineer',
+        'GRM Intern',
+        'Red Teamer'
+    ]
+    
+    let skills = allSkills.slice();
+    
+    const colorsOnWhite = [
+        '#CC0',
+        '#0DD',
+        '#F0F'
+    ]
     let typeSpeed = 50;
     const displayTime = 1000;
     let eraseSpeed = 30;
-    let clearedSpeed = 1000;
-    let usedSkills = [];
+    let clearedSpeed = 600;
 
     //so we will have text made based on our skills
     //then we will call type to type it, the erase it.
@@ -59,7 +57,7 @@ const pageOneTypeWriter = () => {
     //choose a color and a random skill
     let chosenSkillIndex = Math.floor(skills.length * Math.random());
     let chosenSkill = skills[chosenSkillIndex];
-    skills.splice(chosenSkillIndex, 0);
+    skills.splice(chosenSkillIndex, 1);
     let color = colorsOnWhite[Math.floor(colorsOnWhite.length * Math.random())]
     document.getElementById("skills-intro").innerHTML = "I'm your <span id=\"skill-replaceable\" style=\"color: "+ color +"\"></span><span id=\"text-cursor\">|</span>";   
 
@@ -70,7 +68,7 @@ const pageOneTypeWriter = () => {
         }
         chosenSkillIndex = Math.floor(skills.length * Math.random());
         chosenSkill = skills[chosenSkillIndex];
-        skills.splice(chosenSkillIndex, 0);
+        skills.splice(chosenSkillIndex, 1);
         color = colorsOnWhite[Math.floor(colorsOnWhite.length * Math.random())];
         document.getElementById("skills-intro").innerHTML = "I'm your <span id=\"skill-replaceable\" style=\"color: "+ color +"\"></span><span id=\"text-cursor\">|</span>";
     }
@@ -88,20 +86,17 @@ const pageOneTypeWriter = () => {
     let i = 0;
     //sets an interval for typing
     const typeForward = () => {
-        console.log("typing");
         let el = document.getElementById("skill-replaceable");
         if (i < chosenSkill.length) {
             el.innerHTML += chosenSkill.charAt(i);
             i++;
         } else if (i == chosenSkill.length) {
             clearInterval(typeEvents);
-            console.log("done typing");
             //now we run a function to erase the text
             setTimeout(() => {
                 const eraseTyping = setInterval(() => {
                     if (i == 0) {
                         clearInterval(eraseTyping);
-                        console.log("beginning new type");
                         //typeEvents = setInterval(typeForward, typeSpeed);
                         setNewSkill();
                         setTimeout(() => {
@@ -121,7 +116,7 @@ const pageOneTypeWriter = () => {
 
 }
 /**
- * This is our main function
+ * This is our main function for loading
  * 
  */
 window.addEventListener('load', (e) => {
@@ -129,3 +124,29 @@ window.addEventListener('load', (e) => {
     pageOneTypeWriter();
     
 });
+
+
+let ticking = false;
+let currentPage = 0;
+document.addEventListener("scroll", (event) => {
+
+    if (!ticking) {
+        ticking = true;
+
+        console.log(this.oldScroll > this.scrollY);
+        console.log(this.oldScroll);
+        console.log(this.scrollY);
+        this.oldScroll = this.scrollY;
+        console.log("scrolled!")
+        setTimeout(() => ticking = false, 1000);
+    }
+  
+});
+/*
+window.onscroll = function(e) {
+    // print "false" if direction is down and "true" if up
+    console.log(this);
+    console.log(this.oldScroll > this.scrollY);
+    this.oldScroll = this.scrollY;
+  }
+    */
