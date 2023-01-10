@@ -128,20 +128,23 @@ window.addEventListener('load', (e) => {
 
 let ticking = false;
 let currentPage = 0;
+
 document.addEventListener("scroll", (event) => {
 
+    let scrollUp = this.oldScroll > this.scrollY;
+    this.oldScroll = this.scrollY;
+    event.preventDefault();
     if (!ticking) {
         ticking = true;
 
-        console.log(this.oldScroll > this.scrollY);
-        console.log(this.oldScroll);
-        console.log(this.scrollY);
-        this.oldScroll = this.scrollY;
+        console.log(scrollUp);
         console.log("scrolled!")
         setTimeout(() => ticking = false, 1000);
     }
   
 });
+
+
 /*
 window.onscroll = function(e) {
     // print "false" if direction is down and "true" if up
@@ -149,4 +152,4 @@ window.onscroll = function(e) {
     console.log(this.oldScroll > this.scrollY);
     this.oldScroll = this.scrollY;
   }
-    */
+*/
