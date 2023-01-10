@@ -12,7 +12,7 @@ html {
     font-family: "Roboto-Thin";
 }
 body {
-    background-color: #000;
+    background-color: #fff;
 }
 
 .page {
@@ -47,17 +47,33 @@ body {
     font-family: "Roboto-Thin";
     font-size:52px;
 }
-
+/*
 #page-1 img {
     position: fixed;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     z-index: 0;
-    width: 300%;
-    /*height: 100%;*/
+    width: 20%;
+    opacity: .5;
 }
+*/
 
+.mandelbrot-small {
+    position: fixed;
+    width: 100%;
+    max-width: 1000px;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    opacity: .6;
+}
+#cyan {
+    transform: translate(-75%, 0%);
+}
+#magenta {
+    transform: translate(-25%, 0%);
+}
 #page-2 {
     margin-bottom:1000px;
 }
