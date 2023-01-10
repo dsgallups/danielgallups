@@ -10,9 +10,10 @@
 
 html {
     font-family: "Roboto-Thin";
+    background-color: black;
 }
 body {
-    background-color: #fff;
+    /*background-color: #fff;*/
 }
 
 .page {
@@ -34,6 +35,8 @@ body {
     flex-direction: column;
     margin-top:10%;
     z-index: 2;
+    color: #fff;
+    mix-blend-mode: difference;
 }
 
 #page-1 .content .name {
@@ -47,17 +50,17 @@ body {
     font-family: "Roboto-Thin";
     font-size:52px;
 }
-/*
-#page-1 img {
+
+#page-1 #big-test {
     position: fixed;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     z-index: 0;
-    width: 20%;
-    opacity: .5;
 }
-*/
+#page-1 {
+    mix-blend-mode: initial;
+}
 
 .mandelbrot-small {
     position: fixed;
@@ -67,6 +70,8 @@ body {
     left: 50%;
     transform: translate(-50%, 0%);
     opacity: .6;
+    mix-blend-mode: darken;
+    display: none;
 }
 #cyan {
     transform: translate(-75%, 0%);
