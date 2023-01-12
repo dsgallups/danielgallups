@@ -168,6 +168,14 @@ const scrollToPage = (cP, nP) => {
     if (nP < 0 || nP > 3) return cP
     console.log('From %d to %d', cP, nP);
     
+    let smallMandelbrots = document.querySelectorAll('.mandelbrot-small')
+    let cyan = document.getElementById("cyan")
+    let yellow = document.getElementById("yellow")
+    let magenta = document.getElementById("magenta")
+    let big = document.getElementById("big-dark")
+    let page1 = document.getElementById("page-1")
+    let page2 = document.getElementById("page-2")
+
     switch (cP) {
         case 0:
             /**
@@ -189,13 +197,8 @@ const scrollToPage = (cP, nP) => {
             */
             //css animations suck
             //transition: all .5s ease-in-out;
-            let smallMandelbrots = document.querySelectorAll('.mandelbrot-small')
-            let cyan = document.getElementById("cyan")
-            let yellow = document.getElementById("yellow")
-            let magenta = document.getElementById("magenta")
-            let big = document.getElementById("big-dark")
 
-            const movements = [700, 200, 100, 500, 1400, 2000]
+            const movements = [700, 200, 100, 500, 1400, 500, 800]
             
             function getTiming(frameNo) {
                 let cum = 0;
@@ -315,24 +318,117 @@ const scrollToPage = (cP, nP) => {
             }, getTiming(3))
 
             //Now we just adjust the background to be black and scroll to page 2
-            
+            setTimeout(() => {
+                page1.style["background-color"] = "#000"
+            }, getTiming(4) - 200)
             setTimeout(() => {
                 document.getElementById("main-container").style["background-color"] = "#000"
                 big.style = null
                 smallMandelbrots.forEach(el => el.style = null)
-
+                
+                page1.style.transition = "all 1s ease-in-out"
+                page1.style.top = '-100vh';
             }, getTiming(4))
+
+            setTimeout(() => {
+                window.scrollTo(0, 200)
+            }, getTiming(5))
+
+            setTimeout(() => {                
+                page2.style.transition = "all 1s ease-in-out"
+                page2.style["margin-top"] = '200px';
+            }, getTiming(5) + 200)
+            
             
             
             //Finally release the return to reenable the scroll
             
             setTimeout(() => {
                 allowScrollEvent()
-            }, getTiming(5))
+            }, getTiming(6) + 1000)
             
 
             break
         case 1:
+            if (nP == 0) {
+                //const movements = [700, 200, 100, 500, 1400, 500, 800]
+                const movements = [2000, 2000, 500, 100, 200, 700]
+                
+                function getTiming(frameNo) {
+                    let cum = 0;
+                    for (let i = 0; i <= frameNo; i++) {
+                        cum += movements[i];
+                    }
+                    return cum;
+                }
+                
+                //first for reverse
+                page2.style.transition = null
+                page2.style["margin-top"] = "0vh"
+                window.scrollTo(0, 0)
+                page2.style.transition = "all 1s ease-in-out"
+                page2.style["margin-top"] = '200vh';
+
+                setTimeout(() => {
+                    //bring back big
+                    //big.style.top = '-70vw'
+                    //big.style.width = (viewportWidth * 4) + 'px'
+                    //document.getElementById("main-container").style["background-color"] = "#fff"
+                    page1.style.transition = "all 1s ease-in-out"
+                    page1.style.top = '0vh';
+                    big.style.transition = "all 0s"
+                    big.style.opacity = '1'
+                    big.style.top = '-50vw'
+                    big.style['max-width'] = 'initial'
+                    big.style.width = (viewportWidth * 3) + 'px'
+                    let acc = -50;
+                    let leftAcc = 0;
+                    smallMandelbrots.forEach((el) =>  {
+                        el.style.transition = "all 0s"
+                        el.style.top = -50 + acc + 'vw'
+                        el.style.left = 30 + leftAcc + '%' 
+                        el.style['max-width'] = 'initial'
+                        el.style.width = (viewportWidth * 1) + 'px'
+                        //acc -= 10
+                        leftAcc += 20
+                    })
+                    document.getElementById("main-container").style["background-color"] = "#fff"
+                    page1.style["background-color"] = "inherit"
+                }, getTiming(0))
+
+
+                
+                setTimeout(() => {
+                    //mandelbrot comes out
+                    big.style.transition = "all 1s ease-in-out"
+                    big.style.top = '250vh'
+                    //big.style.width = '750px'
+                    smallMandelbrots.forEach((el) =>  {
+                        el.style.transition = "all 1.5s cubic-bezier(.76,.05,1,.6) 0s"
+                        el.style.top = '200vh'
+                    })
+                    
+
+                }, getTiming(1))
+                
+                
+                
+
+
+                
+            
+
+                
+                
+                
+                
+                
+                setTimeout(() => {
+                    allowScrollEvent()
+                }, getTiming(5))
+            } else {
+
+            }
             break
         case 2:
             break
@@ -388,7 +484,7 @@ document.addEventListener("scroll", (event) => {
             currentPage = scrollToPage(currentPage, currentPage + 1)
 
         //for testing
-        currentPage = 0;
+        //currentPage = 0;
         
     }
   
