@@ -2,6 +2,51 @@
  * THIS SCRIPT RENDERS THE PAGE.
  */
 
+/**
+ * HELPER FUNCTIONS, credit to @gblazex
+ * https://stackoverflow.com/questions/4770025/how-to-disable-scrolling-temporarily
+ */
+// left: 37, up: 38, right: 39, down: 40,
+// spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
+var keys = {37: 1, 38: 1, 39: 1, 40: 1};
+
+function preventDefault(e) {
+  e.preventDefault();
+  
+}
+
+function preventDefaultForScrollKeys(e) {
+  if (keys[e.keyCode]) {
+    preventDefault(e);
+    return false;
+  }
+}
+
+// modern Chrome requires { passive: false } when adding event
+var supportsPassive = false;
+try {
+  window.addEventListener("test", null, Object.defineProperty({}, 'passive', {
+    get: function () { supportsPassive = true; } 
+  }));
+} catch(e) {}
+
+var wheelOpt = supportsPassive ? { passive: false } : false;
+var wheelEvent = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel';
+
+function disableScroll() {
+    document.body.classList.add("stop-scrolling")
+    window.addEventListener('DOMMouseScroll', preventDefault, false); // older FF
+    window.addEventListener(wheelEvent, preventDefault, wheelOpt); // modern desktop
+    window.addEventListener('touchmove', preventDefault, wheelOpt); // mobile
+    window.addEventListener('keydown', preventDefaultForScrollKeys, false);
+}
+function enableScroll() {
+    window.removeEventListener('DOMMouseScroll', preventDefault, false);
+    window.removeEventListener(wheelEvent, preventDefault, wheelOpt); 
+    window.removeEventListener('touchmove', preventDefault, wheelOpt);
+    window.removeEventListener('keydown', preventDefaultForScrollKeys, false);
+    document.body.classList.remove("stop-scrolling")
+}
 
 /**
  * Our page is divided into 4 pages.
@@ -115,6 +160,25 @@ const pageOneTypeWriter = () => {
     let typeEvents = setInterval(typeForward, typeSpeed)
 
 }
+
+const scrollToPage = (cP, nP) => {
+    if (nP < 0 || nP > 3) return cP
+    console.log('From %d to %d', cP, nP);
+    
+    if (cP == 0) {
+        
+    }
+
+
+    return nP
+}
+
+
+
+
+
+
+
 /**
  * This is our main function for loading
  * 
@@ -130,16 +194,26 @@ let ticking = false
 let currentPage = 0
 
 document.addEventListener("scroll", (event) => {
-
     let scrollUp = this.oldScroll > this.scrollY
     this.oldScroll = this.scrollY
     event.preventDefault()
     if (!ticking) {
+        document.body.classList.add("stop-scrolling")
+        disableScroll();
         ticking = true
 
-        console.log(scrollUp)
-        console.log("scrolled!")
-        setTimeout(() => ticking = false, 1000)
+        console.log(`Scrolled up: `, scrollUp)
+        //perform the animation
+        scrollUp ? 
+            currentPage = scrollToPage(currentPage, currentPage - 1) : 
+            currentPage = scrollToPage(currentPage, currentPage + 1)
+
+        setTimeout(() => {
+            //Perform a certain animation based on the current page and
+            //the next page            
+            enableScroll();
+            ticking = false
+        }, 1000)
     }
   
 })

@@ -8,6 +8,15 @@
     src: url("/static/roboto/Roboto-Regular.ttf") format("truetype");
 }
 
+/*
+    Credit to @hallodom and @MusikAnimal
+    https://stackoverflow.com/questions/4770025/how-to-disable-scrolling-temporarily
+*/
+.stop-scrolling {
+    height: 100%;
+    overflow:hidden;
+}
+
 html {
     font-family: "Roboto-Thin";
     background-color: black;
@@ -23,6 +32,7 @@ body {
     justify-content: center;
     position: relative;
     z-index: 1;
+    margin-top:200vh;
 }
 .content {
     width: 100%;
@@ -39,7 +49,7 @@ body {
     mix-blend-mode: difference;
 }
 
-#page-1 .content .name {
+.name {
     font-family: "Roboto-Strong";
     font-size:52px;
 
@@ -60,6 +70,7 @@ body {
 }
 #page-1 {
     mix-blend-mode: initial;
+    margin-top: 0;
 }
 
 .mandelbrot-small {
@@ -80,7 +91,7 @@ body {
     transform: translate(-25%, 0%);
 }
 #page-2 {
-    margin-bottom:1000px;
+    margin-top:200vh;
 }
 /*
 .page-1 .content #skills-intro #skill-replaceable {

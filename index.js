@@ -2,6 +2,7 @@ const express = require('express')
 const { fstat } = require('fs')
 const livereload = require('livereload');
 const connectLiveReload = require('connect-livereload')
+const logger = require('morgan')
 
 const app = express()
 
@@ -14,10 +15,10 @@ liveReloadServer.server.once("connection", () => {
     }, 100)
 })
 app.use(connectLiveReload())
+app.use(logger("dev"))
 
 
 app.get('/', (req, res) => {
-    console.log("GET /")
     res.sendFile(path.join(__dirname +  '/content/index.html'))
 });
 
