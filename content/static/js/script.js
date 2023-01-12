@@ -35,10 +35,11 @@ var wheelEvent = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewh
 
 function disableScroll() {
     document.body.classList.add("stop-scrolling")
+    document.getElementById("main-container").classList.add("stop-scrolling")
     window.addEventListener('DOMMouseScroll', preventDefault, false); // older FF
     window.addEventListener(wheelEvent, preventDefault, wheelOpt); // modern desktop
     window.addEventListener('touchmove', preventDefault, wheelOpt); // mobile
-    window.addEventListener('keydown', preventDefaultForScrollKeys, false);
+    window.addEventListener('keydown', preventDefaultForScrollKeys, false)
 }
 function enableScroll() {
     window.removeEventListener('DOMMouseScroll', preventDefault, false);
@@ -46,6 +47,7 @@ function enableScroll() {
     window.removeEventListener('touchmove', preventDefault, wheelOpt);
     window.removeEventListener('keydown', preventDefaultForScrollKeys, false);
     document.body.classList.remove("stop-scrolling")
+    document.getElementById("main-container").classList.remove("stop-scrolling")
 }
 
 /**
@@ -269,18 +271,18 @@ const scrollToPage = (cP, nP) => {
             
             //reparameterize our sets to zoom in correctly
             setTimeout(() => {
-                big.style.transition = null
                 if (viewportWidth >= 750) {
+                    big.style.transition = null
                     big.style.width = '750px'
                 }
-                big.style['max-width'] = '10000%'
+                big.style['max-width'] = 'initial'
                 
                 smallMandelbrots.forEach((el) =>  {
-                    el.style.transition = null
                     if (viewportWidth >= 750) {
+                        el.style.transition = null
                         el.style.width = '750px'
                     }
-                    el.style['max-width'] = '10000%'
+                    el.style['max-width'] = 'initial'
                 })
                 
             }, getTiming(3) - 100)
@@ -302,17 +304,19 @@ const scrollToPage = (cP, nP) => {
                 
             }, getTiming(3))
 
-            //Now we lower the text and scroll to page 2
+            //Now we just adjust the background to be black and scroll to page 2
             setTimeout(() => {
-                //smooth scroll to page to
-                smoothScrollToID();
+                document.getElementById("main-container").style["background-color"] = "#000"
+                big.style = null
+                smallMandelbrots.forEach(el => el.style = null)
+
             }, getTiming(4))
             
             //Finally release the return to reenable the scroll
             setTimeout(() => {
                 allowScrollEvent()
             }, getTiming(5))
-
+            
 
             break
         case 1:
@@ -352,10 +356,11 @@ function allowScrollEvent() {
     console.log('scrolling re-enabled!')
 }
 function disableScrollEvents() {
-    document.body.classList.add("stop-scrolling")
     disableScroll();
     ticking = true
 }
+
+
 document.addEventListener("scroll", (event) => {
     let scrollUp = this.oldScroll > this.scrollY
     this.oldScroll = this.scrollY

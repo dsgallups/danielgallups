@@ -21,19 +21,23 @@ html {
     font-family: "Roboto-Thin";
 }
 body {
-    background-color: #fff;
     position: relative;
+    margin: 0;
 }
-
+#main-container {
+    background-color: #000;
+    position: relative;
+    height: 400vh;
+}
 .page {
     display: flex;
     width: 100%;
     margin: 0 auto;
     justify-content: center;
-    position: relative;
+    position: absolute;
     z-index: 1;
     margin-top:200vh;
-    background-color: inherit;
+    /*background-color: inherit;*/
 }
 .content {
     width: 100%;
@@ -72,7 +76,8 @@ body {
 #page-1 {
     mix-blend-mode: initial;
     margin-top: 0;
-    position:absolute;
+    margin-top: 0!important;
+    
 }
 
 .mandelbrot-small {
