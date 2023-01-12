@@ -4,7 +4,8 @@
   "description": "VanillaJS personal website",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "start": "nodemon index.js --ext js,css,html,svg,png --watch ./"
   },
   "repository": {
     "type": "git",
