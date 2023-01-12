@@ -161,6 +161,8 @@ const pageOneTypeWriter = () => {
 
 }
 
+
+const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
 const scrollToPage = (cP, nP) => {
     if (nP < 0 || nP > 3) return cP
     console.log('From %d to %d', cP, nP);
@@ -192,7 +194,16 @@ const scrollToPage = (cP, nP) => {
             let magenta = document.getElementById("magenta")
             let big = document.getElementById("big-dark")
 
-            const movements = [700, 200, 100]
+            const movements = [700, 200, 100, 500]
+            
+            function getTiming(frameNo) {
+                let cum = 0;
+                for (let i = 0; i <= frameNo; i++) {
+                    cum += movements[i];
+                }
+                return cum;
+            }
+            
 
         
 
@@ -218,7 +229,7 @@ const scrollToPage = (cP, nP) => {
                 yellow.style.top = '175px'
                 //magenta
                 magenta.style.left = '51.5%'
-            }, movements[0])
+            }, getTiming(0))
 
 
             setTimeout(() => {
@@ -231,23 +242,68 @@ const scrollToPage = (cP, nP) => {
                 yellow.style.top = '200px'
                 //magenta
                 magenta.style.left = '50%'
-            }, movements[0] + movements[1]) 
+            }, getTiming(1)) 
 
-            //Now display the real boy and remove the old mandelbrots
+            //Now display the real boy, and extend the mandelbrots out a lil bit
+            setTimeout(() => {
+                big.style.transition = "all .5s ease-in-out"
+                big.style.opacity = '1'
+                
+
+            }, getTiming(2))
+
+            //halfway frame
             setTimeout(() => {
 
-            })
-            setTimeout(() => {
+                smallMandelbrots.forEach((el) =>  {
+                    el.style.transition = "all 2.3s ease-in-out"
+                })
+                //cyan
+                cyan.style.left = '60%'
+                //yellow. This is bugged due to interaction with official frame 3
+                yellow.style.top = '0px'
+                //magenta
+                magenta.style.left = '40%'
 
-                big.style.opacity = '100%';
+
+            }, getTiming(3) - 350)
+            
+            //remove our max-width
+            setTimeout(() => {
+                big.style.transition = null
+                if (viewportWidth >= 750) {
+                    big.style.width = '750px'
+                }
+                big.style['max-width'] = '10000%'
+                
                 smallMandelbrots.forEach((el) =>  {
                     el.style.transition = null
-                    el.style.left = null
-                    el.style.top = null
+                    if (viewportWidth >= 750) {
+                        el.style.width = '750px'
+                    }
+                    el.style['max-width'] = '10000%'
                 })
+                
+            }, getTiming(3) - 100)
+            
 
-
-            }, movements[0] + movements[1] + movements[2])
+            
+            //remove our max-width
+            setTimeout(() => {
+                big.style.transition = "all 1.4s ease-in-out"
+                big.style.top = '-1000px'
+                //big.style.transform = 'translate(0, -1200px)'
+                big.style.width = '8000px'
+                
+                smallMandelbrots.forEach((el) =>  {
+                    el.style.transition = "all 1.4s ease-in-out"
+                    el.style.width = '8000px'
+                    el.style.top = '-1000px'
+                })
+                
+            }, getTiming(3))
+            
+            
 
 
             break

@@ -19,10 +19,9 @@
 
 html {
     font-family: "Roboto-Thin";
-    background-color: #fff;
 }
 body {
-    /*background-color: #fff;*/
+    background-color: #fff;
 }
 
 .page {
@@ -33,6 +32,7 @@ body {
     position: relative;
     z-index: 1;
     margin-top:200vh;
+    background-color: inherit;
 }
 .content {
     width: 100%;
@@ -45,7 +45,7 @@ body {
     flex-direction: column;
     margin-top:200px;
     z-index: 2;
-    color: #000;
+    color: #fff;
     mix-blend-mode: difference;
 }
 
