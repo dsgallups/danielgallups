@@ -271,7 +271,7 @@ const scrollToPage = (cP, nP) => {
             
             //reparameterize our sets to zoom in correctly
             setTimeout(() => {
-                document.querySelector(".name").style.color = 'red';
+                //document.querySelector(".name").style.color = 'red';
                 if (viewportWidth >= 750) {
                     big.style.transition = null
                     big.style.width = '750px'
@@ -292,14 +292,13 @@ const scrollToPage = (cP, nP) => {
             
             //zoom into the mandelbrot
             setTimeout(() => {
-                document.querySelector(".name").style.color = 'green';
+                //document.querySelector(".name").style.color = 'green';
                 big.style.transition = "all 1.4s ease-in-out"
-                big.style.top = '-800px'
+                big.style.top = '-70vw'
                 //big.style.transform = 'translate(0, -1200px)'
                 if (viewportWidth >= 750) {
 
                 }
-                console.log(viewportWidth)
                 big.style.width = (viewportWidth * 4) + 'px'
                 
                 /*
@@ -309,28 +308,28 @@ const scrollToPage = (cP, nP) => {
                     el.style.transition = "all 1.4s ease-in-out"
                     el.style.width = (viewportWidth * 4) + 'px'
                 })
-                cyan.style.top = '-600px'
-                yellow.style.top = '-800px'
-                magenta.style.top = '-600px'
+                cyan.style.top = '-70vw'
+                yellow.style.top = '-70vw'
+                magenta.style.top = '-70vw'
                 
             }, getTiming(3))
 
             //Now we just adjust the background to be black and scroll to page 2
-            /*
+            
             setTimeout(() => {
                 document.getElementById("main-container").style["background-color"] = "#000"
                 big.style = null
                 smallMandelbrots.forEach(el => el.style = null)
 
             }, getTiming(4))
-            */
+            
             
             //Finally release the return to reenable the scroll
-            /*
+            
             setTimeout(() => {
                 allowScrollEvent()
             }, getTiming(5))
-            */
+            
 
             break
         case 1:

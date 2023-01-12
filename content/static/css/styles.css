@@ -25,7 +25,7 @@ body {
     margin: 0;
 }
 #main-container {
-    background-color: #000;
+    background-color: #fff;
     position: relative;
     height: 400vh;
 }
@@ -37,7 +37,7 @@ body {
     position: absolute;
     z-index: 1;
     margin-top:200vh;
-    /*background-color: inherit;*/
+    background-color: inherit;
 }
 .content {
     width: 100%;
