@@ -198,7 +198,7 @@ const scrollToPage = (cP, nP) => {
             //css animations suck
             //transition: all .5s ease-in-out;
 
-            const movements = [700, 200, 100, 500, 1400, 500, 800]
+            const movements = [700, 200, 100, 500, 700, 400, 1500]
             
             function getTiming(frameNo) {
                 let cum = 0;
@@ -210,7 +210,7 @@ const scrollToPage = (cP, nP) => {
             
 
         
-
+            window.scrollTo(0,0)
             //First part, they overshoot by a little
             smallMandelbrots.forEach((el) =>  {
                 el.style.transition =" all .7s ease-out"
@@ -337,7 +337,7 @@ const scrollToPage = (cP, nP) => {
             setTimeout(() => {                
                 page2.style.transition = "all 1s ease-in-out"
                 page2.style["margin-top"] = '200px';
-            }, getTiming(5) + 200)
+            }, getTiming(5) + 100)
             
             
             
@@ -345,14 +345,13 @@ const scrollToPage = (cP, nP) => {
             
             setTimeout(() => {
                 allowScrollEvent()
-            }, getTiming(6) + 1000)
+            }, getTiming(6))
             
 
             break
         case 1:
             if (nP == 0) {
-                //const movements = [700, 200, 100, 500, 1400, 500, 800]
-                const movements = [2000, 2000, 500, 100, 200, 700]
+                const movements = [700, 1000, 2000]
                 
                 function getTiming(frameNo) {
                     let cum = 0;
@@ -412,20 +411,14 @@ const scrollToPage = (cP, nP) => {
                 }, getTiming(1))
                 
                 
-                
-
-
-                
-            
-
-                
-                
-                
-                
-                
+    
                 setTimeout(() => {
+                    smallMandelbrots.forEach(el => {
+                        el.style = null
+                    })
+                    big.style = null
                     allowScrollEvent()
-                }, getTiming(5))
+                }, getTiming(2))
             } else {
 
             }
