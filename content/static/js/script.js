@@ -198,7 +198,7 @@ const scrollToPage = (cP, nP) => {
             //css animations suck
             //transition: all .5s ease-in-out;
 
-            const movements = [700, 200, 100, 500, 700, 400, 1500]
+            const movements = [700, 200, 100, 500, 800, 400, 1500]
             
             function getTiming(frameNo) {
                 let cum = 0;
