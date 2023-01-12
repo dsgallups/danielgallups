@@ -11,7 +11,7 @@ backend:
       commands: []
     postbuild:
       commands:
-        - npm run start
+        - node index.js
 frontend: 
   phases:
       prebuild:
