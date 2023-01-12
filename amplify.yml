@@ -8,5 +8,15 @@ backend:
       commands:
         - npm i
     build:
+      commands: []
+    postbuild:
       commands:
         - npm run start
+frontend: 
+  phases:
+      prebuild:
+        commands: []
+      build:
+        commands: []
+      postbuild:
+        commands: []
