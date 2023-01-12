@@ -165,8 +165,98 @@ const scrollToPage = (cP, nP) => {
     if (nP < 0 || nP > 3) return cP
     console.log('From %d to %d', cP, nP);
     
-    if (cP == 0) {
+    switch (cP) {
+        case 0:
+            /**
+             * This animation will spawn three mandelbrots of different pigments, which combine to black.
+             *      Yellow comes from the top
+             *      Cyan comes from the left
+             *      Magenta comes from the right
+             *      This will be manipulated via the top and left parameters.
+             *  
+             * Then, the black of that set zooms in to make an entirely black background.
+             * Finally, page 2 is revealed.
+             * 
+             * 
+             */
+
+            /*
+                Due to using CSS animations, we have to time the animation according to what
+                is defined in the stylesheet.
+            */
+            //css animations suck
+            //transition: all .5s ease-in-out;
+            let smallMandelbrots = document.querySelectorAll('.mandelbrot-small')
+            let cyan = document.getElementById("cyan")
+            let yellow = document.getElementById("yellow")
+            let magenta = document.getElementById("magenta")
+            let big = document.getElementById("big-dark")
+
+            const movements = [700, 200, 100]
+
         
+
+            //First part, they overshoot by a little
+            smallMandelbrots.forEach((el) =>  {
+                el.style.transition =" all .7s ease-out"
+            })
+            
+            //cyan
+            cyan.style.left = '53%'
+            //yellow
+            yellow.style.top = '250px'
+            //magenta
+            magenta.style.left = '43%'
+
+            setTimeout(() => {
+                smallMandelbrots.forEach((el) =>  {
+                    el.style.transition ="all .2s ease-in-out"
+                })
+                //cyan
+                cyan.style.left = '48.5%'
+                //yellow
+                yellow.style.top = '175px'
+                //magenta
+                magenta.style.left = '51.5%'
+            }, movements[0])
+
+
+            setTimeout(() => {
+                smallMandelbrots.forEach((el) =>  {
+                    el.style.transition = "all .1s ease-in-out"
+                })
+                //cyan
+                cyan.style.left = '50%'
+                //yellow
+                yellow.style.top = '200px'
+                //magenta
+                magenta.style.left = '50%'
+            }, movements[0] + movements[1]) 
+
+            //Now display the real boy and remove the old mandelbrots
+            setTimeout(() => {
+
+            })
+            setTimeout(() => {
+
+                big.style.opacity = '100%';
+                smallMandelbrots.forEach((el) =>  {
+                    el.style.transition = null
+                    el.style.left = null
+                    el.style.top = null
+                })
+
+
+            }, movements[0] + movements[1] + movements[2])
+
+
+            break
+        case 1:
+            break
+        case 2:
+            break
+        case 3:
+            break
     }
 
 
@@ -208,6 +298,8 @@ document.addEventListener("scroll", (event) => {
             currentPage = scrollToPage(currentPage, currentPage - 1) : 
             currentPage = scrollToPage(currentPage, currentPage + 1)
 
+        //for testing
+        currentPage = 0;
         setTimeout(() => {
             //Perform a certain animation based on the current page and
             //the next page            

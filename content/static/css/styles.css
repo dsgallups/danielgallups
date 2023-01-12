@@ -19,7 +19,7 @@
 
 html {
     font-family: "Roboto-Thin";
-    background-color: black;
+    background-color: #fff;
 }
 body {
     /*background-color: #fff;*/
@@ -43,9 +43,9 @@ body {
 
 #page-1 .content {
     flex-direction: column;
-    margin-top:10%;
+    margin-top:200px;
     z-index: 2;
-    color: #fff;
+    color: #000;
     mix-blend-mode: difference;
 }
 
@@ -76,23 +76,51 @@ body {
 .mandelbrot-small {
     position: fixed;
     width: 100%;
-    max-width: 1000px;
-    top:50%;
+    max-width: 750px;
+    top: 200px;
     left: 50%;
-    transform: translate(-50%, 0%);
+    transform: translate(-50%, 0px);
     opacity: .6;
     mix-blend-mode: darken;
-    display: none;
+}
+.cyan-animate {
+    animation-name: cyan-join;
+    animation-duration: 1.5s;
+}
+.yellow-animate {
+    animation-name: yellow-join;
+    animation-duration: 1.5s;
+}
+.magenta-animate {
+    animation-name: magenta-join;
+    animation-duration: 1.5s;
+}
+#big-dark {
+    position: fixed;
+    width: 100%;
+    max-width: 750px;
+    top: 200px;
+    left: 50%;
+    transform: translate(-50%, 0px);
+}
+.no-display {
+    opacity: 0;
 }
 #cyan {
-    transform: translate(-75%, 0%);
+    left: -50%;
+}
+#yellow {
+    top: -800px;
 }
 #magenta {
-    transform: translate(-25%, 0%);
+    left: 150%;
 }
+
+
 #page-2 {
     margin-top:200vh;
 }
+
 /*
 .page-1 .content #skills-intro #skill-replaceable {
     color: #AAAA00;
