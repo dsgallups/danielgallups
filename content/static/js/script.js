@@ -161,7 +161,6 @@ const pageOneTypeWriter = () => {
 
 }
 
-
 const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
 const scrollToPage = (cP, nP) => {
     if (nP < 0 || nP > 3) return cP
@@ -194,7 +193,7 @@ const scrollToPage = (cP, nP) => {
             let magenta = document.getElementById("magenta")
             let big = document.getElementById("big-dark")
 
-            const movements = [700, 200, 100, 500]
+            const movements = [700, 200, 100, 500, 1400, 2000]
             
             function getTiming(frameNo) {
                 let cum = 0;
@@ -268,7 +267,7 @@ const scrollToPage = (cP, nP) => {
 
             }, getTiming(3) - 350)
             
-            //remove our max-width
+            //reparameterize our sets to zoom in correctly
             setTimeout(() => {
                 big.style.transition = null
                 if (viewportWidth >= 750) {
@@ -288,7 +287,7 @@ const scrollToPage = (cP, nP) => {
             
 
             
-            //remove our max-width
+            //zoom into the mandelbrot
             setTimeout(() => {
                 big.style.transition = "all 1.4s ease-in-out"
                 big.style.top = '-1000px'
@@ -302,8 +301,17 @@ const scrollToPage = (cP, nP) => {
                 })
                 
             }, getTiming(3))
+
+            //Now we lower the text and scroll to page 2
+            setTimeout(() => {
+                //smooth scroll to page to
+                smoothScrollToID();
+            }, getTiming(4))
             
-            
+            //Finally release the return to reenable the scroll
+            setTimeout(() => {
+                allowScrollEvent()
+            }, getTiming(5))
 
 
             break
@@ -338,15 +346,22 @@ window.addEventListener('load', (e) => {
 
 let ticking = false
 let currentPage = 0
-
+function allowScrollEvent() {
+    enableScroll();
+    ticking = false
+    console.log('scrolling re-enabled!')
+}
+function disableScrollEvents() {
+    document.body.classList.add("stop-scrolling")
+    disableScroll();
+    ticking = true
+}
 document.addEventListener("scroll", (event) => {
     let scrollUp = this.oldScroll > this.scrollY
     this.oldScroll = this.scrollY
     event.preventDefault()
     if (!ticking) {
-        document.body.classList.add("stop-scrolling")
-        disableScroll();
-        ticking = true
+        disableScrollEvents();
 
         console.log(`Scrolled up: `, scrollUp)
         //perform the animation
@@ -356,12 +371,7 @@ document.addEventListener("scroll", (event) => {
 
         //for testing
         currentPage = 0;
-        setTimeout(() => {
-            //Perform a certain animation based on the current page and
-            //the next page            
-            enableScroll();
-            ticking = false
-        }, 1000)
+        
     }
   
 })
