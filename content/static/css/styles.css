@@ -1,0 +1,96 @@
+@font-face {
+    font-family: "Roboto-Thin";
+    src: url("/static/roboto/Roboto-Thin.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Roboto-Strong";
+    src: url("/static/roboto/Roboto-Regular.ttf") format("truetype");
+}
+
+html {
+    font-family: "Roboto-Thin";
+    background-color: black;
+}
+body {
+    /*background-color: #fff;*/
+}
+
+.page {
+    display: flex;
+    width: 100%;
+    margin: 0 auto;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+.content {
+    width: 100%;
+    max-width: 1500px;
+    display: flex;
+    align-self: center;
+}
+
+#page-1 .content {
+    flex-direction: column;
+    margin-top:10%;
+    z-index: 2;
+    color: #fff;
+    mix-blend-mode: difference;
+}
+
+#page-1 .content .name {
+    font-family: "Roboto-Strong";
+    font-size:52px;
+
+}
+
+#page-1 .content #skills-intro {
+    margin-top:10px;
+    font-family: "Roboto-Thin";
+    font-size:52px;
+}
+
+#page-1 #big-test {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+}
+#page-1 {
+    mix-blend-mode: initial;
+}
+
+.mandelbrot-small {
+    position: fixed;
+    width: 100%;
+    max-width: 1000px;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    opacity: .6;
+    mix-blend-mode: darken;
+    display: none;
+}
+#cyan {
+    transform: translate(-75%, 0%);
+}
+#magenta {
+    transform: translate(-25%, 0%);
+}
+#page-2 {
+    margin-bottom:1000px;
+}
+/*
+.page-1 .content #skills-intro #skill-replaceable {
+    color: #AAAA00;
+}
+*/
+
+
+
+
+.wireframe {
+    border: 1px solid red;
+}
