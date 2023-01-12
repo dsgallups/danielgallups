@@ -1,0 +1,17 @@
+version: 1
+env:
+  variables:
+    key: value
+frontend:
+  phases:
+    build:
+      commands:
+        - []
+  artifacts:
+    files:
+        - **/*
+    discard-paths: yes
+    baseDirectory: content/static
+  cache:
+    paths:
+        - []
