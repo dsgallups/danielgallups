@@ -20,3 +20,7 @@ frontend:
         commands: []
       postbuild:
         commands: []
+  artifacts:
+    files:
+      - '**/*'
+    baseDirectory: /
