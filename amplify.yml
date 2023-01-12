@@ -5,8 +5,7 @@ env:
 frontend:
   phases:
     build:
-      commands:
-        - []
+      commands: []
   artifacts:
     files:
         - '**/*'
