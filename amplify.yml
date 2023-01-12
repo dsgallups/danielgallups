@@ -2,15 +2,11 @@ version: 1
 env:
   variables:
     key: value
-frontend:
+backend:
   phases:
+    prebuild:
+      commands:
+        - npm i
     build:
-      commands: []
-  artifacts:
-    files:
-        - '**/*'
-    discard-paths: yes
-    baseDirectory: content/static
-  cache:
-    paths:
-        - []
+      commands:
+        - npm run start

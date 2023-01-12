@@ -19,7 +19,7 @@ app.use(logger("dev"))
 
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname +  '/content/static/index.html'))
+    res.sendFile(path.join(__dirname +  '/content/index.html'))
 });
 
 app.get('/static/:type/:fileName', (req, res) => {
