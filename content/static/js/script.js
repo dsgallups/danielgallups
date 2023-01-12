@@ -34,17 +34,17 @@ const pageOneTypeWriter = () => {
         'Red Teamer'
     ]
     
-    let skills = allSkills.slice();
+    let skills = allSkills.slice()
     
     const colorsOnWhite = [
         '#CC0',
         '#0DD',
         '#F0F'
     ]
-    let typeSpeed = 50;
-    const displayTime = 1000;
-    let eraseSpeed = 30;
-    let clearedSpeed = 600;
+    let typeSpeed = 50
+    const displayTime = 1000
+    let eraseSpeed = 30
+    let clearedSpeed = 600
 
     //so we will have text made based on our skills
     //then we will call type to type it, the erase it.
@@ -52,67 +52,67 @@ const pageOneTypeWriter = () => {
 
 
     if (skills.length == 0) {
-        skills = allSkills.slice();
+        skills = allSkills.slice()
     }
     //choose a color and a random skill
-    let chosenSkillIndex = Math.floor(skills.length * Math.random());
-    let chosenSkill = skills[chosenSkillIndex];
-    skills.splice(chosenSkillIndex, 1);
+    let chosenSkillIndex = Math.floor(skills.length * Math.random())
+    let chosenSkill = skills[chosenSkillIndex]
+    skills.splice(chosenSkillIndex, 1)
     let color = colorsOnWhite[Math.floor(colorsOnWhite.length * Math.random())]
-    document.getElementById("skills-intro").innerHTML = "I'm your <span id=\"skill-replaceable\" style=\"color: "+ color +"\"></span><span id=\"text-cursor\">|</span>";   
+    document.getElementById("skills-intro").innerHTML = "I'm your <span id=\"skill-replaceable\" style=\"color: "+ color +"\"></span><span id=\"text-cursor\">|</span>"   
 
     //very poor programming practice. JS sucks, but this makes sense to me right now. gross.
     const setNewSkill = () => {
         if (skills.length == 0) {
-            skills = allSkills.slice();
+            skills = allSkills.slice()
         }
-        chosenSkillIndex = Math.floor(skills.length * Math.random());
-        chosenSkill = skills[chosenSkillIndex];
-        skills.splice(chosenSkillIndex, 1);
-        color = colorsOnWhite[Math.floor(colorsOnWhite.length * Math.random())];
-        document.getElementById("skills-intro").innerHTML = "I'm your <span id=\"skill-replaceable\" style=\"color: "+ color +"\"></span><span id=\"text-cursor\">|</span>";
+        chosenSkillIndex = Math.floor(skills.length * Math.random())
+        chosenSkill = skills[chosenSkillIndex]
+        skills.splice(chosenSkillIndex, 1)
+        color = colorsOnWhite[Math.floor(colorsOnWhite.length * Math.random())]
+        document.getElementById("skills-intro").innerHTML = "I'm your <span id=\"skill-replaceable\" style=\"color: "+ color +"\"></span><span id=\"text-cursor\">|</span>"
     }
-    //let skillText = staticText + " " + chosenSkill;
+    //let skillText = staticText + " " + chosenSkill
 
     //sets cursor speed
-    let show = true;
+    let show = true
     setInterval(() => {
         show ? document.getElementById("text-cursor").setAttribute("style", "display: inline")
-            : document.getElementById("text-cursor").setAttribute("style", "display: none");
+            : document.getElementById("text-cursor").setAttribute("style", "display: none")
         
-        show = !show;
-    }, 600);
+        show = !show
+    }, 600)
 
-    let i = 0;
+    let i = 0
     //sets an interval for typing
     const typeForward = () => {
-        let el = document.getElementById("skill-replaceable");
+        let el = document.getElementById("skill-replaceable")
         if (i < chosenSkill.length) {
-            el.innerHTML += chosenSkill.charAt(i);
-            i++;
+            el.innerHTML += chosenSkill.charAt(i)
+            i++
         } else if (i == chosenSkill.length) {
-            clearInterval(typeEvents);
+            clearInterval(typeEvents)
             //now we run a function to erase the text
             setTimeout(() => {
                 const eraseTyping = setInterval(() => {
                     if (i == 0) {
-                        clearInterval(eraseTyping);
-                        //typeEvents = setInterval(typeForward, typeSpeed);
-                        setNewSkill();
+                        clearInterval(eraseTyping)
+                        //typeEvents = setInterval(typeForward, typeSpeed)
+                        setNewSkill()
                         setTimeout(() => {
-                            typeEvents = setInterval(typeForward, typeSpeed);
-                        }, clearedSpeed);
+                            typeEvents = setInterval(typeForward, typeSpeed)
+                        }, clearedSpeed)
                     }
-                    el.innerHTML = el.innerHTML.substring(0, el.innerHTML.length - 1);
+                    el.innerHTML = el.innerHTML.substring(0, el.innerHTML.length - 1)
                     i -= 1
-                }, eraseSpeed);
+                }, eraseSpeed)
                 
-            }, displayTime);
+            }, displayTime)
         }
-    };
+    }
 
 
-    let typeEvents = setInterval(typeForward, typeSpeed);
+    let typeEvents = setInterval(typeForward, typeSpeed)
 
 }
 /**
@@ -121,35 +121,35 @@ const pageOneTypeWriter = () => {
  */
 window.addEventListener('load', (e) => {
     console.log("Loaded!!!")
-    pageOneTypeWriter();
+    pageOneTypeWriter()
     
-});
+})
 
 
-let ticking = false;
-let currentPage = 0;
+let ticking = false
+let currentPage = 0
 
 document.addEventListener("scroll", (event) => {
 
-    let scrollUp = this.oldScroll > this.scrollY;
-    this.oldScroll = this.scrollY;
-    event.preventDefault();
+    let scrollUp = this.oldScroll > this.scrollY
+    this.oldScroll = this.scrollY
+    event.preventDefault()
     if (!ticking) {
-        ticking = true;
+        ticking = true
 
-        console.log(scrollUp);
+        console.log(scrollUp)
         console.log("scrolled!")
-        setTimeout(() => ticking = false, 1000);
+        setTimeout(() => ticking = false, 1000)
     }
   
-});
+})
 
 
 /*
 window.onscroll = function(e) {
     // print "false" if direction is down and "true" if up
-    console.log(this);
-    console.log(this.oldScroll > this.scrollY);
-    this.oldScroll = this.scrollY;
+    console.log(this)
+    console.log(this.oldScroll > this.scrollY)
+    this.oldScroll = this.scrollY
   }
 */
