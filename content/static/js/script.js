@@ -417,6 +417,8 @@ const scrollToPage = (cP, nP) => {
                         el.style = null
                     })
                     big.style = null
+                    page1.style = null
+    
                     allowScrollEvent()
                 }, getTiming(2))
             } else {
