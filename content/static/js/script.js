@@ -257,12 +257,12 @@ const scrollToPage = (cP, nP) => {
             setTimeout(() => {
 
                 smallMandelbrots.forEach((el) =>  {
-                    el.style.transition = "all 2.3s ease-in-out"
+                    el.style.transition = "all 1.8s ease-in-out"
                 })
                 //cyan
                 cyan.style.left = '60%'
                 //yellow. This is bugged due to interaction with official frame 3
-                yellow.style.top = '0px'
+                yellow.style.top = '-10px'
                 //magenta
                 magenta.style.left = '40%'
 
@@ -271,6 +271,7 @@ const scrollToPage = (cP, nP) => {
             
             //reparameterize our sets to zoom in correctly
             setTimeout(() => {
+                document.querySelector(".name").style.color = 'red';
                 if (viewportWidth >= 750) {
                     big.style.transition = null
                     big.style.width = '750px'
@@ -291,32 +292,45 @@ const scrollToPage = (cP, nP) => {
             
             //zoom into the mandelbrot
             setTimeout(() => {
+                document.querySelector(".name").style.color = 'green';
                 big.style.transition = "all 1.4s ease-in-out"
-                big.style.top = '-1000px'
+                big.style.top = '-800px'
                 //big.style.transform = 'translate(0, -1200px)'
-                big.style.width = '8000px'
+                if (viewportWidth >= 750) {
+
+                }
+                console.log(viewportWidth)
+                big.style.width = (viewportWidth * 4) + 'px'
                 
+                /*
+                    we must manually set yellow here
+                */
                 smallMandelbrots.forEach((el) =>  {
                     el.style.transition = "all 1.4s ease-in-out"
-                    el.style.width = '8000px'
-                    el.style.top = '-1000px'
+                    el.style.width = (viewportWidth * 4) + 'px'
                 })
+                cyan.style.top = '-600px'
+                yellow.style.top = '-800px'
+                magenta.style.top = '-600px'
                 
             }, getTiming(3))
 
             //Now we just adjust the background to be black and scroll to page 2
+            /*
             setTimeout(() => {
                 document.getElementById("main-container").style["background-color"] = "#000"
                 big.style = null
                 smallMandelbrots.forEach(el => el.style = null)
 
             }, getTiming(4))
+            */
             
             //Finally release the return to reenable the scroll
+            /*
             setTimeout(() => {
                 allowScrollEvent()
             }, getTiming(5))
-            
+            */
 
             break
         case 1:
