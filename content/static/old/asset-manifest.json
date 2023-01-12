@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/static/css/main.6e06f73a.css",
+    "main.js": "/static/js/main.08a645a0.js",
+    "pdf.worker.js": "/e7e915313973ba1d49f9bb2a1998626e.js",
+    "static/media/face.jpg": "/static/media/face.29f07d43e75f0e7edb7c.jpg",
+    "static/media/DanielGallupsResume.pdf": "/static/media/DanielGallupsResume.e963053aa2e091e6a93a.pdf",
+    "static/media/headshot-dan.jpg": "/static/media/headshot-dan.52e6abd21106d358ece5.jpg",
+    "static/media/pathfinder-logo.png": "/static/media/pathfinder-logo.9ebaf5a51c446b19e330.png",
+    "static/media/icons8-github.svg": "/static/media/icons8-github.4cd3a2bc790226c346ae943ec1622139.svg",
+    "static/media/Purdue_Boilermakers_logo.svg": "/static/media/Purdue_Boilermakers_logo.afdb2b767b87b932b8c32bae8e0edfbf.svg",
+    "index.html": "/index.html",
+    "static/media/icons8-instagram.svg": "/static/media/icons8-instagram.5377a69af6808c3caf41dab7872d0a8d.svg",
+    "static/media/icons8-linkedin.svg": "/static/media/icons8-linkedin.092116303172f9668b9c3b6af9c7cb28.svg",
+    "static/media/icons8-medium.svg": "/static/media/icons8-medium.d7821c8a56ce64ae76415fe99110fb99.svg",
+    "static/media/Chess_Board.svg": "/static/media/Chess_Board.60f765cbfe6ef25ce4336038ae5803e8.svg",
+    "main.6e06f73a.css.map": "/static/css/main.6e06f73a.css.map",
+    "main.08a645a0.js.map": "/static/js/main.08a645a0.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6e06f73a.css",
+    "static/js/main.08a645a0.js"
+  ]
+}

@@ -9,7 +9,7 @@ frontend:
         - []
   artifacts:
     files:
-        - **/*
+        - '**/*'
     discard-paths: yes
     baseDirectory: content/static
   cache:
