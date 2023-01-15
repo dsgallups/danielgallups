@@ -69,7 +69,6 @@ const pageOneTypeWriter = () => {
         'CTF Competitor',
         'Code Documenter',
         'Forensic Analyst',
-        'Rockstar',
         'IT Specialist',
         'Printer Fixer',
         'Intelligence Gatherer',
