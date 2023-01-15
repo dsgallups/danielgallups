@@ -175,6 +175,8 @@ const scrollToPage = (cP, nP) => {
     let big = document.getElementById("big-dark")
     let page1 = document.getElementById("page-1")
     let page2 = document.getElementById("page-2")
+    let page3 = document.getElementById("page-3")
+    let mW = document.getElementById("big-white")
 
     switch (cP) {
         case 0:
@@ -346,7 +348,7 @@ const scrollToPage = (cP, nP) => {
 
             setTimeout(() => {                
                 page2.style.transition = "all 1s ease-in-out"
-                page2.style["margin-top"] = '200px';
+                page2.style["top"] = '200px';
             }, getTiming(5) + 100)
             
             
@@ -447,7 +449,63 @@ const scrollToPage = (cP, nP) => {
                     allowScrollEvent()
                 }, getTiming(2))
             } else {
+                //from page 2 to page 3
+                /**
+                 * So the animation will have the white mandelbrot come up
+                 * Then, when it hits a certain point, it will take the content of page 2 with it
+                 * The mandelbrot will continue downwards to the needle
+                 * then the needle will become a solid 1px divider
+                 * then at the end of this divider is the resume (for now)
+                 */
+                const movements = [200, 1000, 300, 1500];
+                function getTiming(frameNo) {
+                    let cum = 0;
+                    for (let i = 0; i <= frameNo; i++) {
+                        cum += movements[i];
+                    }
+                    return cum;
+                }
+                
+                //So first set up our white mandelbrot to be just below the view height
+                mW.style.opacity = "1"
+                mW.style.top = "100vh"
 
+                //mWTopPos = -370;
+                
+                mWTopPos = -480;
+
+                setTimeout(() => {
+                    mW.style.transition = "all 1s ease-in"
+                    mW.style.top = mWTopPos + "px"
+                }, getTiming(0));
+
+                //now bring everything with it >:)
+                setTimeout(() => {
+                    //the size of the page is 713 about
+                    mW.style.transition = "all .3s linear"
+                    page2.style.transition = "all .3s linear"
+                    let page2Top = -800
+                    mWTopPos += page2Top
+                    page2.style.top = page2Top + "px"
+                    mW.style.top = mWTopPos + "px"
+                    mWTopPos += -4600
+                }, getTiming(1))
+
+                setTimeout(() => {
+                    console.log("im herere")
+                    //mW = document.getElementById("big-white")
+                    //mW.style.transition = "all 1s cubic-bezier(.49,.7,.44,1) 0s"
+                    mW.style.transition = "all 1.5s cubic-bezier(.05,.61,.09,1.03) 0s"
+                    mW.style.top = mWTopPos + "px"
+                }, getTiming(2))
+
+                setTimeout(() => {
+                    page3.style.transition = "all 1s ease-out"
+                    page3.style["top"] = '200px'
+                }, getTiming(3) - 1000)
+
+
+            
             }
             break
         case 2:

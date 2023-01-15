@@ -56,10 +56,10 @@ body {
     margin: 0 auto;
     justify-content: center;
     position: absolute;
-    top: 0;
+    top: 200vh;
     z-index: 1;
-    margin-top:200vh;
-    background-color: inherit;
+    /*margin-top:200vh;*/
+    /*background-color: inherit;*/
 }
 .content {
     width: 100%;
@@ -101,8 +101,8 @@ body {
 #page-1 {
     mix-blend-mode: initial;
     margin-top: 0!important;
-    width: initial;
-    
+    top: 0;
+    background-color: inherit;
 }
 
 .mandelbrot-small {
@@ -150,7 +150,6 @@ body {
 
 
 #page-2 {
-    margin-top:200vh;
     /*I don't know why this works*/
     background-color: initial;
 }
@@ -163,6 +162,7 @@ body {
     justify-content: space-between;
 }
 #page-2 .content-header {
+    font-size: 38px;
     margin-bottom:10px;
 }
 #page-2 .content-medium {
@@ -172,6 +172,7 @@ body {
 #page-2 .left-content {
     display: flex;
     flex-direction: column;
+    max-width: 50%;
 }
 #page-2 .right-content {
     display: flex;
@@ -182,6 +183,9 @@ body {
 /**
     styling for page 2 directory
 */
+.education {
+    margin-bottom:15px;
+}
 #page-2 .dir-root {
     font-family: "Roboto-Strong";
     font-size: 34px;
@@ -191,9 +195,16 @@ body {
 #page-2 .dir-2 {
     font-size: 20px;
     margin-left: 20px;
-    opacity: .8;
     display: flex;
     flex-direction: row;
+}
+#page-2 .dir-2 a {
+    color: inherit;
+    opacity: .6;
+    transition: opacity .2s;
+}
+#page-2 .dir-2 a:hover {
+    opacity: 1;
 }
 #page-2 .dir-2 .description {
     font-family: "Roboto-Thin";
@@ -209,21 +220,41 @@ body {
     color: #ffd241;
 }
 .mern {
-    color: #026e00;
+    color: #03ad00;
 }
 .tiny-mern {
     font-family: "Roboto-Thin";
     font-size: 16px;
 }
 .it {
-    color: #2c3d6e;
+    color: #4058a0;
 }
 /**
     end styling for page 2 directory
 */
+#big-white {
+    opacity: 0;
+    position: fixed;
+    width: 5740px;
+    top: -370px;
+    left: 50%;
+    transform: translate(-50%, 0px);
+    mix-blend-mode: darken;
+}
 
 
 
+
+#page-3 {
+    margin-top: 150px;
+}
+#page-3 .content {
+    justify-content: center;
+}
+#page-3 .resume-container {
+    background-color: #194266;
+    padding: 20px;
+}
 
 .wireframe {
     border: 1px solid red;
