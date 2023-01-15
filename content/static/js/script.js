@@ -164,6 +164,10 @@ const pageOneTypeWriter = () => {
 }
 
 const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+
+let mWTopPos = -480;
+
+
 const scrollToPage = (cP, nP) => {
     if (nP < 0 || nP > 3) return cP
     console.log('From %d to %d', cP, nP);
@@ -367,15 +371,6 @@ const scrollToPage = (cP, nP) => {
              * 
              * 
              * 
-
-
-
-
-
-
-
-
-
              */
             if (nP == 0) {
                 const movements = [700, 1000, 2000]
@@ -444,8 +439,8 @@ const scrollToPage = (cP, nP) => {
                         el.style = null
                     })
                     big.style = null
-                    //page1.style = null
-    
+                    page1.style = null
+                    page2.style = null
                     allowScrollEvent()
                 }, getTiming(2))
             } else {
@@ -472,7 +467,7 @@ const scrollToPage = (cP, nP) => {
 
                 //mWTopPos = -370;
                 
-                mWTopPos = -480;
+                
 
                 setTimeout(() => {
                     mW.style.transition = "all 1s ease-in"
@@ -488,15 +483,14 @@ const scrollToPage = (cP, nP) => {
                     mWTopPos += page2Top
                     page2.style.top = page2Top + "px"
                     mW.style.top = mWTopPos + "px"
-                    mWTopPos += -4600
+                    
                 }, getTiming(1))
 
                 setTimeout(() => {
-                    console.log("im herere")
-                    //mW = document.getElementById("big-white")
-                    //mW.style.transition = "all 1s cubic-bezier(.49,.7,.44,1) 0s"
-                    mW.style.transition = "all 1.5s cubic-bezier(.05,.61,.09,1.03) 0s"
+                    mW.style.transition = "all 1.5s cubic-bezier(.05,.61,.09,1) 0s"
+                    mWTopPos += -4600
                     mW.style.top = mWTopPos + "px"
+                    console.log("mwTopPos = ", mWTopPos)
                 }, getTiming(2))
 
                 setTimeout(() => {
@@ -504,11 +498,62 @@ const scrollToPage = (cP, nP) => {
                     page3.style["top"] = '200px'
                 }, getTiming(3) - 1000)
 
-
+                setTimeout(() => {
+                    allowScrollEvent()
+                }, getTiming(3))
             
             }
             break
         case 2:
+            //can only scroll up for now..
+            if (nP == 1) {
+                
+                const movements = [1500, 300, 1000];
+                function getTiming(frameNo) {
+                    let cum = 0;
+                    for (let i = 0; i <= frameNo; i++) {
+                        cum += movements[i];
+                    }
+                    return cum;
+                }
+
+                //move the resume down
+                page3.style.transition = "all 1s ease-in"
+                page3.style["top"] = "200vh";
+                //this is the literal reverse
+                mW.style.transition = "all 1.5s cubic-bezier(.61,.05,1,.09) 0s"
+                console.log("mwTopPos is ", mWTopPos)
+                mWTopPos += 4600
+                mW.style.top = mWTopPos + "px"
+                console.log("mwTopPos is ", mWTopPos)
+
+                //begin the reverse
+                setTimeout(() => {
+                    //all 1.5s cubic-bezier(0.09, 1.03, 0.05, 0.61) 0s
+                    mW.style.transition = "all .3s linear"
+                    page2.style.transition = "all .3s linear"
+                    let page2Top = 200
+                    mWTopPos += page2Top
+                    page2.style.top = page2Top + "px"
+                    mW.style.top = mWTopPos + "px"
+                }, getTiming(0));
+
+                //send the mandelbrot down
+                setTimeout(() => {
+                    mW.style.transition = "all 1s ease-out"
+                    mW.style.top = "100vh"
+                }, getTiming(1))
+
+                setTimeout(() => {
+                    mWTopPos = -480;
+                    mW.style = null
+                    page3.style = null
+                    page2.style.transition = "1s ease-in-out 0s"
+                    page2.style.top = "200px"
+                    allowScrollEvent()
+                }, getTiming(2))
+
+            }
             break
         case 3:
             break
