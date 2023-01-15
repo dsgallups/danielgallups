@@ -366,13 +366,11 @@ const scrollToPage = (cP, nP) => {
 
             break
         case 1:
-            /**
-             * This is for page 1 scrolling up or down
-             * 
-             * 
-             * 
-             */
+            
             if (nP == 0) {
+                /**
+                 * Page 1 to Page 0 (scroll up)
+                 */
                 const movements = [700, 1000, 2000]
                 
                 function getTiming(frameNo) {
@@ -385,10 +383,14 @@ const scrollToPage = (cP, nP) => {
                 
                 //first for reverse
                 page2.style.transition = null
-                page2.style["margin-top"] = "0vh"
                 window.scrollTo(0, 0)
-                page2.style.transition = "all 1s ease-in-out"
-                page2.style["margin-top"] = '200vh';
+                page2.style.top = "0px"
+
+                setTimeout(() => {
+                    page2.style.transition = "all 1s ease-in-out"
+                    page2.style.top = '200vh';
+                }, 100)
+                
 
                 setTimeout(() => {
                     //bring back big
@@ -452,6 +454,7 @@ const scrollToPage = (cP, nP) => {
                  * then the needle will become a solid 1px divider
                  * then at the end of this divider is the resume (for now)
                  */
+                window.scrollTo(0, 200)
                 const movements = [200, 1000, 300, 1500];
                 function getTiming(frameNo) {
                     let cum = 0;
@@ -472,6 +475,7 @@ const scrollToPage = (cP, nP) => {
                 setTimeout(() => {
                     mW.style.transition = "all 1s ease-in"
                     mW.style.top = mWTopPos + "px"
+                    window.scrollTo(0, 200)
                 }, getTiming(0));
 
                 //now bring everything with it >:)
@@ -495,7 +499,7 @@ const scrollToPage = (cP, nP) => {
 
                 setTimeout(() => {
                     page3.style.transition = "all 1s ease-out"
-                    page3.style["top"] = '200px'
+                    page3.style.top = '200px'
                 }, getTiming(3) - 1000)
 
                 setTimeout(() => {
@@ -522,10 +526,10 @@ const scrollToPage = (cP, nP) => {
                 page3.style["top"] = "200vh";
                 //this is the literal reverse
                 mW.style.transition = "all 1.5s cubic-bezier(.61,.05,1,.09) 0s"
-                console.log("mwTopPos is ", mWTopPos)
+
                 mWTopPos += 4600
                 mW.style.top = mWTopPos + "px"
-                console.log("mwTopPos is ", mWTopPos)
+
 
                 //begin the reverse
                 setTimeout(() => {
