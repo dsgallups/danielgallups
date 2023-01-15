@@ -24,6 +24,23 @@ html {
 html::-webkit-scrollbar {
     display: none;
 }
+a {
+    text-decoration: none;
+    color: #fff;
+    transition: color .2s
+}
+
+a:visited {
+    text-decoration: none;
+}
+
+a:hover {
+    color: rgb(2, 100, 248);
+}
+
+a:active {
+    text-decoration: underline;
+}
 body {
     position: relative;
     margin: 0;
@@ -52,17 +69,20 @@ body {
     color: #fff;
     mix-blend-mode: difference;
 }
+.content-header {
+    font-family: "Roboto-Strong";
+    font-size:52px;
+
+}
+.content-medium {
+    font-family: "Roboto-Thin";
+    font-size: 34px;
+}
 
 #page-1 .content {
     flex-direction: column;
     margin-top:200px;
     z-index: 2;
-}
-
-.name {
-    font-family: "Roboto-Strong";
-    font-size:52px;
-
 }
 
 #page-1 .content #skills-intro {
@@ -135,10 +155,71 @@ body {
     background-color: initial;
 }
 
-/*
-.page-1 .content #skills-intro #skill-replaceable {
-    color: #AAAA00;
+#page-2 .content {
+    flex-direction: row;
+    margin-top:100px;
+    z-index: 2;
+    width: 100%;
+    justify-content: space-between;
 }
+#page-2 .content-header {
+    margin-bottom:10px;
+}
+#page-2 .content-medium {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+#page-2 .left-content {
+    display: flex;
+    flex-direction: column;
+}
+#page-2 .right-content {
+    display: flex;
+    flex-direction: column;
+}
+
+
+/**
+    styling for page 2 directory
+*/
+#page-2 .dir-root {
+    font-family: "Roboto-Strong";
+    font-size: 34px;
+    margin-left:10px;
+    margin-bottom:10px;
+}
+#page-2 .dir-2 {
+    font-size: 20px;
+    margin-left: 20px;
+    opacity: .8;
+    display: flex;
+    flex-direction: row;
+}
+#page-2 .dir-2 .description {
+    font-family: "Roboto-Thin";
+    font-size: 16px;
+}
+.entry-note {
+    margin-right: 5px;
+}
+.rust {
+    color: #e98b2a;
+}
+.python {
+    color: #ffd241;
+}
+.mern {
+    color: #026e00;
+}
+.tiny-mern {
+    font-family: "Roboto-Thin";
+    font-size: 16px;
+}
+.it {
+    color: #2c3d6e;
+}
+/**
+    end styling for page 2 directory
 */
 
 
