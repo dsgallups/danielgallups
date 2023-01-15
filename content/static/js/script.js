@@ -199,7 +199,7 @@ const scrollToPage = (cP, nP) => {
             //transition: all .5s ease-in-out;
 
             const movements = [700, 200, 100, 500, 800, 400, 1500]
-            
+            let p = 0;
             function getTiming(frameNo) {
                 let cum = 0;
                 for (let i = 0; i <= frameNo; i++) {
@@ -216,6 +216,7 @@ const scrollToPage = (cP, nP) => {
                 el.style.transition =" all .7s ease-out"
             })
             
+            
             //cyan
             cyan.style.left = '53%'
             //yellow
@@ -223,7 +224,11 @@ const scrollToPage = (cP, nP) => {
             //magenta
             magenta.style.left = '43%'
 
+            window.scrollTo(0,0)
+
             setTimeout(() => {
+                window.scrollTo(0,0)
+                console.log("action", p++);
                 smallMandelbrots.forEach((el) =>  {
                     el.style.transition ="all .2s ease-in-out"
                 })
@@ -235,8 +240,10 @@ const scrollToPage = (cP, nP) => {
                 magenta.style.left = '51.5%'
             }, getTiming(0))
 
-
+            
             setTimeout(() => {
+                window.scrollTo(0,0)
+                console.log("action ", p++);
                 smallMandelbrots.forEach((el) =>  {
                     el.style.transition = "all .1s ease-in-out"
                 })
@@ -249,52 +256,53 @@ const scrollToPage = (cP, nP) => {
             }, getTiming(1)) 
 
             //Now display the real boy, and extend the mandelbrots out a lil bit
+            
             setTimeout(() => {
-                big.style.transition = "all .5s ease-in-out"
-                big.style.opacity = '1'
+                //big.style.transition = "all 1s ease-in-out"
+                //big.style.opacity = '.5'
+                let bigOpacity = 0;
+                //animate opacity
                 
-
-            }, getTiming(2))
-
-            //halfway frame
-            setTimeout(() => {
-
+                let animateOpacity = setInterval(() => {
+                    bigOpacity += .01
+                    big.style.opacity = bigOpacity
+                    if (bigOpacity >= 1) {
+                        clearInterval(animateOpacity);
+                    }
+                }, 2)
+                
                 smallMandelbrots.forEach((el) =>  {
                     el.style.transition = "all 1.8s ease-in-out"
+                    //el.style.opacity = '1'
                 })
-                //cyan
-                cyan.style.left = '60%'
-                //yellow. This is bugged due to interaction with official frame 3
-                yellow.style.top = '-10px'
-                //magenta
-                magenta.style.left = '40%'
 
-
-            }, getTiming(3) - 350)
-            
-            //reparameterize our sets to zoom in correctly
-            setTimeout(() => {
-                //document.querySelector(".name").style.color = 'red';
-                if (viewportWidth >= 750) {
-                    big.style.transition = null
-                    big.style.width = '750px'
-                }
-                big.style['max-width'] = 'initial'
                 
-                smallMandelbrots.forEach((el) =>  {
+                setTimeout(() => {
+                    console.log("action ", p++);
                     if (viewportWidth >= 750) {
-                        el.style.transition = null
-                        el.style.width = '750px'
+                        console.log("true");
+                        big.style.transition = null
+                        big.style.width = '750px'
                     }
-                    el.style['max-width'] = 'initial'
-                })
-                
-            }, getTiming(3) - 100)
-            
+                    big.style['max-width'] = 'initial'
+                    
+                    smallMandelbrots.forEach((el) =>  {
+                        if (viewportWidth >= 750) {
+                            el.style.transition = null
+                            el.style.width = '750px'
+                        }
+                        el.style['max-width'] = 'initial'
+                    })
+                }, 200);
 
+
+            }, getTiming(2))        
             
             //zoom into the mandelbrot
+            
             setTimeout(() => {
+                
+                console.log("action ", p++);
                 //document.querySelector(".name").style.color = 'green';
                 big.style.transition = "all 1.4s ease-in-out"
                 big.style.top = '-70vw'
@@ -304,21 +312,23 @@ const scrollToPage = (cP, nP) => {
                 }
                 big.style.width = (viewportWidth * 4) + 'px'
                 
-                /*
-                    we must manually set yellow here
-                */
                 smallMandelbrots.forEach((el) =>  {
                     el.style.transition = "all 1.4s ease-in-out"
                     el.style.width = (viewportWidth * 4) + 'px'
                 })
                 cyan.style.top = '-70vw'
-                yellow.style.top = '-70vw'
+                cyan.style.left = '100%'
+
+                yellow.style.top = '-150vw'
+
                 magenta.style.top = '-70vw'
+                magenta.style.left = '-100%'
                 
             }, getTiming(3))
 
             //Now we just adjust the background to be black and scroll to page 2
             setTimeout(() => {
+                page1.style.transition = null;
                 page1.style["background-color"] = "#000"
             }, getTiming(4) - 200)
             setTimeout(() => {
@@ -350,6 +360,21 @@ const scrollToPage = (cP, nP) => {
 
             break
         case 1:
+            /**
+             * This is for page 1 scrolling up or down
+             * 
+             * 
+             * 
+
+
+
+
+
+
+
+
+
+             */
             if (nP == 0) {
                 const movements = [700, 1000, 2000]
                 
@@ -417,7 +442,7 @@ const scrollToPage = (cP, nP) => {
                         el.style = null
                     })
                     big.style = null
-                    page1.style = null
+                    //page1.style = null
     
                     allowScrollEvent()
                 }, getTiming(2))

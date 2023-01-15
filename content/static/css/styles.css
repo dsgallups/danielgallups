@@ -21,6 +21,9 @@ html {
     font-family: "Roboto-Thin";
     scrollbar-width: none;
 }
+html::-webkit-scrollbar {
+    display: none;
+}
 body {
     position: relative;
     margin: 0;
@@ -78,6 +81,7 @@ body {
 #page-1 {
     mix-blend-mode: initial;
     margin-top: 0!important;
+    width: initial;
     
 }
 
@@ -88,7 +92,7 @@ body {
     top: 200px;
     left: 50%;
     transform: translate(-50%, 0px);
-    opacity: .6;
+    opacity: 1;
     mix-blend-mode: darken;
 }
 .cyan-animate {
