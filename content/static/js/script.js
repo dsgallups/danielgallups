@@ -264,8 +264,8 @@ const scrollToPage = (cP, nP) => {
             
             setTimeout(() => {
                 //big.style.transition = "all 1s ease-in-out"
-                //big.style.opacity = '.5'
-                let bigOpacity = 0;
+                big.style.opacity = '1'
+                /*let bigOpacity = 0;
                 //animate opacity
                 
                 let animateOpacity = setInterval(() => {
@@ -279,7 +279,7 @@ const scrollToPage = (cP, nP) => {
                 smallMandelbrots.forEach((el) =>  {
                     el.style.transition = "all 1.8s ease-in-out"
                     //el.style.opacity = '1'
-                })
+                })*/
 
                 
                 setTimeout(() => {
