@@ -359,6 +359,7 @@ const scrollToPage = (cP, nP) => {
             //Finally release the return to reenable the scroll
             
             setTimeout(() => {
+                window.scrollTo(0, 200)
                 allowScrollEvent()
             }, getTiming(6))
             
@@ -442,7 +443,8 @@ const scrollToPage = (cP, nP) => {
                     big.style = null
                     page1.style = null
                     page2.style = null
-                    allowScrollEvent()
+                    window.scrollTo(0, 0)
+                    setTimeout(() =>  allowScrollEvent(), 300)
                 }, getTiming(2))
             } else {
                 //from page 2 to page 3
@@ -502,9 +504,10 @@ const scrollToPage = (cP, nP) => {
                 }, getTiming(3) - 1000)
 
                 setTimeout(() => {
-                    allowScrollEvent()
+                    window.scrollTo(0, 200)
+                    setTimeout(() =>  allowScrollEvent(), 300)
                 }, getTiming(3))
-            
+                
             }
             break
         case 2:
@@ -553,9 +556,14 @@ const scrollToPage = (cP, nP) => {
                     page3.style = null
                     page2.style.transition = "1s ease-in-out 0s"
                     page2.style.top = "200px"
-                    allowScrollEvent()
+                    window.scrollTo(0, 200)
+                    setTimeout(() =>  allowScrollEvent(), 300)
                 }, getTiming(2))
 
+            } else {
+                window.scrollTo(0, 200)
+                setTimeout(() =>  allowScrollEvent(), 300)
+                return cP
             }
             break
         case 3:
