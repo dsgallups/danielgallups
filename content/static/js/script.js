@@ -8,44 +8,44 @@
  */
 // left: 37, up: 38, right: 39, down: 40,
 // spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
-var keys = {37: 1, 38: 1, 39: 1, 40: 1};
+var keys = {37: 1, 38: 1, 39: 1, 40: 1}
 
 function preventDefault(e) {
-  e.preventDefault();
+  e.preventDefault()
   
 }
 
 function preventDefaultForScrollKeys(e) {
   if (keys[e.keyCode]) {
-    preventDefault(e);
-    return false;
+    preventDefault(e)
+    return false
   }
 }
 
 // modern Chrome requires { passive: false } when adding event
-var supportsPassive = false;
+var supportsPassive = false
 try {
   window.addEventListener("test", null, Object.defineProperty({}, 'passive', {
-    get: function () { supportsPassive = true; } 
-  }));
+    get: function () { supportsPassive = true } 
+  }))
 } catch(e) {}
 
-var wheelOpt = supportsPassive ? { passive: false } : false;
-var wheelEvent = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel';
+var wheelOpt = supportsPassive ? { passive: false } : false
+var wheelEvent = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel'
 
 function disableScroll() {
     document.body.classList.add("stop-scrolling")
     document.getElementById("main-container").classList.add("stop-scrolling")
-    window.addEventListener('DOMMouseScroll', preventDefault, false); // older FF
-    window.addEventListener(wheelEvent, preventDefault, wheelOpt); // modern desktop
-    window.addEventListener('touchmove', preventDefault, wheelOpt); // mobile
+    window.addEventListener('DOMMouseScroll', preventDefault, false) // older FF
+    window.addEventListener(wheelEvent, preventDefault, wheelOpt) // modern desktop
+    window.addEventListener('touchmove', preventDefault, wheelOpt) // mobile
     window.addEventListener('keydown', preventDefaultForScrollKeys, false)
 }
 function enableScroll() {
-    window.removeEventListener('DOMMouseScroll', preventDefault, false);
-    window.removeEventListener(wheelEvent, preventDefault, wheelOpt); 
-    window.removeEventListener('touchmove', preventDefault, wheelOpt);
-    window.removeEventListener('keydown', preventDefaultForScrollKeys, false);
+    window.removeEventListener('DOMMouseScroll', preventDefault, false)
+    window.removeEventListener(wheelEvent, preventDefault, wheelOpt)
+    window.removeEventListener('touchmove', preventDefault, wheelOpt)
+    window.removeEventListener('keydown', preventDefaultForScrollKeys, false)
     document.body.classList.remove("stop-scrolling")
     document.getElementById("main-container").classList.remove("stop-scrolling")
 }
@@ -92,10 +92,6 @@ const pageOneTypeWriter = () => {
     let eraseSpeed = 30
     let clearedSpeed = 600
 
-    //so we will have text made based on our skills
-    //then we will call type to type it, the erase it.
-    //then we will 
-
 
     if (skills.length == 0) {
         skills = allSkills.slice()
@@ -107,7 +103,7 @@ const pageOneTypeWriter = () => {
     let color = colorsOnWhite[Math.floor(colorsOnWhite.length * Math.random())]
     document.getElementById("skills-intro").innerHTML = "I'm your <span id=\"skill-replaceable\" style=\"color: "+ color +"\"></span><span id=\"text-cursor\">|</span>"   
 
-    //very poor programming practice. JS sucks, but this makes sense to me right now. gross.
+    //very poor programming practice. This makes sense to me right now. gross.
     const setNewSkill = () => {
         if (skills.length == 0) {
             skills = allSkills.slice()
@@ -118,7 +114,6 @@ const pageOneTypeWriter = () => {
         color = colorsOnWhite[Math.floor(colorsOnWhite.length * Math.random())]
         document.getElementById("skills-intro").innerHTML = "I'm your <span id=\"skill-replaceable\" style=\"color: "+ color +"\"></span><span id=\"text-cursor\">|</span>"
     }
-    //let skillText = staticText + " " + chosenSkill
 
     //sets cursor speed
     let show = true
@@ -164,12 +159,12 @@ const pageOneTypeWriter = () => {
 
 const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
 
-let mWTopPos = -480;
+let mWTopPos = -480
 
 
 const scrollToPage = (cP, nP) => {
     if (nP < 0 || nP > 3) return cP
-    console.log('From %d to %d', cP, nP);
+    console.log('From %d to %d', cP, nP)
     
     let smallMandelbrots = document.querySelectorAll('.mandelbrot-small')
     let cyan = document.getElementById("cyan")
@@ -196,21 +191,14 @@ const scrollToPage = (cP, nP) => {
              * 
              */
 
-            /*
-                Due to using CSS animations, we have to time the animation according to what
-                is defined in the stylesheet.
-            */
-            //css animations suck
-            //transition: all .5s ease-in-out;
-
             const movements = [700, 200, 100, 500, 800, 400, 1500]
-            let p = 0;
+            let p = 0
             function getTiming(frameNo) {
-                let cum = 0;
+                let cum = 0
                 for (let i = 0; i <= frameNo; i++) {
-                    cum += movements[i];
+                    cum += movements[i]
                 }
-                return cum;
+                return cum
             }
             
 
@@ -233,7 +221,7 @@ const scrollToPage = (cP, nP) => {
 
             setTimeout(() => {
                 window.scrollTo(0,0)
-                console.log("action", p++);
+                console.log("action", p++)
                 smallMandelbrots.forEach((el) =>  {
                     el.style.transition ="all .2s ease-in-out"
                 })
@@ -248,7 +236,7 @@ const scrollToPage = (cP, nP) => {
             
             setTimeout(() => {
                 window.scrollTo(0,0)
-                console.log("action ", p++);
+                console.log("action ", p++)
                 smallMandelbrots.forEach((el) =>  {
                     el.style.transition = "all .1s ease-in-out"
                 })
@@ -272,7 +260,7 @@ const scrollToPage = (cP, nP) => {
                     bigOpacity += .01
                     big.style.opacity = bigOpacity
                     if (bigOpacity >= 1) {
-                        clearInterval(animateOpacity);
+                        clearInterval(animateOpacity)
                     }
                 }, 2)
                 
@@ -283,9 +271,9 @@ const scrollToPage = (cP, nP) => {
 
                 
                 setTimeout(() => {
-                    console.log("action ", p++);
+                    console.log("action ", p++)
                     if (viewportWidth >= 750) {
-                        console.log("true");
+                        console.log("true")
                         big.style.transition = null
                         big.style.width = '750px'
                     }
@@ -298,7 +286,7 @@ const scrollToPage = (cP, nP) => {
                         }
                         el.style['max-width'] = 'initial'
                     })
-                }, 200);
+                }, 200)
 
 
             }, getTiming(2))        
@@ -307,7 +295,7 @@ const scrollToPage = (cP, nP) => {
             
             setTimeout(() => {
                 
-                console.log("action ", p++);
+                console.log("action ", p++)
                 //document.querySelector(".name").style.color = 'green';
                 big.style.transition = "all 1.4s ease-in-out"
                 big.style.top = '-70vw'
@@ -333,7 +321,7 @@ const scrollToPage = (cP, nP) => {
 
             //Now we just adjust the background to be black and scroll to page 2
             setTimeout(() => {
-                page1.style.transition = null;
+                page1.style.transition = null
                 page1.style["background-color"] = "#000"
             }, getTiming(4) - 200)
             setTimeout(() => {
@@ -342,7 +330,7 @@ const scrollToPage = (cP, nP) => {
                 smallMandelbrots.forEach(el => el.style = null)
                 
                 page1.style.transition = "all 1s ease-in-out"
-                page1.style.top = '-100vh';
+                page1.style.top = '-100vh'
             }, getTiming(4))
 
             setTimeout(() => {
@@ -351,7 +339,7 @@ const scrollToPage = (cP, nP) => {
 
             setTimeout(() => {                
                 page2.style.transition = "all 1s ease-in-out"
-                page2.style["top"] = '200px';
+                page2.style["top"] = '200px'
             }, getTiming(5) + 100)
             
             
@@ -374,11 +362,11 @@ const scrollToPage = (cP, nP) => {
                 const movements = [700, 1000, 2000]
                 
                 function getTiming(frameNo) {
-                    let cum = 0;
+                    let cum = 0
                     for (let i = 0; i <= frameNo; i++) {
-                        cum += movements[i];
+                        cum += movements[i]
                     }
-                    return cum;
+                    return cum
                 }
                 
                 //first for reverse
@@ -388,7 +376,7 @@ const scrollToPage = (cP, nP) => {
 
                 setTimeout(() => {
                     page2.style.transition = "all 1s ease-in-out"
-                    page2.style.top = '200vh';
+                    page2.style.top = '200vh'
                 }, 100)
                 
 
@@ -398,16 +386,16 @@ const scrollToPage = (cP, nP) => {
                     //big.style.width = (viewportWidth * 4) + 'px'
                     //document.getElementById("main-container").style["background-color"] = "#fff"
                     page1.style.transition = "all 1s ease-in-out"
-                    page1.style.top = '0vh';
+                    page1.style.top = '0vh'
                     big.style.transition = "all 0s"
                     big.style["background-color"] = "black"
                     big.style.opacity = '1'
                     big.style.top = '-600px'
                     big.style['min-width'] = '4000px'
-                    big.style.width = (viewportWidth*3) + 'px';
+                    big.style.width = (viewportWidth*3) + 'px'
                     console.log(big.style.width)
-                    let acc = -50;
-                    let leftAcc = 0;
+                    let acc = -50
+                    let leftAcc = 0
                     smallMandelbrots.forEach((el) =>  {
                         el.style.transition = "all 0s"
                         el.style.top = -50 + acc + 'vw'
@@ -458,28 +446,24 @@ const scrollToPage = (cP, nP) => {
                  * then at the end of this divider is the resume (for now)
                  */
                 window.scrollTo(0, 200)
-                const movements = [200, 1000, 300, 1500];
+                const movements = [200, 1000, 300, 1500]
                 function getTiming(frameNo) {
-                    let cum = 0;
+                    let cum = 0
                     for (let i = 0; i <= frameNo; i++) {
-                        cum += movements[i];
+                        cum += movements[i]
                     }
-                    return cum;
+                    return cum
                 }
                 
                 //So first set up our white mandelbrot to be just below the view height
                 mW.style.opacity = "1"
-                mW.style.top = "100vh"
-
-                //mWTopPos = -370;
-                
-                
+                mW.style.top = "100vh"             
 
                 setTimeout(() => {
                     mW.style.transition = "all 1s ease-in"
                     mW.style.top = mWTopPos + "px"
                     window.scrollTo(0, 200)
-                }, getTiming(0));
+                }, getTiming(0))
 
                 //now bring everything with it >:)
                 setTimeout(() => {
@@ -516,18 +500,18 @@ const scrollToPage = (cP, nP) => {
             //can only scroll up for now..
             if (nP == 1) {
                 
-                const movements = [1500, 300, 1000];
+                const movements = [1500, 300, 1000]
                 function getTiming(frameNo) {
-                    let cum = 0;
+                    let cum = 0
                     for (let i = 0; i <= frameNo; i++) {
-                        cum += movements[i];
+                        cum += movements[i]
                     }
-                    return cum;
+                    return cum
                 }
 
                 //move the resume down
                 page3.style.transition = "all 1s ease-in"
-                page3.style["top"] = "200vh";
+                page3.style["top"] = "200vh"
                 //this is the literal reverse
                 mW.style.transition = "all 1.5s cubic-bezier(.61,.05,1,.09) 0s"
 
@@ -544,7 +528,7 @@ const scrollToPage = (cP, nP) => {
                     mWTopPos += page2Top
                     page2.style.top = page2Top + "px"
                     mW.style.top = mWTopPos + "px"
-                }, getTiming(0));
+                }, getTiming(0))
 
                 //send the mandelbrot down
                 setTimeout(() => {
@@ -553,7 +537,7 @@ const scrollToPage = (cP, nP) => {
                 }, getTiming(1))
 
                 setTimeout(() => {
-                    mWTopPos = -480;
+                    mWTopPos = -480
                     mW.style = null
                     page3.style = null
                     page2.style.transition = "1s ease-in-out 0s"
@@ -599,12 +583,12 @@ window.addEventListener('load', (e) => {
 let ticking = false
 let currentPage = 0
 function allowScrollEvent() {
-    enableScroll();
+    enableScroll()
     ticking = false
     console.log('scrolling re-enabled!')
 }
 function disableScrollEvents() {
-    disableScroll();
+    disableScroll()
     ticking = true
 }
 
@@ -614,7 +598,7 @@ document.addEventListener("scroll", (event) => {
     this.oldScroll = this.scrollY
     event.preventDefault()
     if (!ticking) {
-        disableScrollEvents();
+        disableScrollEvents()
 
         console.log(`Scrolled up: `, scrollUp)
         //perform the animation
