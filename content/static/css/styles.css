@@ -86,7 +86,7 @@ body {
 #page-1 .content {
     flex-direction: column;
     margin-top:200px;
-    z-index: 2;
+    z-index: 10;
 }
 
 #page-1 .content #skills-intro {
@@ -137,6 +137,7 @@ body {
     max-width: 750px;
     top: 200px;
     left: 50%;
+    z-index:5;
     transform: translate(-50%, 0px);
 }
 .no-display {
