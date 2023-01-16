@@ -587,6 +587,9 @@ const scrollToPage = (cP, nP) => {
 window.addEventListener('load', (e) => {
     console.log("Loaded!!!")
     pageOneTypeWriter()
+    if (window.innerWidth <= 1220) {
+        document.getElementById("main-container").innerHTML = "<div class=\"content-header\">Preview is unavailable on this device. Please refresh on browser with a width larger than 1200px.</div>"
+    }
     
 })
 
