@@ -400,10 +400,12 @@ const scrollToPage = (cP, nP) => {
                     page1.style.transition = "all 1s ease-in-out"
                     page1.style.top = '0vh';
                     big.style.transition = "all 0s"
+                    big.style["background-color"] = "black"
                     big.style.opacity = '1'
                     big.style.top = '-600px'
-                    big.style['max-width'] = 'initial'
-                    big.style.width = '4000px'
+                    big.style['min-width'] = '4000px'
+                    big.style.width = (viewportWidth*3) + 'px';
+                    console.log(big.style.width)
                     let acc = -50;
                     let leftAcc = 0;
                     smallMandelbrots.forEach((el) =>  {
