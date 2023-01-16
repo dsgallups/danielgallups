@@ -76,7 +76,7 @@ const pageOneTypeWriter = () => {
         'Coffee Maker',
         'Unit Tester',
         'Backend Engineer',
-        'GRM Intern',
+        'GRC Intern',
         'Red Teamer'
     ]
     

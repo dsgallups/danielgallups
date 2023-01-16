@@ -41,6 +41,9 @@ app.get('/static/:type/:fileName', (req, res) => {
             res.sendStatus(404)
     }
 });
+app.get('/static/media/icon/:fileName', (req, res) => {
+    res.sendFile(__dirname + "/content/static/media/icon/" + req.params.fileName);
+});
 
 const port = process.env.PORT || 3000
 app.listen(port, '0.0.0.0', () => console.log(`Listening on port`, port))
