@@ -275,8 +275,8 @@ function animatePageOneMandelbrot() {
 
         addEventListener('mousemove', e => {
             const mbTranslations = {
-                left: 5,
-                top: -80
+                left: 3,
+                top: -60
             }
             let mouse = {
                 x: e.clientX,
@@ -290,23 +290,21 @@ function animatePageOneMandelbrot() {
             }
 
             const give = {
-                x: mandelbrotRect.x / 1.5,
-                y: mandelbrotRect.y / 1.5
+                x: mandelbrotRect.x,
+                y: mandelbrotRect.y,
+                endX: mb.x - (mb.x / 9)
             }
             
-            // now we have the mouse and mandelbrot coordinates. Calculate the distance between the two using pythagorean theorem
-            //mbx - (mousex - givex)
+            //let distance = Math.sqrt(Math.pow(mb.x - mouse.x, 2) + Math.pow(mb.y - mouse.y, 2))
+            let distance = give.endX - mouse.x
+
+            //const maxDistance = Math.sqrt(Math.pow(mb.x - give.x, 2) + Math.pow(mb.y - give.y, 2))
+            const maxDistance = give.endX - give.x
+
+            //So, we will get the percentage of the max distance away
+            let percentageAway = distance / maxDistance
             
             if (mouse.x - give.x > 0 && mouse.x < mb.x) {
-
-            
-                let distance = Math.sqrt(Math.pow(mb.x - mouse.x, 2) + Math.pow(mb.y - mouse.y, 2))
-
-                //this isn't actually correct, but it'll work well enough
-                const maxDistance = Math.sqrt(Math.pow(mb.x - give.x, 2) + Math.pow(mb.y - give.y, 2))
-
-                //So, we will get the percentage of the max distance away
-                let percentageAway = distance / maxDistance
 
                 //Now we will animate each mandelbrot accordingly
                 if (percentageAway <= 1 && percentageAway >= 0) {
@@ -326,11 +324,11 @@ function animatePageOneMandelbrot() {
                 magenta.style.left = fP.left + '%'
             } else if ( mouse.x >= mb.x ) {
                 //cyan
-                cyan.style.left = ((1 - percentageAway)) + fP.left + '%'
+                cyan.style.left = -mbTranslations.left + fP.left + '%'
                 //yellow
-                yellow.style.top = ((1 - percentageAway)) + fP.top + 'px'
+                yellow.style.top = mbTranslations.top + fP.top + 'px'
                 //magenta
-                magenta.style.left = ((1 - percentageAway)) + fP.left + '%'
+                magenta.style.left = mbTranslations.left + fP.left + '%'
             }
 
         })
