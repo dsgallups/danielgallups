@@ -173,12 +173,12 @@ const pageOneTypeWriter = () => {
 }
 
 function animatePageOneMandelbrot() {
-    const movements = [700, 200, 100, 500, 800, 400, 1500]
+    const movements = [700, 200, 100, 200]
     //final positions
     //top is in px, left is in %
     const fP = {
-        "top": 200,
-        "left": 50,
+        "top": 90,
+        "left": 75,
     }
     let p = 0
     function getTiming(frameNo) {
@@ -192,14 +192,17 @@ function animatePageOneMandelbrot() {
     window.scrollTo(0,0)
     //First part, they overshoot by a little
     smallMandelbrots.forEach((el) =>  {
+        el.style.top = fP.top + 'px'
         el.style.transition =" all .7s ease-out"
     })
     
-    
+    big.style.top = fP.top + 'px'
+    big.style.left = fP.left + '%'
     //cyan
     cyan.style.left = 3 + fP.left + '%'
     //yellow
     yellow.style.top = 50 + fP.top + 'px'
+    yellow.style.left = fP.left + '%'
     //magenta
     magenta.style.left = -3 + fP.left + '%'
 
@@ -235,9 +238,9 @@ function animatePageOneMandelbrot() {
     //Now display the real boy, and extend the mandelbrots out a lil bit
     
     setTimeout(() => {
-        big.style.opacity = '1'
 
-        
+        big.style.opacity = '1'
+        /*
         setTimeout(() => {
             if (viewportWidth >= 750) {
                 console.log("true")
@@ -254,9 +257,87 @@ function animatePageOneMandelbrot() {
                 el.style['max-width'] = 'initial'
             })
         }, 200)
+        */
 
 
-    }, getTiming(2))   
+        
+    }, getTiming(2))
+    
+
+    setTimeout(() => {
+
+        //calculate the center of the image, get the cursor x and y, and then mandelbrots based on radius.
+        //get these values
+        smallMandelbrots.forEach((el) =>  {
+            //el.style.transition = "all .5s  linear 0s"
+            el.style.transition = "all 0s"
+        })
+
+        addEventListener('mousemove', e => {
+            const mbTranslations = {
+                left: 5,
+                top: -80
+            }
+            let mouse = {
+                x: e.clientX,
+                y: e.clientY
+            }
+            
+            let mandelbrotRect = big.getBoundingClientRect();
+            let mb = {
+                x: mandelbrotRect.x + (mandelbrotRect.width / 2),
+                y: mandelbrotRect.y + (mandelbrotRect.height / 2)
+            }
+
+            const give = {
+                x: mandelbrotRect.x / 1.5,
+                y: mandelbrotRect.y / 1.5
+            }
+            
+            // now we have the mouse and mandelbrot coordinates. Calculate the distance between the two using pythagorean theorem
+            //mbx - (mousex - givex)
+            
+            if (mouse.x - give.x > 0 && mouse.x < mb.x) {
+
+            
+                let distance = Math.sqrt(Math.pow(mb.x - mouse.x, 2) + Math.pow(mb.y - mouse.y, 2))
+
+                //this isn't actually correct, but it'll work well enough
+                const maxDistance = Math.sqrt(Math.pow(mb.x - give.x, 2) + Math.pow(mb.y - give.y, 2))
+
+                //So, we will get the percentage of the max distance away
+                let percentageAway = distance / maxDistance
+
+                //Now we will animate each mandelbrot accordingly
+                if (percentageAway <= 1 && percentageAway >= 0) {
+                    //cyan
+                    cyan.style.left = (-mbTranslations.left * (1 - percentageAway)) + fP.left + '%'
+                    //yellow
+                    yellow.style.top = (mbTranslations.top * (1 - percentageAway)) + fP.top + 'px'
+                    //magenta
+                    magenta.style.left = (mbTranslations.left * (1 - percentageAway)) + fP.left + '%'
+                }
+            } else if (mouse.x - give.x <= 0) {
+                //cyan
+                cyan.style.left = fP.left + '%'
+                //yellow
+                yellow.style.top = fP.top + 'px'
+                //magenta
+                magenta.style.left = fP.left + '%'
+            } else if ( mouse.x >= mb.x ) {
+                //cyan
+                cyan.style.left = ((1 - percentageAway)) + fP.left + '%'
+                //yellow
+                yellow.style.top = ((1 - percentageAway)) + fP.top + 'px'
+                //magenta
+                magenta.style.left = ((1 - percentageAway)) + fP.left + '%'
+            }
+
+        })
+        
+    }, getTiming(3))
+    
+    
 }
 
 const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
@@ -575,7 +656,7 @@ window.addEventListener('load', (e) => {
     page3 = document.getElementById("page-3")
     mW = document.getElementById("big-white")
     pageOneTypeWriter()
-    setTimeout(() => animatePageOneMandelbrot(), 600);
+    setTimeout(() => animatePageOneMandelbrot(), 600)
 })
 
 
