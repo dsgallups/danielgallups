@@ -75,9 +75,16 @@ const pageOneTypeWriter = () => {
         'Code Writer',
         'Coffee Maker',
         'Unit Tester',
-        'Backend Engineer',
+        'Fullstack Engineer',
         'GRC Intern',
-        'Red Teamer'
+        'Red Teamer',
+        'Team Member',
+        'Cyberforensics Analyst',
+        'Game Developer',
+        'Frontend Developer',
+        'Backend Developer',
+        'Infrastructure Engineer',
+        'Bug Fixer',
     ]
     
     let skills = allSkills.slice()
@@ -157,6 +164,108 @@ const pageOneTypeWriter = () => {
 
 }
 
+function animatePageOneMandelbrot() {
+    const movements = [700, 200, 100, 500, 800, 400, 1500]
+    //final positions
+    const fP = {
+        "top": 50,
+        "left": 50,
+    }
+    let p = 0
+    function getTiming(frameNo) {
+        let cum = 0
+        for (let i = 0; i <= frameNo; i++) {
+            cum += movements[i]
+        }
+        return cum
+    }
+    
+    window.scrollTo(0,0)
+    //First part, they overshoot by a little
+    smallMandelbrots.forEach((el) =>  {
+        el.style.transition =" all .7s ease-out"
+    })
+    
+    
+    //cyan
+    cyan.style.left = '53%'
+    //yellow
+    yellow.style.top = '250px'
+    //magenta
+    magenta.style.left = '43%'
+
+    window.scrollTo(0,0)
+
+    setTimeout(() => {
+        window.scrollTo(0,0)
+        smallMandelbrots.forEach((el) =>  {
+            el.style.transition ="all .2s ease-in-out"
+        })
+        //cyan
+        cyan.style.left = '48.5%'
+        //yellow
+        yellow.style.top = '175px'
+        //magenta
+        magenta.style.left = '51.5%'
+    }, getTiming(0))
+
+    
+    setTimeout(() => {
+        window.scrollTo(0,0)
+        smallMandelbrots.forEach((el) =>  {
+            el.style.transition = "all .1s ease-in-out"
+        })
+        //cyan
+        cyan.style.left = '50%'
+        //yellow
+        yellow.style.top = '200px'
+        //magenta
+        magenta.style.left = '50%'
+    }, getTiming(1)) 
+
+    //Now display the real boy, and extend the mandelbrots out a lil bit
+    
+    setTimeout(() => {
+        //big.style.transition = "all 1s ease-in-out"
+        big.style.opacity = '1'
+        /*let bigOpacity = 0;
+        //animate opacity
+        
+        let animateOpacity = setInterval(() => {
+            bigOpacity += .01
+            big.style.opacity = bigOpacity
+            if (bigOpacity >= 1) {
+                clearInterval(animateOpacity)
+            }
+        }, 2)
+        
+        smallMandelbrots.forEach((el) =>  {
+            el.style.transition = "all 1.8s ease-in-out"
+            //el.style.opacity = '1'
+        })*/
+
+        
+        setTimeout(() => {
+            if (viewportWidth >= 750) {
+                console.log("true")
+                big.style.transition = null
+                big.style.width = '750px'
+            }
+            big.style['max-width'] = 'initial'
+            
+            smallMandelbrots.forEach((el) =>  {
+                if (viewportWidth >= 750) {
+                    el.style.transition = null
+                    el.style.width = '750px'
+                }
+                el.style['max-width'] = 'initial'
+            })
+        }, 200)
+
+
+    }, getTiming(2))   
+}
+
 const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
 
 let mWTopPos = -480
@@ -177,125 +286,11 @@ const scrollToPage = (cP, nP) => {
     let mW = document.getElementById("big-white")
 
     switch (cP) {
-        case 0:
-            /**
-             * This animation will spawn three mandelbrots of different pigments, which combine to black.
-             *      Yellow comes from the top
-             *      Cyan comes from the left
-             *      Magenta comes from the right
-             *      This will be manipulated via the top and left parameters.
-             *  
-             * Then, the black of that set zooms in to make an entirely black background.
-             * Finally, page 2 is revealed.
-             * 
-             * 
-             */
-
-            const movements = [700, 200, 100, 500, 800, 400, 1500]
-            let p = 0
-            function getTiming(frameNo) {
-                let cum = 0
-                for (let i = 0; i <= frameNo; i++) {
-                    cum += movements[i]
-                }
-                return cum
-            }
-            
-
-        
-            window.scrollTo(0,0)
-            //First part, they overshoot by a little
-            smallMandelbrots.forEach((el) =>  {
-                el.style.transition =" all .7s ease-out"
-            })
-            
-            
-            //cyan
-            cyan.style.left = '53%'
-            //yellow
-            yellow.style.top = '250px'
-            //magenta
-            magenta.style.left = '43%'
-
-            window.scrollTo(0,0)
-
-            setTimeout(() => {
-                window.scrollTo(0,0)
-                console.log("action", p++)
-                smallMandelbrots.forEach((el) =>  {
-                    el.style.transition ="all .2s ease-in-out"
-                })
-                //cyan
-                cyan.style.left = '48.5%'
-                //yellow
-                yellow.style.top = '175px'
-                //magenta
-                magenta.style.left = '51.5%'
-            }, getTiming(0))
-
-            
-            setTimeout(() => {
-                window.scrollTo(0,0)
-                console.log("action ", p++)
-                smallMandelbrots.forEach((el) =>  {
-                    el.style.transition = "all .1s ease-in-out"
-                })
-                //cyan
-                cyan.style.left = '50%'
-                //yellow
-                yellow.style.top = '200px'
-                //magenta
-                magenta.style.left = '50%'
-            }, getTiming(1)) 
-
-            //Now display the real boy, and extend the mandelbrots out a lil bit
-            
-            setTimeout(() => {
-                //big.style.transition = "all 1s ease-in-out"
-                big.style.opacity = '1'
-                /*let bigOpacity = 0;
-                //animate opacity
-                
-                let animateOpacity = setInterval(() => {
-                    bigOpacity += .01
-                    big.style.opacity = bigOpacity
-                    if (bigOpacity >= 1) {
-                        clearInterval(animateOpacity)
-                    }
-                }, 2)
-                
-                smallMandelbrots.forEach((el) =>  {
-                    el.style.transition = "all 1.8s ease-in-out"
-                    //el.style.opacity = '1'
-                })*/
-
-                
-                setTimeout(() => {
-                    console.log("action ", p++)
-                    if (viewportWidth >= 750) {
-                        console.log("true")
-                        big.style.transition = null
-                        big.style.width = '750px'
-                    }
-                    big.style['max-width'] = 'initial'
-                    
-                    smallMandelbrots.forEach((el) =>  {
-                        if (viewportWidth >= 750) {
-                            el.style.transition = null
-                            el.style.width = '750px'
-                        }
-                        el.style['max-width'] = 'initial'
-                    })
-                }, 200)
-
-
-            }, getTiming(2))        
-            
+        case 0:           
             //zoom into the mandelbrot
             
             setTimeout(() => {
                 
-                console.log("action ", p++)
                 //document.querySelector(".name").style.color = 'green';
                 big.style.transition = "all 1.4s ease-in-out"
                 big.style.top = '-70vw'

@@ -37,6 +37,9 @@ app.get('/static/:type/:fileName', (req, res) => {
         case "roboto":
             res.sendFile(__dirname + "/content/static/roboto/" + req.params.fileName)
             break
+        case "icon":
+            res.sendFile(__dirname + "/content/static/icon/" + req.params.fileName)
+            break
         default:
             res.sendStatus(404)
     }
