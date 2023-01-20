@@ -135,8 +135,8 @@ body {
     position: fixed;
     width: 100%;
     max-width: 750px;
-    top: 200px;
-    left: 50%;
+    top: 90px;
+    left: 75%;
     z-index:5;
     transform: translate(-50%, 0px);
 }
@@ -147,6 +147,7 @@ body {
     left: -50%;
 }
 #yellow {
+    left: 75%;
     top: -800px;
 }
 #magenta {

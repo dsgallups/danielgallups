@@ -172,14 +172,77 @@ const pageOneTypeWriter = () => {
 
 }
 
+const fP = {
+    "top": 90,
+    "left": 75,
+}
+
+const animateOnMouseMove = e => {
+        const mbTranslations = {
+            left: 1.5,
+            top: -25
+        }
+        let mouse = {
+            x: e.clientX,
+            y: e.clientY
+        }
+        
+        let mandelbrotRect = big.getBoundingClientRect();
+        let mb = {
+            x: mandelbrotRect.x + (mandelbrotRect.width / 2),
+            y: mandelbrotRect.y + (mandelbrotRect.height / 2)
+        }
+
+        const give = {
+            x: mandelbrotRect.x + ((mb.x - mandelbrotRect.x) / 2),
+            y: mandelbrotRect.y,
+            //endX: mb.x - (mb.x / 9)
+            endX: mb.x
+        }
+        
+        //let distance = Math.sqrt(Math.pow(mb.x - mouse.x, 2) + Math.pow(mb.y - mouse.y, 2))
+        let distance = give.endX - mouse.x
+
+        //const maxDistance = Math.sqrt(Math.pow(mb.x - give.x, 2) + Math.pow(mb.y - give.y, 2))
+        const maxDistance = give.endX - give.x
+
+        //So, we will get the percentage of the max distance away
+        let percentageAway = distance / maxDistance
+        
+
+        //Now we want to follow a logarithmic curve on the percentageAway function.
+        if (mouse.x - give.x > 0 && mouse.x < mb.x) {
+
+            //Now we will animate each mandelbrot accordingly
+            if (percentageAway <= 1 && percentageAway >= 0) {
+                //cyan
+                cyan.style.left = (-mbTranslations.left * (1 - Math.pow(percentageAway, 2))) + fP.left + '%'
+                //yellow
+                yellow.style.top = (mbTranslations.top * (1 - Math.pow(percentageAway, 2))) + fP.top + 'px'
+                //magenta
+                magenta.style.left = (mbTranslations.left * (1 - Math.pow(percentageAway, 2))) + fP.left + '%'
+            }
+        } else if (mouse.x - give.x <= 0) {
+            //cyan
+            cyan.style.left = fP.left + '%'
+            //yellow
+            yellow.style.top = fP.top + 'px'
+            //magenta
+            magenta.style.left = fP.left + '%'
+        } else if ( mouse.x >= mb.x ) {
+            //cyan
+            cyan.style.left = -mbTranslations.left + fP.left + '%'
+            //yellow
+            yellow.style.top = mbTranslations.top + fP.top + 'px'
+            //magenta
+            magenta.style.left = mbTranslations.left + fP.left + '%'
+        }
+}
+
 function animatePageOneMandelbrot() {
     const movements = [700, 200, 100, 200]
     //final positions
     //top is in px, left is in %
-    const fP = {
-        "top": 90,
-        "left": 75,
-    }
     let p = 0
     function getTiming(frameNo) {
         let cum = 0
@@ -191,18 +254,22 @@ function animatePageOneMandelbrot() {
     
     window.scrollTo(0,0)
     //First part, they overshoot by a little
+
+    //constants?
+    big.style.top = fP.top + 'px'
+    big.style.left = fP.left + '%'
+    yellow.style.left = fP.left + '%'
+    
     smallMandelbrots.forEach((el) =>  {
         el.style.top = fP.top + 'px'
         el.style.transition =" all .7s ease-out"
     })
     
-    big.style.top = fP.top + 'px'
-    big.style.left = fP.left + '%'
+    
     //cyan
     cyan.style.left = 3 + fP.left + '%'
     //yellow
     yellow.style.top = 50 + fP.top + 'px'
-    yellow.style.left = fP.left + '%'
     //magenta
     magenta.style.left = -3 + fP.left + '%'
 
@@ -239,7 +306,18 @@ function animatePageOneMandelbrot() {
     
     setTimeout(() => {
 
-        big.style.opacity = '1'
+        let bigOpacity = 0
+        big.style.opacity = bigOpacity
+        big.classList.remove('no-display')
+        //animate opacity
+                
+        let animateOpacity = setInterval(() => {
+            bigOpacity += .05
+            big.style.opacity = bigOpacity
+            if (bigOpacity >= 1) {
+                clearInterval(animateOpacity)
+            }
+        }, 2)
         /*
         setTimeout(() => {
             if (viewportWidth >= 750) {
@@ -273,65 +351,7 @@ function animatePageOneMandelbrot() {
             el.style.transition = "all 0s"
         })
 
-        addEventListener('mousemove', e => {
-            const mbTranslations = {
-                left: 3,
-                top: -60
-            }
-            let mouse = {
-                x: e.clientX,
-                y: e.clientY
-            }
-            
-            let mandelbrotRect = big.getBoundingClientRect();
-            let mb = {
-                x: mandelbrotRect.x + (mandelbrotRect.width / 2),
-                y: mandelbrotRect.y + (mandelbrotRect.height / 2)
-            }
-
-            const give = {
-                x: mandelbrotRect.x,
-                y: mandelbrotRect.y,
-                endX: mb.x - (mb.x / 9)
-            }
-            
-            //let distance = Math.sqrt(Math.pow(mb.x - mouse.x, 2) + Math.pow(mb.y - mouse.y, 2))
-            let distance = give.endX - mouse.x
-
-            //const maxDistance = Math.sqrt(Math.pow(mb.x - give.x, 2) + Math.pow(mb.y - give.y, 2))
-            const maxDistance = give.endX - give.x
-
-            //So, we will get the percentage of the max distance away
-            let percentageAway = distance / maxDistance
-            
-            if (mouse.x - give.x > 0 && mouse.x < mb.x) {
-
-                //Now we will animate each mandelbrot accordingly
-                if (percentageAway <= 1 && percentageAway >= 0) {
-                    //cyan
-                    cyan.style.left = (-mbTranslations.left * (1 - percentageAway)) + fP.left + '%'
-                    //yellow
-                    yellow.style.top = (mbTranslations.top * (1 - percentageAway)) + fP.top + 'px'
-                    //magenta
-                    magenta.style.left = (mbTranslations.left * (1 - percentageAway)) + fP.left + '%'
-                }
-            } else if (mouse.x - give.x <= 0) {
-                //cyan
-                cyan.style.left = fP.left + '%'
-                //yellow
-                yellow.style.top = fP.top + 'px'
-                //magenta
-                magenta.style.left = fP.left + '%'
-            } else if ( mouse.x >= mb.x ) {
-                //cyan
-                cyan.style.left = -mbTranslations.left + fP.left + '%'
-                //yellow
-                yellow.style.top = mbTranslations.top + fP.top + 'px'
-                //magenta
-                magenta.style.left = mbTranslations.left + fP.left + '%'
-            }
-
-        })
+        addEventListener('mousemove', animateOnMouseMove)
         
     }, getTiming(3))
     
@@ -351,7 +371,8 @@ const scrollToPage = (cP, nP) => {
     switch (cP) {
         case 0:           
             //zoom into the mandelbrot
-            const movements = [700, 200, 100, 500, 800, 400, 1500]
+            const movements = [1400, 1000, 1000]
+            removeEventListener('mousemove', animateOnMouseMove)
 
             function getTiming(frameNo) {
                 let cum = 0
@@ -365,7 +386,7 @@ const scrollToPage = (cP, nP) => {
 
                 
                 //document.querySelector(".name").style.color = 'green';
-                big.style.transition = "all 1.4s ease-in-out"
+                big.style.transition = "all 1.4s ease-in"
                 big.style.top = '-70vw'
                 //big.style.transform = 'translate(0, -1200px)'
                 if (viewportWidth >= 750) {
@@ -374,7 +395,7 @@ const scrollToPage = (cP, nP) => {
                 big.style.width = (viewportWidth * 4) + 'px'
                 
                 smallMandelbrots.forEach((el) =>  {
-                    el.style.transition = "all 1.4s ease-in-out"
+                    el.style.transition = "all 1.4s ease-in"
                     el.style.width = (viewportWidth * 4) + 'px'
                 })
                 cyan.style.top = '-70vw'
@@ -385,13 +406,13 @@ const scrollToPage = (cP, nP) => {
                 magenta.style.top = '-70vw'
                 magenta.style.left = '-100%'
                 
-            }, getTiming(3))
+            }, 0)
 
             //Now we just adjust the background to be black and scroll to page 2
             setTimeout(() => {
                 page1.style.transition = null
                 page1.style["background-color"] = "#000"
-            }, getTiming(4) - 200)
+            }, getTiming(0))
             setTimeout(() => {
                 document.getElementById("main-container").style["background-color"] = "#000"
                 big.style = null
@@ -399,16 +420,16 @@ const scrollToPage = (cP, nP) => {
                 
                 page1.style.transition = "all 1s ease-in-out"
                 page1.style.top = '-100vh'
-            }, getTiming(4))
+            }, getTiming(0))
 
             setTimeout(() => {
                 window.scrollTo(0, 200)
-            }, getTiming(5))
+            }, getTiming(0))
 
             setTimeout(() => {                
                 page2.style.transition = "all 1s ease-in-out"
                 page2.style["top"] = '200px'
-            }, getTiming(5) + 100)
+            }, getTiming(1) + 100)
             
             
             
@@ -417,7 +438,7 @@ const scrollToPage = (cP, nP) => {
             setTimeout(() => {
                 window.scrollTo(0, 200)
                 allowScrollEvent()
-            }, getTiming(6))
+            }, getTiming(2))
             
 
             break
@@ -475,6 +496,7 @@ const scrollToPage = (cP, nP) => {
                     })
                     document.getElementById("main-container").style["background-color"] = "#fff"
                     page1.style["background-color"] = "inherit"
+                    setTimeout(() => animatePageOneMandelbrot(), 600)
                 }, getTiming(0))
 
 
