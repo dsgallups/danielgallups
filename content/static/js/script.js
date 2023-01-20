@@ -49,7 +49,15 @@ function enableScroll() {
     document.body.classList.remove("stop-scrolling")
     document.getElementById("main-container").classList.remove("stop-scrolling")
 }
-
+let smallMandelbrots = document.querySelectorAll('.mandelbrot-small')
+let cyan = document.getElementById("cyan")
+let yellow = document.getElementById("yellow")
+let magenta = document.getElementById("magenta")
+let big = document.getElementById("big-dark")
+let page1 = document.getElementById("page-1")
+let page2 = document.getElementById("page-2")
+let page3 = document.getElementById("page-3")
+let mW = document.getElementById("big-white")
 /**
  * Our page is divided into 4 pages.
  * page 1 is the first thing they see.
@@ -167,8 +175,9 @@ const pageOneTypeWriter = () => {
 function animatePageOneMandelbrot() {
     const movements = [700, 200, 100, 500, 800, 400, 1500]
     //final positions
+    //top is in px, left is in %
     const fP = {
-        "top": 50,
+        "top": 200,
         "left": 50,
     }
     let p = 0
@@ -188,11 +197,11 @@ function animatePageOneMandelbrot() {
     
     
     //cyan
-    cyan.style.left = '53%'
+    cyan.style.left = 3 + fP.left + '%'
     //yellow
-    yellow.style.top = '250px'
+    yellow.style.top = 50 + fP.top + 'px'
     //magenta
-    magenta.style.left = '43%'
+    magenta.style.left = -3 + fP.left + '%'
 
     window.scrollTo(0,0)
 
@@ -202,11 +211,11 @@ function animatePageOneMandelbrot() {
             el.style.transition ="all .2s ease-in-out"
         })
         //cyan
-        cyan.style.left = '48.5%'
+        cyan.style.left = -1.5 + fP.left + '%'
         //yellow
-        yellow.style.top = '175px'
+        yellow.style.top = -25 + fP.top + 'px'
         //magenta
-        magenta.style.left = '51.5%'
+        magenta.style.left = 1.5 + fP.left + '%'
     }, getTiming(0))
 
     
@@ -216,33 +225,17 @@ function animatePageOneMandelbrot() {
             el.style.transition = "all .1s ease-in-out"
         })
         //cyan
-        cyan.style.left = '50%'
+        cyan.style.left = fP.left + '%'
         //yellow
-        yellow.style.top = '200px'
+        yellow.style.top = fP.top + 'px'
         //magenta
-        magenta.style.left = '50%'
+        magenta.style.left = fP.left + '%'
     }, getTiming(1)) 
 
     //Now display the real boy, and extend the mandelbrots out a lil bit
     
     setTimeout(() => {
-        //big.style.transition = "all 1s ease-in-out"
         big.style.opacity = '1'
-        /*let bigOpacity = 0;
-        //animate opacity
-        
-        let animateOpacity = setInterval(() => {
-            bigOpacity += .01
-            big.style.opacity = bigOpacity
-            if (bigOpacity >= 1) {
-                clearInterval(animateOpacity)
-            }
-        }, 2)
-        
-        smallMandelbrots.forEach((el) =>  {
-            el.style.transition = "all 1.8s ease-in-out"
-            //el.style.opacity = '1'
-        })*/
 
         
         setTimeout(() => {
@@ -275,21 +268,22 @@ const scrollToPage = (cP, nP) => {
     if (nP < 0 || nP > 3) return cP
     console.log('From %d to %d', cP, nP)
     
-    let smallMandelbrots = document.querySelectorAll('.mandelbrot-small')
-    let cyan = document.getElementById("cyan")
-    let yellow = document.getElementById("yellow")
-    let magenta = document.getElementById("magenta")
-    let big = document.getElementById("big-dark")
-    let page1 = document.getElementById("page-1")
-    let page2 = document.getElementById("page-2")
-    let page3 = document.getElementById("page-3")
-    let mW = document.getElementById("big-white")
 
     switch (cP) {
         case 0:           
             //zoom into the mandelbrot
+            const movements = [700, 200, 100, 500, 800, 400, 1500]
+
+            function getTiming(frameNo) {
+                let cum = 0
+                for (let i = 0; i <= frameNo; i++) {
+                    cum += movements[i]
+                }
+                return cum
+            }
             
             setTimeout(() => {
+
                 
                 //document.querySelector(".name").style.color = 'green';
                 big.style.transition = "all 1.4s ease-in-out"
@@ -567,11 +561,21 @@ const scrollToPage = (cP, nP) => {
  */
 window.addEventListener('load', (e) => {
     console.log("Loaded!!!")
-    pageOneTypeWriter()
     if (window.innerWidth < 810) {
         document.getElementById("main-container").innerHTML = "<div class=\"content-header\">Preview is unavailable on this device. Please refresh on browser with a width larger than 810px.</div>"
     }
-    
+
+    smallMandelbrots = document.querySelectorAll('.mandelbrot-small')
+    cyan = document.getElementById("cyan")
+    yellow = document.getElementById("yellow")
+    magenta = document.getElementById("magenta")
+    big = document.getElementById("big-dark")
+    page1 = document.getElementById("page-1")
+    page2 = document.getElementById("page-2")
+    page3 = document.getElementById("page-3")
+    mW = document.getElementById("big-white")
+    pageOneTypeWriter()
+    setTimeout(() => animatePageOneMandelbrot(), 600);
 })
 
 
