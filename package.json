@@ -18,6 +18,9 @@
   },
   "homepage": "https://github.com/dsgallups/danielgallups#readme",
   "dependencies": {
+    "@node-minify/core": "^7.1.0",
+    "@node-minify/google-closure-compiler": "^7.1.0",
+    "@node-minify/uglify-js": "^7.1.0",
     "connect-livereload": "^0.6.1",
     "express": "^4.18.2",
     "livereload": "^0.9.3",
