@@ -200,6 +200,19 @@ body {
     align-items: flex-end;
 }
 
+#page-2-nav {
+    position: fixed;
+    top: 95vh;
+    left: 50%;
+    opacity: 0;
+    transform: translate(-50%, 0px);
+    color: #fff;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
 
 /**
     styling for page 2 directory

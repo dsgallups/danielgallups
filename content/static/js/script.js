@@ -60,6 +60,10 @@ let page3 = document.getElementById("page-3")
 let mW = document.getElementById("big-white")
 let notifyArrows = document.getElementById("notifier-arrows")
 let notifier = document.getElementById('mandelbrot-notifier')
+let animateArrows = null
+let page2Nav = document.getElementById('page-2-nav')
+let notifyArrowsTwo = document.getElementById("notifier-arrows-2")
+let animateArrowsTwo = null
 /**
  * Our page is divided into 4 pages.
  * page 1 is the first thing they see.
@@ -272,6 +276,7 @@ const animateOnMouseMove = e => {
 }
 
 function animatePageOneMandelbrot() {
+    disableScrollEvents()
     const movements = [300, 400, 800, 300]
     //final positions
     //top is in px, left is in %
@@ -362,7 +367,7 @@ function animatePageOneMandelbrot() {
         let notifyArrows = document.getElementById("notifier-arrows")
         notifyArrows.style.transition = 'all 1s ease-in-out'
         let down = true
-        setInterval(() => {
+        let animateArrows = setInterval(() => {
             down ? notifyArrows.style['margin-top'] = '10px' : notifyArrows.style['margin-top'] = '0px'
             down = !down
         }, 1000)
@@ -415,6 +420,7 @@ function animatePageOneMandelbrot() {
 
 
         addEventListener('mousemove', animateOnMouseMove)
+        allowScrollEvent()
         
     }, getTiming(3))
     
@@ -449,7 +455,8 @@ const scrollToPage = (cP, nP) => {
                 return cum
             }
             notifier = document.getElementById('mandelbrot-notifier')
-            notifier.style.opacity = 0
+            notifier.style = null
+            clearInterval(animateArrows)
                             
             //document.querySelector(".name").style.color = 'green';
             const bigTop = '-900px'
@@ -494,6 +501,7 @@ const scrollToPage = (cP, nP) => {
             }, getTiming(2))
 
             setTimeout(() => {                
+                notifier.style = null
                 page2.style.transition = "all .6s ease-out"
                 page2.style["top"] = '200px'
             }, getTiming(2) + 100)
@@ -503,7 +511,20 @@ const scrollToPage = (cP, nP) => {
             //Finally release the return to reenable the scroll
             
             setTimeout(() => {
+                let page2Nav = document.getElementById('page-2-nav')
+                page2Nav.style.opacity = '0'
+                page2Nav.style.transition = 'all 1s linear'
+                page2Nav.style.opacity = '1'
+                console.log("here we are 2")
                 //also give big-white a display value
+                let notifyArrowsTwo = document.getElementById("notifier-arrows-2")
+                notifyArrowsTwo.style.transition = 'all 1s ease-in-out'
+                let down = true
+                let animateArrowsTwo = setInterval(() => {
+                    down ? notifyArrowsTwo.style['margin-top'] = '5px' : notifyArrowsTwo.style['margin-top'] = '0px'
+                    down = !down
+                }, 1000)
+
                 mW.style.display = 'initial'
                 window.scrollTo(0, 200)
                 allowScrollEvent()
@@ -528,9 +549,11 @@ const scrollToPage = (cP, nP) => {
                 }
                 
                 //first for reverse
+                page2Nav.style = null
                 page2.style.transition = null
                 window.scrollTo(0, 0)
                 page2.style.top = "0px"
+                clearInterval(animateArrowsTwo)
 
                 setTimeout(() => {
                     console.log("point 0 fired")
@@ -616,6 +639,8 @@ const scrollToPage = (cP, nP) => {
                     return cum
                 }
                 
+                page2Nav.style = null
+                clearInterval(animateArrowsTwo)
                 //So first set up our white mandelbrot to be just below the view height
                 mW.style.opacity = "1"
                 mW.style.top = "100vh"             
@@ -705,6 +730,21 @@ const scrollToPage = (cP, nP) => {
                     page2.style.top = "200px"
                     mW.style.display = 'initial'
                     window.scrollTo(0, 200)
+
+                    let page2Nav = document.getElementById('page-2-nav')
+                    page2Nav.style.opacity = '0'
+                    page2Nav.style.transition = 'all 1s linear'
+                    page2Nav.style.opacity = '1'
+                    console.log("here we are 2")
+                    //also give big-white a display value
+                    let notifyArrowsTwo = document.getElementById("notifier-arrows-2")
+                    notifyArrowsTwo.style.transition = 'all 1s ease-in-out'
+                    let down = true
+                    let animateArrowsTwo = setInterval(() => {
+                        down ? notifyArrowsTwo.style['margin-top'] = '5px' : notifyArrowsTwo.style['margin-top'] = '0px'
+                        down = !down
+                    }, 1000)
+
                     setTimeout(() =>  allowScrollEvent(), 300)
                 }, getTiming(2))
 
@@ -726,7 +766,17 @@ const scrollToPage = (cP, nP) => {
 
 
 
-
+let ticking = false
+let currentPage = 0
+function allowScrollEvent() {
+    enableScroll()
+    ticking = false
+    console.log('scrolling re-enabled!')
+}
+function disableScrollEvents() {
+    disableScroll()
+    ticking = true
+}
 
 /**
  * This is our main function for loading
@@ -749,6 +799,8 @@ window.addEventListener('load', (e) => {
     mW = document.getElementById("big-white")
     notifier = document.getElementById('mandelbrot-notifier')
     notifyArrows = document.getElementById("notifier-arrows")
+    page2Nav = document.getElementById('page-2-nav')
+    notifyArrowsTwo = document.getElementById("notifier-arrows-2")
     pageOneTypeWriter()
     setTimeout(() => animatePageOneMandelbrot(), 600)
 
@@ -756,19 +808,6 @@ window.addEventListener('load', (e) => {
         console.log(e)
     })
 })
-
-
-let ticking = false
-let currentPage = 0
-function allowScrollEvent() {
-    enableScroll()
-    ticking = false
-    console.log('scrolling re-enabled!')
-}
-function disableScrollEvents() {
-    disableScroll()
-    ticking = true
-}
 
 
 document.addEventListener("scroll", (event) => {
