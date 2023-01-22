@@ -182,22 +182,32 @@ const mbTranslations = {
     left: 1.5,
     top: -25
 }
-let firstTrigerredMouseMove = false;
+let newMouse = false;
+let lastClientX = 0;
 const animateOnMouseMove = e => {
 
-        if (!firstTrigerredMouseMove) {
+        //just so the animation doesn't jerk when user leaves one side of the window
+        //and enters another
+        if (Math.abs(lastClientX - e.clientX) > 220) {
+            newMouse = true
+        }
+
+        lastClientX = e.clientX
+        
+        if (newMouse) {
 
             smallMandelbrots.forEach((el) =>  {
                 el.style.transition = "all .2s ease-in-out"
             })
-            firstTrigerredMouseMove = true;
             setTimeout(() => {
                 smallMandelbrots.forEach((el) =>  {
                     el.style.transition = "all 0s"
                 })
             }, 200)
+            newMouse = false
+            
         }
-        console.log("triggered")
+        //console.log(e)
         let mouse = {
             x: e.clientX,
             y: e.clientY
