@@ -184,6 +184,12 @@ const mbTranslations = {
 }
 let newMouse = false;
 let lastClientX = 0;
+
+const notifierEvent = () => {
+    disableScrollEvents()
+    currentPage = scrollToPage(0, 1)
+}
+
 const animateOnMouseMove = e => {
 
         //just so the animation doesn't jerk when user leaves one side of the window
@@ -329,6 +335,7 @@ function animatePageOneMandelbrot() {
                 clearInterval(animateOpacity)
             }
         }, timing / (1 / deltaOpacity))
+        
     
         window.scrollTo(0,0)
     }, getTiming(0))
@@ -350,6 +357,16 @@ function animatePageOneMandelbrot() {
         }, timing / (1 / deltaOpacity))
     
         window.scrollTo(0,0)
+
+        //animate the arrows prior to their opacity increasing
+        let notifyArrows = document.getElementById("notifier-arrows")
+        notifyArrows.style.transition = 'all 1s ease-in-out'
+        let down = true
+        setInterval(() => {
+            down ? notifyArrows.style['margin-top'] = '10px' : notifyArrows.style['margin-top'] = '0px'
+            down = !down
+        }, 1000)
+
     }, getTiming(1))
 
     setTimeout(() => {
@@ -364,6 +381,8 @@ function animatePageOneMandelbrot() {
         //magenta
         magenta.style.left = fP.left + '%'
 
+
+
         //fadein scroll notifier
         notifier = document.getElementById('mandelbrot-notifier')
         let opacities = 0
@@ -377,14 +396,6 @@ function animatePageOneMandelbrot() {
             }
         }, timing / (1 / deltaOpacity))
 
-        //animate the arrows
-        let notifyArrows = document.getElementById("notifier-arrows")
-        notifyArrows.style.transition = 'all 1s ease-in-out'
-        let down = true
-        setInterval(() => {
-            down ? notifyArrows.style['margin-top'] = '10px' : notifyArrows.style['margin-top'] = '0px'
-            down = !down
-        }, 1000)
     }, getTiming(2))
 
 
@@ -399,10 +410,8 @@ function animatePageOneMandelbrot() {
         })
 
         //Give the scroll feature to notifier arrows
-        notifier.addEventListener('click', () => {
-            disableScrollEvents()
-            currentPage = scrollToPage(currentPage, currentPage + 1)
-        })
+
+        notifier.addEventListener('click', notifierEvent)
 
 
         addEventListener('mousemove', animateOnMouseMove)
@@ -423,9 +432,13 @@ const scrollToPage = (cP, nP) => {
     
 
     switch (cP) {
-        case 0:           
+        case 0:
+            
+            
             //zoom into the mandelbrot
-            const movements = [1400, 1000, 1000]
+            const movements = [800, 100, 500, 1000]
+            notifier.removeEventListener('click', notifierEvent)
+
             removeEventListener('mousemove', animateOnMouseMove)
 
             function getTiming(frameNo) {
@@ -435,64 +448,66 @@ const scrollToPage = (cP, nP) => {
                 }
                 return cum
             }
+            notifier = document.getElementById('mandelbrot-notifier')
+            notifier.style.opacity = 0
+                            
+            //document.querySelector(".name").style.color = 'green';
+            const bigTop = '-900px'
+            const bigLeft = '50%'
+            big.style.transition = "all .8s ease-in"
+            big.style.top = bigTop
+            big.style.left = bigLeft
+            //big.style.transform = 'translate(0, -1200px)'
+            big.style.width = (viewportWidth * 4) + 'px'
             
-            setTimeout(() => {
+            smallMandelbrots.forEach((el) =>  {
+                el.style.transition = "all .8s ease-in"
+                el.style.width = (viewportWidth * 4) + 'px'
+            })
+            cyan.style.top = bigTop
+            cyan.style.left = '0%'
 
-                
-                //document.querySelector(".name").style.color = 'green';
-                big.style.transition = "all 1.4s ease-in"
-                big.style.top = '-70vw'
-                //big.style.transform = 'translate(0, -1200px)'
-                if (viewportWidth >= 750) {
+            yellow.style.top = '-1500px'
+            yellow.style.left = bigLeft
 
-                }
-                big.style.width = (viewportWidth * 4) + 'px'
-                
-                smallMandelbrots.forEach((el) =>  {
-                    el.style.transition = "all 1.4s ease-in"
-                    el.style.width = (viewportWidth * 4) + 'px'
-                })
-                cyan.style.top = '-70vw'
-                cyan.style.left = '100%'
-
-                yellow.style.top = '-150vw'
-
-                magenta.style.top = '-70vw'
-                magenta.style.left = '-100%'
-                
-            }, 0)
+            magenta.style.top = bigTop
+            magenta.style.left = '100%'
+            
 
             //Now we just adjust the background to be black and scroll to page 2
             setTimeout(() => {
                 page1.style.transition = null
                 page1.style["background-color"] = "#000"
             }, getTiming(0))
+
             setTimeout(() => {
                 document.getElementById("main-container").style["background-color"] = "#000"
                 big.style = null
                 smallMandelbrots.forEach(el => el.style = null)
                 
-                page1.style.transition = "all 1s ease-in-out"
+                page1.style.transition = "all .6s ease-in"
                 page1.style.top = '-100vh'
-            }, getTiming(0))
+            }, getTiming(1))
 
             setTimeout(() => {
                 window.scrollTo(0, 200)
-            }, getTiming(0))
+            }, getTiming(2))
 
             setTimeout(() => {                
-                page2.style.transition = "all 1s ease-in-out"
+                page2.style.transition = "all .6s ease-out"
                 page2.style["top"] = '200px'
-            }, getTiming(1) + 100)
+            }, getTiming(2) + 100)
             
             
             
             //Finally release the return to reenable the scroll
             
             setTimeout(() => {
+                //also give big-white a display value
+                mW.style.display = 'initial'
                 window.scrollTo(0, 200)
                 allowScrollEvent()
-            }, getTiming(2))
+            }, getTiming(3))
             
 
             break
@@ -502,7 +517,7 @@ const scrollToPage = (cP, nP) => {
                 /**
                  * Page 1 to Page 0 (scroll up)
                  */
-                const movements = [700, 1000, 2000]
+                const movements = [600, 1000, 1700]
                 
                 function getTiming(frameNo) {
                     let cum = 0
@@ -518,44 +533,42 @@ const scrollToPage = (cP, nP) => {
                 page2.style.top = "0px"
 
                 setTimeout(() => {
+                    console.log("point 0 fired")
                     page2.style.transition = "all 1s ease-in-out"
                     page2.style.top = '200vh'
                 }, 100)
                 
 
                 setTimeout(() => {
-                    //bring back big
-                    //big.style.top = '-70vw'
-                    //big.style.width = (viewportWidth * 4) + 'px'
-                    //document.getElementById("main-container").style["background-color"] = "#fff"
+                    console.log("point 1 fired")
                     page1.style.transition = "all 1s ease-in-out"
                     page1.style.top = '0vh'
+
                     big.style.transition = "all 0s"
                     big.style["background-color"] = "black"
                     big.style.opacity = '1'
                     big.style.top = '-600px'
                     big.style['min-width'] = '4000px'
                     big.style.width = (viewportWidth*3) + 'px'
-                    console.log(big.style.width)
+
                     let acc = -50
                     let leftAcc = 0
                     smallMandelbrots.forEach((el) =>  {
                         el.style.transition = "all 0s"
                         el.style.top = -50 + acc + 'vw'
                         el.style.left = 30 + leftAcc + '%' 
-                        el.style['max-width'] = 'initial'
                         el.style.width = (viewportWidth * 1) + 'px'
-                        //acc -= 10
+                        el.style.opacity = '1'
                         leftAcc += 20
                     })
                     document.getElementById("main-container").style["background-color"] = "#fff"
                     page1.style["background-color"] = "inherit"
-                    setTimeout(() => animatePageOneMandelbrot(), 600)
                 }, getTiming(0))
 
 
                 
                 setTimeout(() => {
+                    console.log("point 2 fired")
                     //mandelbrot comes out
                     big.style.transition = "all 1s ease-in-out"
                     big.style.top = '250vh'
@@ -577,8 +590,12 @@ const scrollToPage = (cP, nP) => {
                     big.style = null
                     page1.style = null
                     page2.style = null
+                    mW.style = null
+                    document.getElementById("main-container").style = null
                     window.scrollTo(0, 0)
-                    setTimeout(() =>  allowScrollEvent(), 300)
+                    console.log('point 3 fired')
+                    setTimeout(() => animatePageOneMandelbrot(), 600)
+                    setTimeout(() =>  allowScrollEvent(), 1200)
                 }, getTiming(2))
             } else {
                 //from page 2 to page 3
@@ -760,7 +777,8 @@ document.addEventListener("scroll", (event) => {
     if (!ticking) {
         disableScrollEvents()
 
-        console.log(`Scrolled up: `, scrollUp)
+        console.log("scroll event:")
+        console.log(event)
         //perform the animation
         scrollUp ? 
             currentPage = scrollToPage(currentPage, currentPage - 1) : 

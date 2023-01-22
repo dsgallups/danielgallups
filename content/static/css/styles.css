@@ -118,8 +118,7 @@ body {
     opacity: 0;
     transform: translate(-50%, 0px);
     position: fixed;
-    width: 100%;
-    max-width: 750px;
+    width: 750px;
 }
 #mandelbrot-notifier {
     position: fixed;
