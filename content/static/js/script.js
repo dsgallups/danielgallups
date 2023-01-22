@@ -594,8 +594,8 @@ const scrollToPage = (cP, nP) => {
                     document.getElementById("main-container").style = null
                     window.scrollTo(0, 0)
                     console.log('point 3 fired')
-                    setTimeout(() => animatePageOneMandelbrot(), 600)
-                    setTimeout(() =>  allowScrollEvent(), 1200)
+                    animatePageOneMandelbrot()
+                    setTimeout(() =>  allowScrollEvent(), 700)
                 }, getTiming(2))
             } else {
                 //from page 2 to page 3
@@ -703,6 +703,7 @@ const scrollToPage = (cP, nP) => {
                     page3.style = null
                     page2.style.transition = "1s ease-in-out 0s"
                     page2.style.top = "200px"
+                    mW.style.display = 'initial'
                     window.scrollTo(0, 200)
                     setTimeout(() =>  allowScrollEvent(), 300)
                 }, getTiming(2))
