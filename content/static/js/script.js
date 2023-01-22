@@ -178,6 +178,7 @@ const fP = {
 }
 
 const animateOnMouseMove = e => {
+        console.log("triggered")
         const mbTranslations = {
             left: 1.5,
             top: -25
@@ -240,7 +241,7 @@ const animateOnMouseMove = e => {
 }
 
 function animatePageOneMandelbrot() {
-    const movements = [700, 200, 100, 200]
+    const movements = [800, 800]
     //final positions
     //top is in px, left is in %
     let p = 0
@@ -253,97 +254,56 @@ function animatePageOneMandelbrot() {
     }
     
     window.scrollTo(0,0)
-    //First part, they overshoot by a little
+
 
     //constants?
-    big.style.top = fP.top + 'px'
-    big.style.left = fP.left + '%'
-    yellow.style.left = fP.left + '%'
-    
+    let opacities = 0
     smallMandelbrots.forEach((el) =>  {
-        el.style.top = fP.top + 'px'
+        el.style.opacity = '0'
         el.style.transition =" all .7s ease-out"
     })
-    
-    
-    //cyan
-    cyan.style.left = 3 + fP.left + '%'
-    //yellow
-    yellow.style.top = 50 + fP.top + 'px'
-    //magenta
-    magenta.style.left = -3 + fP.left + '%'
-
-    window.scrollTo(0,0)
-
+    //animate opacity in
     setTimeout(() => {
-        window.scrollTo(0,0)
-        smallMandelbrots.forEach((el) =>  {
-            el.style.transition ="all .2s ease-in-out"
-        })
-        //cyan
-        cyan.style.left = -1.5 + fP.left + '%'
-        //yellow
-        yellow.style.top = -25 + fP.top + 'px'
-        //magenta
-        magenta.style.left = 1.5 + fP.left + '%'
-    }, getTiming(0))
-
+        let timing = movements[1]
+        let deltaOpacity = .01
+        /*
+            if we want 1000 millisecond animation
+            deltaOpacity is .05
     
-    setTimeout(() => {
-        window.scrollTo(0,0)
-        smallMandelbrots.forEach((el) =>  {
-            el.style.transition = "all .1s ease-in-out"
-        })
-        //cyan
-        cyan.style.left = fP.left + '%'
-        //yellow
-        yellow.style.top = fP.top + 'px'
-        //magenta
-        magenta.style.left = fP.left + '%'
-    }, getTiming(1)) 
-
-    //Now display the real boy, and extend the mandelbrots out a lil bit
+            calculation is (delta per frame * total frames = full opacity)
+            To get total frames, we take (full opacity (1) and divide by (deltaOpacity))
+            x = 1 / .05
+            which would equal 20. So then to make it 40
+            we multiple 20 by 2, so we take the timing (1000), divide by 1000
+            timing / 1000 = time
     
-    setTimeout(() => {
-
-        let bigOpacity = 0
-        big.style.opacity = bigOpacity
-        big.classList.remove('no-display')
-        //animate opacity
-                
+            so if we have 1% delta opacity to 100%, we want it to run for 4 seconds
+            we get the frames (100) = (1/.01)
+    
+            we need to display 100 frames over four seconds
+            so for 4000 milliseconds, each frame much stand for 40 milliseconds
+            4000 / 100 which is equal to timing / ( 1 / deltaOpacity)
+        */
+        console.log(timing / (1 / deltaOpacity))
         let animateOpacity = setInterval(() => {
-            bigOpacity += .05
-            big.style.opacity = bigOpacity
-            if (bigOpacity >= 1) {
+            opacities += deltaOpacity
+            smallMandelbrots.forEach(el => {
+                el.style.opacity = opacities
+            })
+            big.style.opacity = opacities
+            if (opacities >= 1) {
                 clearInterval(animateOpacity)
             }
-        }, 2)
-        /*
-        setTimeout(() => {
-            if (viewportWidth >= 750) {
-                console.log("true")
-                big.style.transition = null
-                big.style.width = '750px'
-            }
-            big.style['max-width'] = 'initial'
-            
-            smallMandelbrots.forEach((el) =>  {
-                if (viewportWidth >= 750) {
-                    el.style.transition = null
-                    el.style.width = '750px'
-                }
-                el.style['max-width'] = 'initial'
-            })
-        }, 200)
-        */
-
-
-        
-    }, getTiming(2))
+        }, timing / (1 / deltaOpacity))
     
+        window.scrollTo(0,0)
+    }, getTiming(0))
+    
+
 
     setTimeout(() => {
 
+        console.log("here")
         //calculate the center of the image, get the cursor x and y, and then mandelbrots based on radius.
         //get these values
         smallMandelbrots.forEach((el) =>  {
@@ -353,7 +313,7 @@ function animatePageOneMandelbrot() {
 
         addEventListener('mousemove', animateOnMouseMove)
         
-    }, getTiming(3))
+    }, getTiming(1))
     
     
 }

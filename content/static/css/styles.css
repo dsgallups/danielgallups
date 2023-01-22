@@ -113,10 +113,10 @@ body {
     position: fixed;
     width: 100%;
     max-width: 750px;
-    top: 200px;
-    left: 50%;
+    top: 90px;
+    left: 75%;
     transform: translate(-50%, 0px);
-    opacity: 1;
+    opacity: 0;
     mix-blend-mode: darken;
 }
 .cyan-animate {
@@ -138,6 +138,7 @@ body {
     top: 90px;
     left: 75%;
     z-index:5;
+    opacity: 0;
     transform: translate(-50%, 0px);
 }
 .no-display {
