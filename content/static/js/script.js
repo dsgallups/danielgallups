@@ -58,6 +58,8 @@ let page1 = document.getElementById("page-1")
 let page2 = document.getElementById("page-2")
 let page3 = document.getElementById("page-3")
 let mW = document.getElementById("big-white")
+let notifyArrows = document.getElementById("notifier-arrows")
+let notifier = document.getElementById('mandelbrot-notifier')
 /**
  * Our page is divided into 4 pages.
  * page 1 is the first thing they see.
@@ -176,13 +178,26 @@ const fP = {
     "top": 90,
     "left": 75,
 }
-
+const mbTranslations = {
+    left: 1.5,
+    top: -25
+}
+let firstTrigerredMouseMove = false;
 const animateOnMouseMove = e => {
-        console.log("triggered")
-        const mbTranslations = {
-            left: 1.5,
-            top: -25
+
+        if (!firstTrigerredMouseMove) {
+
+            smallMandelbrots.forEach((el) =>  {
+                el.style.transition = "all .2s ease-in-out"
+            })
+            firstTrigerredMouseMove = true;
+            setTimeout(() => {
+                smallMandelbrots.forEach((el) =>  {
+                    el.style.transition = "all 0s"
+                })
+            }, 200)
         }
+        console.log("triggered")
         let mouse = {
             x: e.clientX,
             y: e.clientY
@@ -241,7 +256,7 @@ const animateOnMouseMove = e => {
 }
 
 function animatePageOneMandelbrot() {
-    const movements = [800, 800]
+    const movements = [300, 400, 800, 300]
     //final positions
     //top is in px, left is in %
     let p = 0
@@ -255,17 +270,30 @@ function animatePageOneMandelbrot() {
     
     window.scrollTo(0,0)
 
-
-    //constants?
-    let opacities = 0
     smallMandelbrots.forEach((el) =>  {
         el.style.opacity = '0'
-        el.style.transition =" all .7s ease-out"
+        el.style.transition =" all .0s ease-out"
     })
+    
+    //cyan
+    cyan.style.left = -mbTranslations.left + fP.left + '%'
+    //yellow
+    yellow.style.top = mbTranslations.top + fP.top + 'px'
+    //magenta
+    magenta.style.left = mbTranslations.left + fP.left + '%'
+
+    let opacities = 0
+    let deltaOpacity = .01
     //animate opacity in
     setTimeout(() => {
-        let timing = movements[1]
-        let deltaOpacity = .01
+        let opacities = 0
+        //we start the animation at movements[1], but
+        //our internal fadein is different.
+        let timing = 400
+    
+        /*smallMandelbrots.forEach((el) =>  {
+            //el.style.transition =" all .7s ease-out"
+        })*/
         /*
             if we want 1000 millisecond animation
             deltaOpacity is .05
@@ -284,12 +312,8 @@ function animatePageOneMandelbrot() {
             so for 4000 milliseconds, each frame much stand for 40 milliseconds
             4000 / 100 which is equal to timing / ( 1 / deltaOpacity)
         */
-        console.log(timing / (1 / deltaOpacity))
         let animateOpacity = setInterval(() => {
             opacities += deltaOpacity
-            smallMandelbrots.forEach(el => {
-                el.style.opacity = opacities
-            })
             big.style.opacity = opacities
             if (opacities >= 1) {
                 clearInterval(animateOpacity)
@@ -299,6 +323,59 @@ function animatePageOneMandelbrot() {
         window.scrollTo(0,0)
     }, getTiming(0))
     
+    setTimeout(() => {
+        let opacities = 0
+
+        let timing = 800
+        let deltaOpacity = .01
+
+        let animateOpacity = setInterval(() => {
+            opacities += deltaOpacity
+            smallMandelbrots.forEach(el => {
+                el.style.opacity = opacities
+            })
+            if (opacities >= 1) {
+                clearInterval(animateOpacity)
+            }
+        }, timing / (1 / deltaOpacity))
+    
+        window.scrollTo(0,0)
+    }, getTiming(1))
+
+    setTimeout(() => {
+        //Fadein our scroll notifier and transition those colored mandelbrots inward
+        smallMandelbrots.forEach((el) =>  {
+            el.style.transition = "all .3s ease-in-out 0s"
+        })
+        //cyan
+        cyan.style.left = fP.left + '%'
+        //yellow
+        yellow.style.top = fP.top + 'px'
+        //magenta
+        magenta.style.left = fP.left + '%'
+
+        //fadein scroll notifier
+        notifier = document.getElementById('mandelbrot-notifier')
+        let opacities = 0
+        let timing = 400
+
+        let animateOpacity = setInterval(() => {
+            opacities += deltaOpacity
+            notifier.style.opacity = opacities
+            if (opacities >= 1) {
+                clearInterval(animateOpacity)
+            }
+        }, timing / (1 / deltaOpacity))
+
+        //animate the arrows
+        let notifyArrows = document.getElementById("notifier-arrows")
+        notifyArrows.style.transition = 'all 1s ease-in-out'
+        let down = true
+        setInterval(() => {
+            down ? notifyArrows.style['margin-top'] = '10px' : notifyArrows.style['margin-top'] = '0px'
+            down = !down
+        }, 1000)
+    }, getTiming(2))
 
 
     setTimeout(() => {
@@ -311,9 +388,16 @@ function animatePageOneMandelbrot() {
             el.style.transition = "all 0s"
         })
 
+        //Give the scroll feature to notifier arrows
+        notifier.addEventListener('click', () => {
+            disableScrollEvents()
+            currentPage = scrollToPage(currentPage, currentPage + 1)
+        })
+
+
         addEventListener('mousemove', animateOnMouseMove)
         
-    }, getTiming(1))
+    }, getTiming(3))
     
     
 }
@@ -635,8 +719,14 @@ window.addEventListener('load', (e) => {
     page2 = document.getElementById("page-2")
     page3 = document.getElementById("page-3")
     mW = document.getElementById("big-white")
+    notifier = document.getElementById('mandelbrot-notifier')
+    notifyArrows = document.getElementById("notifier-arrows")
     pageOneTypeWriter()
     setTimeout(() => animatePageOneMandelbrot(), 600)
+
+    addEventListener('click', (e) => {
+        console.log(e)
+    })
 })
 
 

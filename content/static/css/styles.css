@@ -110,14 +110,36 @@ body {
 }
 
 .mandelbrot-small {
+    mix-blend-mode: darken;
+}
+.fp-mandelbrot {
+    top: 90px;
+    left: 75%;
+    opacity: 0;
+    transform: translate(-50%, 0px);
     position: fixed;
     width: 100%;
     max-width: 750px;
-    top: 90px;
+}
+#mandelbrot-notifier {
+    position: fixed;
+    opacity: 0;
+    top: 260px;
     left: 75%;
     transform: translate(-50%, 0px);
-    opacity: 0;
-    mix-blend-mode: darken;
+    color: #fff;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+#mandelbrot-notifier .small-text {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+#mandelbrot-notifier #notifier-arrows {
+    font-size: 28px;
 }
 .cyan-animate {
     animation-name: cyan-join;
@@ -132,14 +154,7 @@ body {
     animation-duration: 1.5s;
 }
 #big-dark {
-    position: fixed;
-    width: 100%;
-    max-width: 750px;
-    top: 90px;
-    left: 75%;
     z-index:5;
-    opacity: 0;
-    transform: translate(-50%, 0px);
 }
 .no-display {
     opacity: 0;
@@ -254,6 +269,7 @@ body {
     left: 50%;
     transform: translate(-50%, 0px);
     mix-blend-mode: darken;
+    display: none;
 }
 
 
