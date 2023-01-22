@@ -189,9 +189,14 @@ const mbTranslations = {
 let newMouse = false;
 let lastClientX = 0;
 
+//supppper crappy but im lazy right now
 const notifierEvent = () => {
     disableScrollEvents()
     currentPage = scrollToPage(0, 1)
+}
+const notifierEventTwo = () => {
+    disableScrollEvents()
+    currentPage = scrollToPage(1, 2)
 }
 
 const animateOnMouseMove = e => {
@@ -520,6 +525,7 @@ const scrollToPage = (cP, nP) => {
                 let notifyArrowsTwo = document.getElementById("notifier-arrows-2")
                 notifyArrowsTwo.style.transition = 'all 1s ease-in-out'
                 let down = true
+                page2Nav.addEventListener('click', notifierEventTwo)
                 let animateArrowsTwo = setInterval(() => {
                     down ? notifyArrowsTwo.style['margin-top'] = '5px' : notifyArrowsTwo.style['margin-top'] = '0px'
                     down = !down
@@ -641,6 +647,7 @@ const scrollToPage = (cP, nP) => {
                 
                 page2Nav.style = null
                 clearInterval(animateArrowsTwo)
+                page2Nav.removeEventListener('click', notifierEventTwo)
                 //So first set up our white mandelbrot to be just below the view height
                 mW.style.opacity = "1"
                 mW.style.top = "100vh"             
@@ -744,6 +751,7 @@ const scrollToPage = (cP, nP) => {
                         down ? notifyArrowsTwo.style['margin-top'] = '5px' : notifyArrowsTwo.style['margin-top'] = '0px'
                         down = !down
                     }, 1000)
+                    page2Nav.addEventListener('click', notifierEventTwo)
 
                     setTimeout(() =>  allowScrollEvent(), 300)
                 }, getTiming(2))
