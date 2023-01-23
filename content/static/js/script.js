@@ -189,15 +189,6 @@ const mbTranslations = {
 let newMouse = false;
 let lastClientX = 0;
 
-//supppper crappy but im lazy right now
-const notifierEvent = () => {
-    disableScrollEvents()
-    currentPage = scrollToPage(0, 1)
-}
-const notifierEventTwo = () => {
-    disableScrollEvents()
-    currentPage = scrollToPage(1, 2)
-}
 
 const animateOnMouseMove = e => {
 
@@ -419,10 +410,6 @@ function animatePageOneMandelbrot() {
             el.style.transition = "all 0s"
         })
 
-        //Give the scroll feature to notifier arrows
-
-        notifier.addEventListener('click', notifierEvent)
-
 
         addEventListener('mousemove', animateOnMouseMove)
         allowScrollEvent()
@@ -438,8 +425,13 @@ let mWTopPos = -480
 
 
 const scrollToPage = (cP, nP) => {
-    if (nP < 0 || nP > 3) return cP
     console.log('From %d to %d', cP, nP)
+    disableScrollEvents()
+    if (nP < 0 || nP > 3) {
+        console.log("nP is outside of bounds: ", nP)
+        allowScrollEvent()
+        currentPage = cP
+    }
     
 
     switch (cP) {
@@ -448,7 +440,6 @@ const scrollToPage = (cP, nP) => {
             
             //zoom into the mandelbrot
             const movements = [800, 100, 500, 1000]
-            notifier.removeEventListener('click', notifierEvent)
 
             removeEventListener('mousemove', animateOnMouseMove)
 
@@ -520,12 +511,11 @@ const scrollToPage = (cP, nP) => {
                 page2Nav.style.opacity = '0'
                 page2Nav.style.transition = 'all 1s linear'
                 page2Nav.style.opacity = '1'
-                console.log("here we are 2")
                 //also give big-white a display value
                 let notifyArrowsTwo = document.getElementById("notifier-arrows-2")
                 notifyArrowsTwo.style.transition = 'all 1s ease-in-out'
                 let down = true
-                page2Nav.addEventListener('click', notifierEventTwo)
+                page2Nav.addEventListener('click', scrollToPage.bind(null, 1, 2))
                 let animateArrowsTwo = setInterval(() => {
                     down ? notifyArrowsTwo.style['margin-top'] = '5px' : notifyArrowsTwo.style['margin-top'] = '0px'
                     down = !down
@@ -647,10 +637,9 @@ const scrollToPage = (cP, nP) => {
                 
                 page2Nav.style = null
                 clearInterval(animateArrowsTwo)
-                page2Nav.removeEventListener('click', notifierEventTwo)
                 //So first set up our white mandelbrot to be just below the view height
                 mW.style.opacity = "1"
-                mW.style.top = "100vh"             
+                mW.style.top = "100vh"
 
                 setTimeout(() => {
                     mW.style.transition = "all 1s ease-in"
@@ -751,7 +740,6 @@ const scrollToPage = (cP, nP) => {
                         down ? notifyArrowsTwo.style['margin-top'] = '5px' : notifyArrowsTwo.style['margin-top'] = '0px'
                         down = !down
                     }, 1000)
-                    page2Nav.addEventListener('click', notifierEventTwo)
 
                     setTimeout(() =>  allowScrollEvent(), 300)
                 }, getTiming(2))
@@ -759,7 +747,7 @@ const scrollToPage = (cP, nP) => {
             } else {
                 window.scrollTo(0, 200)
                 setTimeout(() =>  allowScrollEvent(), 300)
-                return cP
+                currentPage = cP
             }
             break
         case 3:
@@ -767,7 +755,7 @@ const scrollToPage = (cP, nP) => {
     }
 
 
-    return nP
+    currentPage = nP
 }
 
 
@@ -792,6 +780,7 @@ function disableScrollEvents() {
  */
 window.addEventListener('load', (e) => {
     console.log("Loaded!!!")
+    
     if (window.innerWidth < 810) {
         document.getElementById("main-container").innerHTML = "<div class=\"content-header\">Preview is unavailable on this device. Please refresh on browser with a width larger than 810px.</div>"
     }
@@ -809,6 +798,9 @@ window.addEventListener('load', (e) => {
     notifyArrows = document.getElementById("notifier-arrows")
     page2Nav = document.getElementById('page-2-nav')
     notifyArrowsTwo = document.getElementById("notifier-arrows-2")
+    notifier.addEventListener('click', scrollToPage.bind(null, 0, 1))
+    page2Nav.addEventListener('click', scrollToPage.bind(null, 1, 2))
+    
     pageOneTypeWriter()
     setTimeout(() => animatePageOneMandelbrot(), 600)
 
@@ -829,8 +821,8 @@ document.addEventListener("scroll", (event) => {
         console.log(event)
         //perform the animation
         scrollUp ? 
-            currentPage = scrollToPage(currentPage, currentPage - 1) : 
-            currentPage = scrollToPage(currentPage, currentPage + 1)
+            scrollToPage(currentPage, currentPage - 1) : 
+            scrollToPage(currentPage, currentPage + 1)
 
         //for testing
         //currentPage = 0;
