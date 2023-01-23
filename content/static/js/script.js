@@ -19,8 +19,8 @@ let notifyArrowsTwo = document.getElementById("notifier-arrows-2")
 let animateArrowsTwo = null
 let ticking = false
 let currentPage = 0
-let newMouse = false;
-let lastClientX = 0;
+let newMouse = false
+let lastClientX = 0
 const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
 let mWTopPos = -480
 
@@ -117,7 +117,7 @@ const setFinalPage = (pageNo) => {
             document.getElementById("main-container").style = null
             window.scrollTo(0, 0)
             animatePageOneMandelbrot()
-            break;
+            break
         case 1:
             page2Nav = document.getElementById('page-2-nav')
             big.style = null
@@ -133,14 +133,20 @@ const setFinalPage = (pageNo) => {
             page2Nav.style.opacity = '1'
             mW.style.display = 'initial'
             window.scrollTo(0, 200)
-            break;
+            break
         case 2:
-            break;
+            break
         default:
-            break;
+            break
     }
 }
-
+const getTiming = (movements, frameNo) => {
+    let cum = 0
+    for (let i = 0; i <= frameNo; i++) {
+        cum += movements[i]
+    }
+    return cum
+}
 /**
  * A commonly used pattern that provides a translation from the standard location defines in fP.
  * @param {float} deltaLeft 
@@ -293,24 +299,23 @@ const animateOnMouseMove = e => {
         
         if (newMouse) {
 
-            smallMandelbrots.forEach((el) =>  {
+            smallMandelbrots.forEach(el =>  {
                 el.style.transition = "all .2s ease-in-out"
             })
             setTimeout(() => {
-                smallMandelbrots.forEach((el) =>  {
+                smallMandelbrots.forEach(el =>  {
                     el.style.transition = "all 0s"
                 })
             }, 200)
             newMouse = false
             
         }
-        //console.log(e)
         let mouse = {
             x: e.clientX,
             y: e.clientY
         }
         
-        let mandelbrotRect = big.getBoundingClientRect();
+        let mandelbrotRect = big.getBoundingClientRect()
         let mb = {
             x: mandelbrotRect.x + (mandelbrotRect.width / 2),
             y: mandelbrotRect.y + (mandelbrotRect.height / 2)
@@ -356,20 +361,11 @@ const animateOnMouseMove = e => {
 function animatePageOneMandelbrot() {
     disableScrollEvents()
     const movements = [300, 400, 800, 300]
-    //final positions
-    //top is in px, left is in %
-    let p = 0
-    function getTiming(frameNo) {
-        let cum = 0
-        for (let i = 0; i <= frameNo; i++) {
-            cum += movements[i]
-        }
-        return cum
-    }
+
     
     window.scrollTo(0,0)
 
-    smallMandelbrots.forEach((el) =>  {
+    smallMandelbrots.forEach(el =>  {
         el.style.opacity = '0'
         el.style.transition =" all .0s ease-out"
     })
@@ -385,7 +381,7 @@ function animatePageOneMandelbrot() {
         }, 300)
         window.scrollTo(0,0)
         
-    }, getTiming(0))
+    }, getTiming(movements, 0))
     
     setTimeout(() => {
         window.scrollTo(0,0)
@@ -402,11 +398,11 @@ function animatePageOneMandelbrot() {
             down = !down
         }, 1000)
 
-    }, getTiming(1))
+    }, getTiming(movements, 1))
 
     setTimeout(() => {
         //Fadein our scroll notifier and transition those colored mandelbrots inward
-        smallMandelbrots.forEach((el) =>  {
+        smallMandelbrots.forEach(el =>  {
             el.style.transition = "all .3s ease-in-out 0s"
         })
 
@@ -417,14 +413,14 @@ function animatePageOneMandelbrot() {
         notifier.style.transition = "all .4s linear"
         notifier.style.opacity = 1
 
-    }, getTiming(2))
+    }, getTiming(movements, 2))
 
 
     setTimeout(() => {
 
         //calculate the center of the image, get the cursor x and y, and then mandelbrots based on radius.
         //get these values
-        smallMandelbrots.forEach((el) =>  {
+        smallMandelbrots.forEach(el =>  {
             //el.style.transition = "all .5s  linear 0s"
             el.style.transition = "all 0s"
         })
@@ -433,7 +429,7 @@ function animatePageOneMandelbrot() {
         addEventListener('mousemove', animateOnMouseMove)
         allowScrollEvents()
         
-    }, getTiming(3))
+    }, getTiming(movements, 3))
     
     
 }
@@ -470,13 +466,6 @@ const scrollToPage = (cP, nP) => {
 
             removeEventListener('mousemove', animateOnMouseMove)
 
-            function getTiming(frameNo) {
-                let cum = 0
-                for (let i = 0; i <= frameNo; i++) {
-                    cum += movements[i]
-                }
-                return cum
-            }
             notifier = document.getElementById('mandelbrot-notifier')
             notifier.style = null
             clearInterval(animateArrows)
@@ -490,7 +479,7 @@ const scrollToPage = (cP, nP) => {
             //big.style.transform = 'translate(0, -1200px)'
             big.style.width = (viewportWidth * 4) + 'px'
             
-            smallMandelbrots.forEach((el) =>  {
+            smallMandelbrots.forEach(el =>  {
                 el.style.transition = "all .8s ease-in"
                 el.style.width = (viewportWidth * 4) + 'px'
             })
@@ -508,7 +497,7 @@ const scrollToPage = (cP, nP) => {
             setTimeout(() => {
                 page1.style.transition = null
                 page1.style["background-color"] = "#000"
-            }, getTiming(0))
+            }, getTiming(movements, 0))
 
             setTimeout(() => {
                 document.getElementById("main-container").style["background-color"] = "#000"
@@ -517,17 +506,17 @@ const scrollToPage = (cP, nP) => {
                 
                 page1.style.transition = "all .6s ease-in"
                 page1.style.top = '-100vh'
-            }, getTiming(1))
+            }, getTiming(movements, 1))
 
             setTimeout(() => {
                 window.scrollTo(0, 200)
-            }, getTiming(2))
+            }, getTiming(movements, 2))
 
             setTimeout(() => {                
                 notifier.style = null
                 page2.style.transition = "all .6s ease-out"
                 page2.style["top"] = '200px'
-            }, getTiming(2) + 100)
+            }, getTiming(movements, 2) + 100)
             
             
             
@@ -536,7 +525,7 @@ const scrollToPage = (cP, nP) => {
             setTimeout(() => {
                 setFinalPage(1)
                 allowScrollEvents()
-            }, getTiming(3))
+            }, getTiming(movements, 3))
             
 
             break
@@ -547,14 +536,6 @@ const scrollToPage = (cP, nP) => {
                  * Page 1 to Page 0 (scroll up)
                  */
                 const movements = [600, 1000, 1700]
-                
-                function getTiming(frameNo) {
-                    let cum = 0
-                    for (let i = 0; i <= frameNo; i++) {
-                        cum += movements[i]
-                    }
-                    return cum
-                }
                 
                 //first for reverse
                 page2Nav.style = null
@@ -582,7 +563,7 @@ const scrollToPage = (cP, nP) => {
 
                     let acc = -50
                     let leftAcc = 0
-                    smallMandelbrots.forEach((el) =>  {
+                    smallMandelbrots.forEach(el =>  {
                         el.style.transition = "all 0s"
                         el.style.top = -50 + acc + 'vw'
                         el.style.left = 30 + leftAcc + '%' 
@@ -592,7 +573,7 @@ const scrollToPage = (cP, nP) => {
                     })
                     document.getElementById("main-container").style["background-color"] = "#fff"
                     page1.style["background-color"] = "inherit"
-                }, getTiming(0))
+                }, getTiming(movements, 0))
 
 
                 
@@ -601,20 +582,20 @@ const scrollToPage = (cP, nP) => {
                     big.style.transition = "all 1s ease-in-out"
                     big.style.top = '250vh'
                     //big.style.width = '750px'
-                    smallMandelbrots.forEach((el) =>  {
+                    smallMandelbrots.forEach(el =>  {
                         el.style.transition = "all 1.5s cubic-bezier(.76,.05,1,.6) 0s"
                         el.style.top = '200vh'
                     })
                     
 
-                }, getTiming(1))
+                }, getTiming(movements, 1))
                 
                 
     
                 setTimeout(() => {
                     setFinalPage(0)
                     setTimeout(() =>  allowScrollEvents(), 700)
-                }, getTiming(2))
+                }, getTiming(movements, 2))
             } else {
                 //from page 2 to page 3
                 /**
@@ -626,13 +607,6 @@ const scrollToPage = (cP, nP) => {
                  */
                 window.scrollTo(0, 200)
                 const movements = [200, 1000, 300, 1500]
-                function getTiming(frameNo) {
-                    let cum = 0
-                    for (let i = 0; i <= frameNo; i++) {
-                        cum += movements[i]
-                    }
-                    return cum
-                }
                 
                 page2Nav.style = null
                 clearInterval(animateArrowsTwo)
@@ -644,7 +618,7 @@ const scrollToPage = (cP, nP) => {
                     mW.style.transition = "all 1s ease-in"
                     mW.style.top = mWTopPos + "px"
                     window.scrollTo(0, 200)
-                }, getTiming(0))
+                }, getTiming(movements, 0))
 
                 //now bring everything with it >:)
                 setTimeout(() => {
@@ -656,24 +630,23 @@ const scrollToPage = (cP, nP) => {
                     page2.style.top = page2Top + "px"
                     mW.style.top = mWTopPos + "px"
                     
-                }, getTiming(1))
+                }, getTiming(movements, 1))
 
                 setTimeout(() => {
                     mW.style.transition = "all 1.5s cubic-bezier(.05,.61,.09,1) 0s"
                     mWTopPos += -4600
                     mW.style.top = mWTopPos + "px"
-                    console.log("mwTopPos = ", mWTopPos)
-                }, getTiming(2))
+                }, getTiming(movements, 2))
 
                 setTimeout(() => {
                     page3.style.transition = "all 1s ease-out"
                     page3.style.top = '200px'
-                }, getTiming(3) - 1000)
+                }, getTiming(movements, 3) - 1000)
 
                 setTimeout(() => {
                     window.scrollTo(0, 200)
                     setTimeout(() =>  allowScrollEvents(), 300)
-                }, getTiming(3))
+                }, getTiming(movements, 3))
                 
             }
             break
@@ -682,13 +655,7 @@ const scrollToPage = (cP, nP) => {
             if (nP == 1) {
                 
                 const movements = [1500, 300, 1000]
-                function getTiming(frameNo) {
-                    let cum = 0
-                    for (let i = 0; i <= frameNo; i++) {
-                        cum += movements[i]
-                    }
-                    return cum
-                }
+                
 
                 //move the resume down
                 page3.style.transition = "all 1s ease-in"
@@ -709,19 +676,19 @@ const scrollToPage = (cP, nP) => {
                     mWTopPos += page2Top
                     page2.style.top = page2Top + "px"
                     mW.style.top = mWTopPos + "px"
-                }, getTiming(0))
+                }, getTiming(movements, 0))
 
                 //send the mandelbrot down
                 setTimeout(() => {
                     mW.style.transition = "all 1s ease-out"
                     mW.style.top = "100vh"
-                }, getTiming(1))
+                }, getTiming(movements, 1))
 
                 setTimeout(() => {
                     mWTopPos = -480                    
                     setFinalPage(1)
                     setTimeout(() =>  allowScrollEvents(), 300)
-                }, getTiming(2))
+                }, getTiming(movements, 2))
 
             } else {
                 window.scrollTo(0, 200)
@@ -772,10 +739,6 @@ window.addEventListener('load', (e) => {
     
     pageOneTypeWriter()
     setTimeout(() => animatePageOneMandelbrot(), 600)
-
-    addEventListener('click', (e) => {
-        console.log(e)
-    })
 })
 
 
