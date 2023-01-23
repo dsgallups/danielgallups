@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 minify({
   compressor: gcc,
   input: path.join(__dirname + "/content/static/js/script.js"),
-  output: path.join(__dirname + "/build/script2.js"),
+  output: path.join(__dirname + "/build/script-min.js"),
   callback: function (err, min) {
     console.log(err, min);
   }

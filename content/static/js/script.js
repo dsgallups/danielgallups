@@ -9,46 +9,6 @@
 // left: 37, up: 38, right: 39, down: 40,
 // spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
 const keys = {37: 1, 38: 1, 39: 1, 40: 1}
-
-function preventDefault(e) {
-  e.preventDefault()
-  
-}
-
-function preventDefaultForScrollKeys(e) {
-  if (keys[e.keyCode]) {
-    preventDefault(e)
-    return false
-  }
-}
-
-// modern Chrome requires { passive: false } when adding event
-var supportsPassive = false
-try {
-  window.addEventListener("test", null, Object.defineProperty({}, 'passive', {
-    get: function () { supportsPassive = true } 
-  }))
-} catch(e) {}
-
-var wheelOpt = supportsPassive ? { passive: false } : false
-var wheelEvent = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel'
-
-function disableScroll() {
-    document.body.classList.add("stop-scrolling")
-    document.getElementById("main-container").classList.add("stop-scrolling")
-    window.addEventListener('DOMMouseScroll', preventDefault, false) // older FF
-    window.addEventListener(wheelEvent, preventDefault, wheelOpt) // modern desktop
-    window.addEventListener('touchmove', preventDefault, wheelOpt) // mobile
-    window.addEventListener('keydown', preventDefaultForScrollKeys, false)
-}
-function enableScroll() {
-    window.removeEventListener('DOMMouseScroll', preventDefault, false)
-    window.removeEventListener(wheelEvent, preventDefault, wheelOpt)
-    window.removeEventListener('touchmove', preventDefault, wheelOpt)
-    window.removeEventListener('keydown', preventDefaultForScrollKeys, false)
-    document.body.classList.remove("stop-scrolling")
-    document.getElementById("main-container").classList.remove("stop-scrolling")
-}
 let smallMandelbrots = document.querySelectorAll('.mandelbrot-small')
 let cyan = document.getElementById("cyan")
 let yellow = document.getElementById("yellow")
@@ -64,11 +24,120 @@ let animateArrows = null
 let page2Nav = document.getElementById('page-2-nav')
 let notifyArrowsTwo = document.getElementById("notifier-arrows-2")
 let animateArrowsTwo = null
+let ticking = false
+let currentPage = 0
+let newMouse = false;
+let lastClientX = 0;
+const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+let mWTopPos = -480
+
+const fP = {
+    "top": 90,
+    "left": 75,
+}
+
+const mbTranslations = {
+    left: 1.5,
+    top: -25
+}
+
 /**
- * Our page is divided into 4 pages.
- * page 1 is the first thing they see.
- * page 2 is what happens when they scroll once
- * Elements that do not belong to a page are unbounded.
+ * -------------------------------------
+ *  BEGIN UNIVERSAL HELPER FUNCTIONS
+ *  ------------------------------------
+ */
+
+function preventDefault(e) {
+  e.preventDefault()
+  
+}
+
+function preventDefaultForScrollKeys(e) {
+  if (keys[e.keyCode]) {
+    preventDefault(e)
+    return false
+  }
+}
+
+var supportsPassive = false     // modern Chrome requires { passive: false } when adding event
+try {
+  window.addEventListener("test", null, Object.defineProperty({}, 'passive', {
+    get: function () { supportsPassive = true } 
+  }))
+} catch(e) {}
+var wheelOpt = supportsPassive ? { passive: false } : false
+var wheelEvent = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel'
+
+function allowScrollEvents() {
+    window.removeEventListener('DOMMouseScroll', preventDefault, false)
+    window.removeEventListener(wheelEvent, preventDefault, wheelOpt)
+    window.removeEventListener('touchmove', preventDefault, wheelOpt)
+    window.removeEventListener('keydown', preventDefaultForScrollKeys, false)
+    document.body.classList.remove("stop-scrolling")
+    document.getElementById("main-container").classList.remove("stop-scrolling")
+    ticking = false
+    console.log('scrolling re-enabled!')
+}
+
+function disableScrollEvents() {
+    document.body.classList.add("stop-scrolling")
+    document.getElementById("main-container").classList.add("stop-scrolling")
+    window.addEventListener('DOMMouseScroll', preventDefault, false) // older FF
+    window.addEventListener(wheelEvent, preventDefault, wheelOpt) // modern desktop
+    window.addEventListener('touchmove', preventDefault, wheelOpt) // mobile
+    window.addEventListener('keydown', preventDefaultForScrollKeys, false)
+    ticking = true
+}
+
+
+/**
+ * Resets a page based on its configuration when viewed.
+ * @param {int} pageNo 
+ */
+const setFinalPage = (pageNo) => {
+    switch (pageNo) {
+        case 0:
+            smallMandelbrots.forEach(el => {
+                el.style = null
+            })
+            big.style = null
+            page1.style = null
+            page2.style = null
+            mW.style = null
+            document.getElementById("main-container").style = null
+            window.scrollTo(0, 0)
+            animatePageOneMandelbrot()
+            break;
+        case 1:
+            page2.style.transition = "1s ease-in-out 0s"
+            page2.style.top = "200px"
+            let page2Nav = document.getElementById('page-2-nav')
+            page2Nav.style.opacity = '0'
+            page2Nav.style.transition = 'all 1s linear'
+            page2Nav.style.opacity = '1'
+            page3.style = null
+            mW.style = null
+            mW.style.display = 'initial'
+            window.scrollTo(0, 200)
+            break;
+        case 2:
+            break;
+        default:
+            break;
+    }
+}
+
+/**
+ * -------------------------------------
+ *  END UNIVERSAL HELPER FUNCTIONS
+ *  ------------------------------------
+ */
+
+
+/**
+ * -------------------------------------
+ *  BEGIN PAGE ONE FUNCTIONS
+ *  ------------------------------------
  */
 
 const pageOneTypeWriter = () => {
@@ -177,55 +246,6 @@ const pageOneTypeWriter = () => {
     let typeEvents = setInterval(typeForward, typeSpeed)
 
 }
-
-const fP = {
-    "top": 90,
-    "left": 75,
-}
-const mbTranslations = {
-    left: 1.5,
-    top: -25
-}
-
-/**
- * Resets a page based on its configuration when viewed.
- * @param {int} pageNo 
- */
-const setFinalPage = (pageNo) => {
-    switch (pageNo) {
-        case 0:
-            smallMandelbrots.forEach(el => {
-                el.style = null
-            })
-            big.style = null
-            page1.style = null
-            page2.style = null
-            mW.style = null
-            document.getElementById("main-container").style = null
-            window.scrollTo(0, 0)
-            animatePageOneMandelbrot()
-            break;
-        case 1:
-            page2.style.transition = "1s ease-in-out 0s"
-            page2.style.top = "200px"
-            let page2Nav = document.getElementById('page-2-nav')
-            page2Nav.style.opacity = '0'
-            page2Nav.style.transition = 'all 1s linear'
-            page2Nav.style.opacity = '1'
-            page3.style = null
-            mW.style = null
-            mW.style.display = 'initial'
-            window.scrollTo(0, 200)
-            break;
-        case 2:
-            break;
-        default:
-            break;
-    }
-}
-let newMouse = false;
-let lastClientX = 0;
-
 
 const animateOnMouseMove = e => {
 
@@ -448,24 +468,25 @@ function animatePageOneMandelbrot() {
 
 
         addEventListener('mousemove', animateOnMouseMove)
-        allowScrollEvent()
+        allowScrollEvents()
         
     }, getTiming(3))
     
     
 }
 
-const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
-
-let mWTopPos = -480
-
+/**
+ * -------------------------------------
+ *  END PAGE ONE FUNCTIONS
+ *  ------------------------------------
+ */
 
 const scrollToPage = (cP, nP) => {
     console.log('From %d to %d', cP, nP)
     disableScrollEvents()
     if (nP < 0 || nP > 2) {
         console.log("nP is outside of bounds: ", nP)
-        setTimeout(() => allowScrollEvent(), 300)
+        setTimeout(() => allowScrollEvents(), 300)
         currentPage = cP
         return
     }
@@ -545,7 +566,7 @@ const scrollToPage = (cP, nP) => {
             
             setTimeout(() => {
                 setFinalPage(1)
-                allowScrollEvent()
+                allowScrollEvents()
             }, getTiming(3))
             
 
@@ -623,7 +644,7 @@ const scrollToPage = (cP, nP) => {
     
                 setTimeout(() => {
                     setFinalPage(0)
-                    setTimeout(() =>  allowScrollEvent(), 700)
+                    setTimeout(() =>  allowScrollEvents(), 700)
                 }, getTiming(2))
             } else {
                 //from page 2 to page 3
@@ -682,7 +703,7 @@ const scrollToPage = (cP, nP) => {
 
                 setTimeout(() => {
                     window.scrollTo(0, 200)
-                    setTimeout(() =>  allowScrollEvent(), 300)
+                    setTimeout(() =>  allowScrollEvents(), 300)
                 }, getTiming(3))
                 
             }
@@ -730,12 +751,12 @@ const scrollToPage = (cP, nP) => {
                 setTimeout(() => {
                     mWTopPos = -480                    
                     setFinalPage(1)
-                    setTimeout(() =>  allowScrollEvent(), 300)
+                    setTimeout(() =>  allowScrollEvents(), 300)
                 }, getTiming(2))
 
             } else {
                 window.scrollTo(0, 200)
-                setTimeout(() =>  allowScrollEvent(), 300)
+                setTimeout(() =>  allowScrollEvents(), 300)
                 currentPage = cP
             }
             break
@@ -747,25 +768,10 @@ const scrollToPage = (cP, nP) => {
     currentPage = nP
 }
 
-
-
-
-
-let ticking = false
-let currentPage = 0
-function allowScrollEvent() {
-    enableScroll()
-    ticking = false
-    console.log('scrolling re-enabled!')
-}
-function disableScrollEvents() {
-    disableScroll()
-    ticking = true
-}
-
 /**
- * This is our main function for loading
- * 
+ * -------------------------------------
+ *  BEGIN I/O FUNCTIONS
+ *  ------------------------------------
  */
 window.addEventListener('load', (e) => {
     console.log("Loaded!!!")
@@ -826,12 +832,8 @@ document.addEventListener("scroll", (event) => {
   
 })
 
-
-/*
-window.onscroll = function(e) {
-    // print "false" if direction is down and "true" if up
-    console.log(this)
-    console.log(this.oldScroll > this.scrollY)
-    this.oldScroll = this.scrollY
-  }
-*/
+/**
+ * -------------------------------------
+ *  END I/O FUNCTIONS
+ *  ------------------------------------
+ */
