@@ -2,13 +2,6 @@
  * THIS SCRIPT RENDERS THE PAGE.
  */
 
-/**
- * HELPER FUNCTIONS, credit to @gblazex
- * https://stackoverflow.com/questions/4770025/how-to-disable-scrolling-temporarily
- */
-// left: 37, up: 38, right: 39, down: 40,
-// spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
-const keys = {37: 1, 38: 1, 39: 1, 40: 1}
 let smallMandelbrots = document.querySelectorAll('.mandelbrot-small')
 let cyan = document.getElementById("cyan")
 let yellow = document.getElementById("yellow")
@@ -46,6 +39,9 @@ const mbTranslations = {
  *  BEGIN UNIVERSAL HELPER FUNCTIONS
  *  ------------------------------------
  */
+// left: 37, up: 38, right: 39, down: 40,
+// spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
+const keys = {37: 1, 38: 1, 39: 1, 40: 1}
 
 function preventDefault(e) {
   e.preventDefault()
@@ -60,6 +56,7 @@ function preventDefaultForScrollKeys(e) {
 }
 
 var supportsPassive = false     // modern Chrome requires { passive: false } when adding event
+
 try {
   window.addEventListener("test", null, Object.defineProperty({}, 'passive', {
     get: function () { supportsPassive = true } 
@@ -68,6 +65,11 @@ try {
 var wheelOpt = supportsPassive ? { passive: false } : false
 var wheelEvent = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel'
 
+/**
+ * Re-enables scroll events. Taken from Stackoverflow
+ * credit to @gblazex
+ * https://stackoverflow.com/questions/4770025/how-to-disable-scrolling-temporarily
+ */
 function allowScrollEvents() {
     window.removeEventListener('DOMMouseScroll', preventDefault, false)
     window.removeEventListener(wheelEvent, preventDefault, wheelOpt)
@@ -79,6 +81,11 @@ function allowScrollEvents() {
     console.log('scrolling re-enabled!')
 }
 
+/**
+ * Disables as many scroll events as possible. Taken from Stackoverflow
+ * @credit to gblazex
+ * https://stackoverflow.com/questions/4770025/how-to-disable-scrolling-temporarily
+ */
 function disableScrollEvents() {
     document.body.classList.add("stop-scrolling")
     document.getElementById("main-container").classList.add("stop-scrolling")
@@ -140,6 +147,9 @@ const setFinalPage = (pageNo) => {
  *  ------------------------------------
  */
 
+/**
+ * Animates a fake typer on the first page
+ */
 const pageOneTypeWriter = () => {
     const allSkills = [
         'Problem Solver',
@@ -247,6 +257,10 @@ const pageOneTypeWriter = () => {
 
 }
 
+/**
+ * Animates the page one mandelbrot set based on the cursor distance from the mandelbrot
+ * @param {event} e 
+ */
 const animateOnMouseMove = e => {
 
         //just so the animation doesn't jerk when user leaves one side of the window
@@ -328,6 +342,9 @@ const animateOnMouseMove = e => {
         }
 }
 
+/**
+ * Fades in four mandelbrots and snaps the four mandelbrots into a single black mandelbrot
+ */
 function animatePageOneMandelbrot() {
     disableScrollEvents()
     const movements = [300, 400, 800, 300]
@@ -481,6 +498,12 @@ function animatePageOneMandelbrot() {
  *  ------------------------------------
  */
 
+/**
+ * This function defines the behavior when scrolling between pages
+ * @param {int} cP the current page
+ * @param {int} nP the next page
+ * @returns null
+ */
 const scrollToPage = (cP, nP) => {
     console.log('From %d to %d', cP, nP)
     disableScrollEvents()
