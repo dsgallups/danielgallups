@@ -186,6 +186,43 @@ const mbTranslations = {
     left: 1.5,
     top: -25
 }
+
+/**
+ * Resets a page based on its configuration when viewed.
+ * @param {int} pageNo 
+ */
+const setFinalPage = (pageNo) => {
+    switch (pageNo) {
+        case 0:
+            smallMandelbrots.forEach(el => {
+                el.style = null
+            })
+            big.style = null
+            page1.style = null
+            page2.style = null
+            mW.style = null
+            document.getElementById("main-container").style = null
+            window.scrollTo(0, 0)
+            animatePageOneMandelbrot()
+            break;
+        case 1:
+            page2.style.transition = "1s ease-in-out 0s"
+            page2.style.top = "200px"
+            let page2Nav = document.getElementById('page-2-nav')
+            page2Nav.style.opacity = '0'
+            page2Nav.style.transition = 'all 1s linear'
+            page2Nav.style.opacity = '1'
+            page3.style = null
+            mW.style = null
+            mW.style.display = 'initial'
+            window.scrollTo(0, 200)
+            break;
+        case 2:
+            break;
+        default:
+            break;
+    }
+}
 let newMouse = false;
 let lastClientX = 0;
 
@@ -402,7 +439,6 @@ function animatePageOneMandelbrot() {
 
     setTimeout(() => {
 
-        console.log("here")
         //calculate the center of the image, get the cursor x and y, and then mandelbrots based on radius.
         //get these values
         smallMandelbrots.forEach((el) =>  {
@@ -427,10 +463,11 @@ let mWTopPos = -480
 const scrollToPage = (cP, nP) => {
     console.log('From %d to %d', cP, nP)
     disableScrollEvents()
-    if (nP < 0 || nP > 3) {
+    if (nP < 0 || nP > 2) {
         console.log("nP is outside of bounds: ", nP)
-        allowScrollEvent()
+        setTimeout(() => allowScrollEvent(), 300)
         currentPage = cP
+        return
     }
     
 
@@ -507,22 +544,7 @@ const scrollToPage = (cP, nP) => {
             //Finally release the return to reenable the scroll
             
             setTimeout(() => {
-                let page2Nav = document.getElementById('page-2-nav')
-                page2Nav.style.opacity = '0'
-                page2Nav.style.transition = 'all 1s linear'
-                page2Nav.style.opacity = '1'
-                //also give big-white a display value
-                let notifyArrowsTwo = document.getElementById("notifier-arrows-2")
-                notifyArrowsTwo.style.transition = 'all 1s ease-in-out'
-                let down = true
-                page2Nav.addEventListener('click', scrollToPage.bind(null, 1, 2))
-                let animateArrowsTwo = setInterval(() => {
-                    down ? notifyArrowsTwo.style['margin-top'] = '5px' : notifyArrowsTwo.style['margin-top'] = '0px'
-                    down = !down
-                }, 1000)
-
-                mW.style.display = 'initial'
-                window.scrollTo(0, 200)
+                setFinalPage(1)
                 allowScrollEvent()
             }, getTiming(3))
             
@@ -552,14 +574,12 @@ const scrollToPage = (cP, nP) => {
                 clearInterval(animateArrowsTwo)
 
                 setTimeout(() => {
-                    console.log("point 0 fired")
                     page2.style.transition = "all 1s ease-in-out"
                     page2.style.top = '200vh'
                 }, 100)
                 
 
                 setTimeout(() => {
-                    console.log("point 1 fired")
                     page1.style.transition = "all 1s ease-in-out"
                     page1.style.top = '0vh'
 
@@ -587,7 +607,6 @@ const scrollToPage = (cP, nP) => {
 
                 
                 setTimeout(() => {
-                    console.log("point 2 fired")
                     //mandelbrot comes out
                     big.style.transition = "all 1s ease-in-out"
                     big.style.top = '250vh'
@@ -603,17 +622,7 @@ const scrollToPage = (cP, nP) => {
                 
     
                 setTimeout(() => {
-                    smallMandelbrots.forEach(el => {
-                        el.style = null
-                    })
-                    big.style = null
-                    page1.style = null
-                    page2.style = null
-                    mW.style = null
-                    document.getElementById("main-container").style = null
-                    window.scrollTo(0, 0)
-                    console.log('point 3 fired')
-                    animatePageOneMandelbrot()
+                    setFinalPage(0)
                     setTimeout(() =>  allowScrollEvent(), 700)
                 }, getTiming(2))
             } else {
@@ -719,28 +728,8 @@ const scrollToPage = (cP, nP) => {
                 }, getTiming(1))
 
                 setTimeout(() => {
-                    mWTopPos = -480
-                    mW.style = null
-                    page3.style = null
-                    page2.style.transition = "1s ease-in-out 0s"
-                    page2.style.top = "200px"
-                    mW.style.display = 'initial'
-                    window.scrollTo(0, 200)
-
-                    let page2Nav = document.getElementById('page-2-nav')
-                    page2Nav.style.opacity = '0'
-                    page2Nav.style.transition = 'all 1s linear'
-                    page2Nav.style.opacity = '1'
-                    console.log("here we are 2")
-                    //also give big-white a display value
-                    let notifyArrowsTwo = document.getElementById("notifier-arrows-2")
-                    notifyArrowsTwo.style.transition = 'all 1s ease-in-out'
-                    let down = true
-                    let animateArrowsTwo = setInterval(() => {
-                        down ? notifyArrowsTwo.style['margin-top'] = '5px' : notifyArrowsTwo.style['margin-top'] = '0px'
-                        down = !down
-                    }, 1000)
-
+                    mWTopPos = -480                    
+                    setFinalPage(1)
                     setTimeout(() =>  allowScrollEvent(), 300)
                 }, getTiming(2))
 
@@ -800,6 +789,12 @@ window.addEventListener('load', (e) => {
     notifyArrowsTwo = document.getElementById("notifier-arrows-2")
     notifier.addEventListener('click', scrollToPage.bind(null, 0, 1))
     page2Nav.addEventListener('click', scrollToPage.bind(null, 1, 2))
+
+    let down = true
+    setInterval(() => {
+        down ? notifyArrowsTwo.style['margin-top'] = '5px' : notifyArrowsTwo.style['margin-top'] = '0px'
+        down = !down
+    }, 1000)
     
     pageOneTypeWriter()
     setTimeout(() => animatePageOneMandelbrot(), 600)

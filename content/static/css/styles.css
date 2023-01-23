@@ -213,7 +213,9 @@ body {
     align-items: center;
     cursor: pointer;
 }
-
+#notifier-arrows-2 {
+    transition: all 1s ease-in-out;
+}
 /**
     styling for page 2 directory
 */
