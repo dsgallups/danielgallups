@@ -380,66 +380,23 @@ function animatePageOneMandelbrot() {
     //magenta
     magenta.style.left = mbTranslations.left + fP.left + '%'
 
-    let opacities = 0
-    let deltaOpacity = .01
     //animate opacity in
     setTimeout(() => {
-        let opacities = 0
-        //we start the animation at movements[1], but
-        //our internal fadein is different.
-        let timing = 400
-    
-        /*smallMandelbrots.forEach((el) =>  {
-            //el.style.transition =" all .7s ease-out"
-        })*/
-        /*
-            if we want 1000 millisecond animation
-            deltaOpacity is .05
-    
-            calculation is (delta per frame * total frames = full opacity)
-            To get total frames, we take (full opacity (1) and divide by (deltaOpacity))
-            x = 1 / .05
-            which would equal 20. So then to make it 40
-            we multiple 20 by 2, so we take the timing (1000), divide by 1000
-            timing / 1000 = time
-    
-            so if we have 1% delta opacity to 100%, we want it to run for 4 seconds
-            we get the frames (100) = (1/.01)
-    
-            we need to display 100 frames over four seconds
-            so for 4000 milliseconds, each frame much stand for 40 milliseconds
-            4000 / 100 which is equal to timing / ( 1 / deltaOpacity)
-        */
-        let animateOpacity = setInterval(() => {
-            opacities += deltaOpacity
-            big.style.opacity = opacities
-            if (opacities >= 1) {
-                clearInterval(animateOpacity)
-            }
-        }, timing / (1 / deltaOpacity))
+        big.style.transition = 'all .4s linear'
+        big.style.opacity = '1'
+        setTimeout(() => {
         
-    
+        }, 300)
         window.scrollTo(0,0)
+        
     }, getTiming(0))
     
     setTimeout(() => {
-        let opacities = 0
-
-        let timing = 800
-        let deltaOpacity = .01
-
-        let animateOpacity = setInterval(() => {
-            opacities += deltaOpacity
-            smallMandelbrots.forEach(el => {
-                el.style.opacity = opacities
-            })
-            if (opacities >= 1) {
-                clearInterval(animateOpacity)
-            }
-        }, timing / (1 / deltaOpacity))
-    
         window.scrollTo(0,0)
-
+        smallMandelbrots.forEach(el => {
+            el.style.transition = 'all .8s linear'
+            el.style.opacity = '1'
+        })
         //animate the arrows prior to their opacity increasing
         let notifyArrows = document.getElementById("notifier-arrows")
         notifyArrows.style.transition = 'all 1s ease-in-out'
@@ -463,20 +420,10 @@ function animatePageOneMandelbrot() {
         //magenta
         magenta.style.left = fP.left + '%'
 
-
-
         //fadein scroll notifier
         notifier = document.getElementById('mandelbrot-notifier')
-        let opacities = 0
-        let timing = 400
-
-        let animateOpacity = setInterval(() => {
-            opacities += deltaOpacity
-            notifier.style.opacity = opacities
-            if (opacities >= 1) {
-                clearInterval(animateOpacity)
-            }
-        }, timing / (1 / deltaOpacity))
+        notifier.style.transition = "all .4s linear"
+        notifier.style.opacity = 1
 
     }, getTiming(2))
 
