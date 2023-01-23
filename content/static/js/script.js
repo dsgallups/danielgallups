@@ -579,7 +579,6 @@ const scrollToPage = (cP, nP) => {
                 
                 setTimeout(() => {
                     setFinalPage(0)
-                    setTimeout(() =>  allowScrollEvents(), 700)
                 }, getTiming(movements, 2))
             } else {
                 //from page 2 to page 3
