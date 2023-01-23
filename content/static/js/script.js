@@ -78,7 +78,6 @@ function allowScrollEvents() {
     document.body.classList.remove("stop-scrolling")
     document.getElementById("main-container").classList.remove("stop-scrolling")
     ticking = false
-    console.log('scrolling re-enabled!')
 }
 
 /**
@@ -101,7 +100,7 @@ function disableScrollEvents() {
  * Resets a page based on its configuration when viewed.
  * @param {int} pageNo 
  */
-const setFinalPage = (pageNo) => {
+const setFinalPage = pageNo => {
     switch (pageNo) {
         case 0:
             smallMandelbrots.forEach(el => {
@@ -709,7 +708,7 @@ const scrollToPage = (cP, nP) => {
  *  BEGIN I/O FUNCTIONS
  *  ------------------------------------
  */
-window.addEventListener('load', (e) => {
+window.addEventListener('load', e => {
 
     if (window.innerWidth < 810) {
         document.getElementById("main-container").innerHTML = "<div class=\"content-header\">Preview is unavailable on this device. Please refresh on browser with a width larger than 810px.</div>"
@@ -742,7 +741,7 @@ window.addEventListener('load', (e) => {
 })
 
 
-document.addEventListener("scroll", (event) => {
+document.addEventListener("scroll", event => {
     let scrollUp = this.oldScroll > this.scrollY
     this.oldScroll = this.scrollY
     event.preventDefault()
