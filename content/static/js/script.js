@@ -1,7 +1,3 @@
-/**
- * THIS SCRIPT RENDERS THE PAGE.
- */
-
 let smallMandelbrots = document.querySelectorAll('.mandelbrot-small')
 let cyan = document.getElementById("cyan")
 let yellow = document.getElementById("yellow")
