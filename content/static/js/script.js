@@ -797,8 +797,7 @@ const scrollToPage = (cP, nP) => {
  *  ------------------------------------
  */
 window.addEventListener('load', (e) => {
-    console.log("Loaded!!!")
-    
+
     if (window.innerWidth < 810) {
         document.getElementById("main-container").innerHTML = "<div class=\"content-header\">Preview is unavailable on this device. Please refresh on browser with a width larger than 810px.</div>"
     }
@@ -841,8 +840,6 @@ document.addEventListener("scroll", (event) => {
     if (!ticking) {
         disableScrollEvents()
 
-        console.log("scroll event:")
-        console.log(event)
         //perform the animation
         scrollUp ? 
             scrollToPage(currentPage, currentPage - 1) : 
