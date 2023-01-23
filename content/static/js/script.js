@@ -110,20 +110,27 @@ const setFinalPage = (pageNo) => {
             big.style = null
             page1.style = null
             page2.style = null
+            page3.style = null
             mW.style = null
+            notifier.style = null
+            page2Nav.style = null
             document.getElementById("main-container").style = null
             window.scrollTo(0, 0)
             animatePageOneMandelbrot()
             break;
         case 1:
+            page2Nav = document.getElementById('page-2-nav')
+            big.style = null
+            page3.style = null
+            mW.style = null
+            notifier.style = null
+            page2Nav.style = null
+
             page2.style.transition = "1s ease-in-out 0s"
             page2.style.top = "200px"
-            let page2Nav = document.getElementById('page-2-nav')
             page2Nav.style.opacity = '0'
             page2Nav.style.transition = 'all 1s linear'
             page2Nav.style.opacity = '1'
-            page3.style = null
-            mW.style = null
             mW.style.display = 'initial'
             window.scrollTo(0, 200)
             break;
@@ -187,10 +194,10 @@ const pageOneTypeWriter = () => {
         '#0DD',
         '#F0F'
     ]
-    let typeSpeed = 50
+    const typeSpeed = 50
     const displayTime = 1000
-    let eraseSpeed = 30
-    let clearedSpeed = 600
+    const eraseSpeed = 30
+    const clearedSpeed = 600
 
 
     if (skills.length == 0) {
