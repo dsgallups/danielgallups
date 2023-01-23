@@ -91,7 +91,6 @@ function disableScrollEvents() {
     ticking = true
 }
 
-
 /**
  * Resets a page based on its configuration when viewed.
  * @param {int} pageNo 
@@ -281,9 +280,7 @@ const pageOneTypeWriter = () => {
         }
     }
 
-
     let typeEvents = setInterval(typeForward, typeSpeed)
-
 }
 
 /**
@@ -364,8 +361,6 @@ const animateOnMouseMove = e => {
 function animatePageOneMandelbrot() {
     disableScrollEvents()
     const movements = [300, 400, 800, 300]
-
-    
     window.scrollTo(0,0)
 
     smallMandelbrots.forEach(el =>  {
@@ -418,7 +413,6 @@ function animatePageOneMandelbrot() {
 
     }, getTiming(movements, 2))
 
-
     setTimeout(() => {
 
         //calculate the center of the image, get the cursor x and y, and then mandelbrots based on radius.
@@ -427,7 +421,6 @@ function animatePageOneMandelbrot() {
             //el.style.transition = "all .5s  linear 0s"
             el.style.transition = "all 0s"
         })
-
 
         addEventListener('mousemove', animateOnMouseMove)
         allowScrollEvents()
@@ -462,8 +455,6 @@ const scrollToPage = (cP, nP) => {
 
     switch (cP) {
         case 0:
-            
-            
             //zoom into the mandelbrot
             const movements = [800, 100, 500, 1000]
 
@@ -495,7 +486,6 @@ const scrollToPage = (cP, nP) => {
             magenta.style.top = bigTop
             magenta.style.left = '100%'
             
-
             //Now we just adjust the background to be black and scroll to page 2
             setTimeout(() => {
                 page1.style.transition = null
@@ -521,19 +511,15 @@ const scrollToPage = (cP, nP) => {
                 page2.style["top"] = '200px'
             }, getTiming(movements, 2) + 100)
             
-            
-            
             //Finally release the return to reenable the scroll
             
             setTimeout(() => {
                 setFinalPage(1)
                 allowScrollEvents()
             }, getTiming(movements, 3))
-            
 
             break
         case 1:
-            
             if (nP == 0) {
                 /**
                  * Page 1 to Page 0 (scroll up)
@@ -577,10 +563,8 @@ const scrollToPage = (cP, nP) => {
                     document.getElementById("main-container").style["background-color"] = "#fff"
                     page1.style["background-color"] = "inherit"
                 }, getTiming(movements, 0))
-
-
                 
-                setTimeout(() => {
+                 setTimeout(() => {
                     //mandelbrot comes out
                     big.style.transition = "all 1s ease-in-out"
                     big.style.top = '250vh'
@@ -593,8 +577,6 @@ const scrollToPage = (cP, nP) => {
 
                 }, getTiming(movements, 1))
                 
-                
-    
                 setTimeout(() => {
                     setFinalPage(0)
                     setTimeout(() =>  allowScrollEvents(), 700)
@@ -659,7 +641,6 @@ const scrollToPage = (cP, nP) => {
                 
                 const movements = [1500, 300, 1000]
                 
-
                 //move the resume down
                 page3.style.transition = "all 1s ease-in"
                 page3.style["top"] = "200vh"
@@ -668,7 +649,6 @@ const scrollToPage = (cP, nP) => {
 
                 mWTopPos += 4600
                 mW.style.top = mWTopPos + "px"
-
 
                 //begin the reverse
                 setTimeout(() => {
@@ -702,8 +682,6 @@ const scrollToPage = (cP, nP) => {
         case 3:
             break
     }
-
-
     currentPage = nP
 }
 
@@ -713,7 +691,7 @@ const scrollToPage = (cP, nP) => {
  *  ------------------------------------
  */
 window.addEventListener('load', e => {
-
+    disableScrollEvents()
     if (window.innerWidth < 810) {
         document.getElementById("main-container").innerHTML = "<div class=\"content-header\">Preview is unavailable on this device. Please refresh on browser with a width larger than 810px.</div>"
     }
@@ -738,8 +716,7 @@ window.addEventListener('load', e => {
     setInterval(() => {
         down ? notifyArrowsTwo.style['margin-top'] = '5px' : notifyArrowsTwo.style['margin-top'] = '0px'
         down = !down
-    }, 1000)
-    
+    }, 1000)   
     pageOneTypeWriter()
     setTimeout(() => animatePageOneMandelbrot(), 600)
 })
