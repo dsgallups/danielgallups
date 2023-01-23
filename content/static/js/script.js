@@ -142,6 +142,19 @@ const setFinalPage = (pageNo) => {
 }
 
 /**
+ * A commonly used pattern that provides a translation from the standard location defines in fP.
+ * @param {float} deltaLeft 
+ * @param {int} deltaTop 
+ */
+const translateBrots = (deltaLeft, deltaTop) => {
+    //cyan
+    cyan.style.left = -deltaLeft + fP.left + '%'
+    //yellow
+    yellow.style.top = deltaTop + fP.top + 'px'
+    //magenta
+    magenta.style.left = deltaLeft + fP.left + '%'
+}
+/**
  * -------------------------------------
  *  END UNIVERSAL HELPER FUNCTIONS
  *  ------------------------------------
@@ -325,27 +338,15 @@ const animateOnMouseMove = e => {
 
             //Now we will animate each mandelbrot accordingly
             if (percentageAway <= 1 && percentageAway >= 0) {
-                //cyan
-                cyan.style.left = (-mbTranslations.left * (1 - Math.pow(percentageAway, 2))) + fP.left + '%'
-                //yellow
-                yellow.style.top = (mbTranslations.top * (1 - Math.pow(percentageAway, 2))) + fP.top + 'px'
-                //magenta
-                magenta.style.left = (mbTranslations.left * (1 - Math.pow(percentageAway, 2))) + fP.left + '%'
+                translateBrots(
+                    mbTranslations.left * (1 - Math.pow(percentageAway, 2)), 
+                    mbTranslations.top * (1 - Math.pow(percentageAway, 2))
+                )
             }
         } else if (mouse.x - give.x <= 0) {
-            //cyan
-            cyan.style.left = fP.left + '%'
-            //yellow
-            yellow.style.top = fP.top + 'px'
-            //magenta
-            magenta.style.left = fP.left + '%'
+            translateBrots(0, 0)
         } else if ( mouse.x >= mb.x ) {
-            //cyan
-            cyan.style.left = -mbTranslations.left + fP.left + '%'
-            //yellow
-            yellow.style.top = mbTranslations.top + fP.top + 'px'
-            //magenta
-            magenta.style.left = mbTranslations.left + fP.left + '%'
+            translateBrots(mbTranslations.left, mbTranslations.top)
         }
 }
 
@@ -373,12 +374,7 @@ function animatePageOneMandelbrot() {
         el.style.transition =" all .0s ease-out"
     })
     
-    //cyan
-    cyan.style.left = -mbTranslations.left + fP.left + '%'
-    //yellow
-    yellow.style.top = mbTranslations.top + fP.top + 'px'
-    //magenta
-    magenta.style.left = mbTranslations.left + fP.left + '%'
+    translateBrots(mbTranslations.left, mbTranslations.top)
 
     //animate opacity in
     setTimeout(() => {
@@ -413,12 +409,8 @@ function animatePageOneMandelbrot() {
         smallMandelbrots.forEach((el) =>  {
             el.style.transition = "all .3s ease-in-out 0s"
         })
-        //cyan
-        cyan.style.left = fP.left + '%'
-        //yellow
-        yellow.style.top = fP.top + 'px'
-        //magenta
-        magenta.style.left = fP.left + '%'
+
+        translateBrots(0, 0)
 
         //fadein scroll notifier
         notifier = document.getElementById('mandelbrot-notifier')
