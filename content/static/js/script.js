@@ -139,15 +139,23 @@ const setFinalPage = pageNo => {
             break
     }
 }
-const getTiming = (movements, frameNo) => {
-    let cum = 0
-    for (let i = 0; i <= frameNo; i++) {
-        cum += movements[i]
-    }
-    return cum
-}
+
 /**
- * A commonly used pattern that provides a translation from the standard location defines in fP.
+ * Returns the sum of values from 0 to frameNo within movements
+ * @param {arr} movements 
+ * @param {int} frameNo 
+ * @returns 
+ */
+const getTiming = (movements, frameNo) => {
+    let acc = 0
+    for (let i = 0; i <= frameNo; i++) {
+        acc += movements[i]
+    }
+    return acc
+}
+
+/**
+ * A commonly used pattern that provides a translation from the standard location defined in fP.
  * @param {float} deltaLeft 
  * @param {int} deltaTop 
  */
