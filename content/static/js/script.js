@@ -609,8 +609,8 @@ const scrollToPage = (cP, nP) => {
                     //the size of the page is 713 about
                     mW.style.transition = "all .3s linear"
                     page2.style.transition = "all .3s linear"
-                    let page2Top = -800
-                    mWTopPos += page2Top
+                    let page2Top = -1000
+                    mWTopPos += -800
                     page2.style.top = page2Top + "px"
                     mW.style.top = mWTopPos + "px"
                     
