@@ -718,6 +718,8 @@ window.addEventListener('load', e => {
     }, 1000)   
     pageOneTypeWriter()
     setTimeout(() => animatePageOneMandelbrot(), 600)
+
+    
 })
 
 

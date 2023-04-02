@@ -20,6 +20,9 @@ app.use(logger("dev"))
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname +  '/content/index.html'))
+    let body = req;
+    console.log(body);
+    return;
 });
 
 app.get('/static/:type/:fileName', (req, res) => {
