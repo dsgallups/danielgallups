@@ -1,6 +1,6 @@
 # My Website Code
 
-* Powered by Vanilla
+* Vanilla
   * Check `/content/static/js/script.js` for more information
 * I built mostly everything you see, credit given for scroll-locking helper functions (thank you @gblazex)
   * https://stackoverflow.com/questions/4770025/how-to-disable-scrolling-temporarily
