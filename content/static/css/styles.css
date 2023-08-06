@@ -49,6 +49,17 @@ body {
     position: relative;
     margin: 0;
 }
+
+#disclaimer {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background: rgb(255, 87, 87);
+    text-align: center;
+    padding: 4px;
+    z-index:5;
+    font-size: 18px;
+}
 #main-container {
     background-color: #fff;
     position: relative;
