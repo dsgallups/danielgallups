@@ -23,7 +23,7 @@
 					target="_blank"
 					rel="noreferrer"
 				>
-					<i class="fa-brands fa-github text-lg" />
+					<i class="fa-brands fa-github"></i>
 				</a>
 			</svelte:fragment>
 		</AppBar>
