@@ -1,5 +1,4 @@
 use draw::DynamicElement;
-use graph::Vec2;
 use physics::{Circle, Dynamics, Kinematics, Matter, Point};
 use wasm_bindgen::prelude::*;
 
@@ -16,7 +15,8 @@ use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
 const GRAV_CONST: f64 = 1.;
-const NUM_CIRCLES: usize = 100;
+const NUM_CIRCLES: usize = 2;
+const ENERGY_CONSERVED_ON_COLLISION: f64 = 0.7;
 
 #[wasm_bindgen]
 extern "C" {
@@ -64,7 +64,13 @@ pub fn run() -> Result<(), JsValue> {
     let g = f.clone();
 
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
-        tick(&mut circles, *mouse_pos.borrow(), *window_size.borrow());
+        let (pot_energy, kin_energy) =
+            tick(&mut circles, *mouse_pos.borrow(), *window_size.borrow());
+        let energy = pot_energy + kin_energy;
+        log(&format!(
+            "energy: {:.2}, potential: {:.2?}, kinetic: {:.2?}",
+            energy, pot_energy, kin_energy
+        ));
         request_animation_frame(f.borrow().as_ref().unwrap());
     }) as Box<dyn FnMut()>));
 
@@ -119,10 +125,18 @@ fn spawn_circles() -> Vec<DynamicElement<Circle>> {
 }
 
 #[allow(clippy::mem_replace_with_uninit)]
-fn tick(circles: &mut [DynamicElement<Circle>], mouse_pos: (f64, f64), window_size: (f64, f64)) {
+fn tick(
+    circles: &mut [DynamicElement<Circle>],
+    mouse_pos: (f64, f64),
+    window_size: (f64, f64),
+) -> (f64, f64) {
     let mouse_mass = -40000.;
 
     let _mouse_matter = Point::new(mouse_mass, mouse_pos.into());
+
+    let mut potential_energy = 0.;
+
+    let mut kinetic_energy = 0.;
 
     for index in 0..circles.len() {
         let mut refframe_circle = unsafe {
@@ -137,6 +151,9 @@ fn tick(circles: &mut [DynamicElement<Circle>], mouse_pos: (f64, f64), window_si
                 continue;
             }
 
+            potential_energy += refframe_circle.mass()
+                * GRAV_CONST
+                * refframe_circle.pos().distance_from(&circle.pos());
             refframe_circle.apply_grav_force(&circle.matter);
         }
 
@@ -169,7 +186,11 @@ fn tick(circles: &mut [DynamicElement<Circle>], mouse_pos: (f64, f64), window_si
             circle.mutate_velocity(|_| new_velocity);
         }
 
+        kinetic_energy += 0.5 * circle.mass() * circle.velocity().magnitude().powf(2.);
+
         circle.draw();
         circle.reset_forces();
     }
+
+    (potential_energy, kinetic_energy)
 }

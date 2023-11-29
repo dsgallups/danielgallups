@@ -248,6 +248,10 @@ export function __wbindgen_object_drop_ref(arg0) {
     takeObject(arg0);
 };
 
+export function __wbg_log_12af4e1f5b304c40(arg0, arg1) {
+    console.log(getStringFromWasm0(arg0, arg1));
+};
+
 export function __wbindgen_cb_drop(arg0) {
     const obj = takeObject(arg0).original;
     if (obj.cnt-- == 1) {
@@ -517,18 +521,18 @@ export function __wbindgen_memory() {
     return addHeapObject(ret);
 };
 
-export function __wbindgen_closure_wrapper91(arg0, arg1, arg2) {
-    const ret = makeMutClosure(arg0, arg1, 23, __wbg_adapter_24);
+export function __wbindgen_closure_wrapper92(arg0, arg1, arg2) {
+    const ret = makeMutClosure(arg0, arg1, 24, __wbg_adapter_24);
     return addHeapObject(ret);
 };
 
-export function __wbindgen_closure_wrapper93(arg0, arg1, arg2) {
-    const ret = makeMutClosure(arg0, arg1, 23, __wbg_adapter_24);
+export function __wbindgen_closure_wrapper94(arg0, arg1, arg2) {
+    const ret = makeMutClosure(arg0, arg1, 24, __wbg_adapter_24);
     return addHeapObject(ret);
 };
 
-export function __wbindgen_closure_wrapper95(arg0, arg1, arg2) {
-    const ret = makeMutClosure(arg0, arg1, 23, __wbg_adapter_29);
+export function __wbindgen_closure_wrapper96(arg0, arg1, arg2) {
+    const ret = makeMutClosure(arg0, arg1, 24, __wbg_adapter_29);
     return addHeapObject(ret);
 };
 

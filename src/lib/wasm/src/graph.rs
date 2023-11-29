@@ -19,6 +19,9 @@ impl Vec2 {
             y: distance.y / dist,
         }
     }
+    pub fn magnitude(&self) -> f64 {
+        (self.x.powi(2) + self.y.powi(2)).sqrt()
+    }
 }
 
 impl From<Vec2> for (f64, f64) {

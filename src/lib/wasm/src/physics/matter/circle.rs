@@ -1,7 +1,7 @@
 use crate::{
     graph::Vec2,
     physics::{Dynamics, Kinematics, Matter},
-    GRAV_CONST,
+    ENERGY_CONSERVED_ON_COLLISION, GRAV_CONST,
 };
 
 pub struct Circle {
@@ -74,8 +74,8 @@ impl Dynamics for Circle {
             let radius = self.radius;
 
             self.mutate_velocity(|mut v| {
-                v.x *= -1.;
-                v.y *= -1.;
+                v.x *= -ENERGY_CONSERVED_ON_COLLISION;
+                v.y *= -ENERGY_CONSERVED_ON_COLLISION;
                 v
             });
 
