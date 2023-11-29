@@ -18,12 +18,20 @@
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<a
-					class="btn btn-sm variant-ghost-surface"
+					class="btn btn-sm variant-soft-surface"
+					href="https://www.linkedin.com/in/daniel-gallups/"
+					target="_blank"
+					rel="noreferrer"
+				>
+					<i class="fa-brands fa-linkedin text-lg" />
+				</a>
+				<a
+					class="btn btn-sm variant-soft-surface"
 					href="https://github.com/dsgallups"
 					target="_blank"
 					rel="noreferrer"
 				>
-					<i class="fa-brands fa-github"></i>
+					<i class="fa-brands fa-github text-lg" />
 				</a>
 			</svelte:fragment>
 		</AppBar>
