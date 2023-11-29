@@ -1,0 +1,15 @@
+:root {
+    --color-surface: #121323;
+    --color-primary: #f5f5fa;
+}
+
+.light-theme {
+    --color-surface: #f5f5fa;
+    --color-primary: #121323;
+}
+
+body {
+    font-family: 'Roboto', serif;
+    background-color: var(--color-surface);
+    color: var(--color-primary);
+}
