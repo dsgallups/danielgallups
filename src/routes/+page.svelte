@@ -1,3 +1,6 @@
+<script lang="ts">
+</script>
+
 <div class="container h-full mx-auto flex flex-col pt-4">
 	<section>
 		<h1 class="text-4xl font-bold">Projects</h1>
