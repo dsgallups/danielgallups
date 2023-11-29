@@ -1,18 +1,10 @@
-use web_sys::Element;
-
-use crate::{document, graph::Vec2, html, GRAV_CONST};
-
-pub struct Circle {
+pub struct DynamicElement<T> {
     pub el: Element,
-    pub velocity: Vec2,
-    color: (f64, f64, f64),
-    pub mass: f64,
-    radius: f64,
-    pub position: Vec2,
-    pub acceleration: Vec2,
+    pub color: (f64, f64, f64),
+    pub matter: T,
 }
 
-impl Circle {
+impl DynamicElement<Circle> {
     pub fn new() -> Self {
         let rand_color = (
             128. + rand::random::<f64>() * 127.,
@@ -27,7 +19,7 @@ impl Circle {
 
         let rand_mass = 1. + rand::random::<f64>() * 9.;
 
-        let radius = rand_mass.sqrt();
+        let matter: Circle = Circle::new(rand_mass, rand_position.into());
 
         let document = document();
         let circle = document.create_element("div").unwrap();
@@ -49,57 +41,80 @@ impl Circle {
             .unwrap();
         Self {
             el: circle,
-            velocity: (0., 0.).into(),
             color: rand_color,
-            mass: rand_mass,
-            position: rand_position.into(),
-            radius,
-            acceleration: (0., 0.).into(),
+            matter,
         }
     }
 
-    pub fn force(&self, other: &Vec2, mass: f64) -> Vec2 {
-        let distance = &self.position - other;
-        let dist = self.position.distance_from(other);
-        let normal = self.position.normal(other);
-        let force = GRAV_CONST * mass * self.mass / dist.powf(2.);
-        Vec2 {
-            x: normal.x * force,
-            y: normal.y * force,
-        }
-    }
+    pub fn draw(&mut self) {
+        let position = self.matter.position();
+        let radius = self.matter.radius();
 
-    pub fn acceleration(&self, other: &Vec2, mass: f64) -> Vec2 {
-        let force = self.force(other, mass);
-        Vec2 {
-            x: force.x / self.mass,
-            y: force.y / self.mass,
-        }
-    }
-
-    pub fn reset(&mut self) {
-        self.velocity = (0., 0.).into();
-        self.position = (
-            rand::random::<f64>() * html().client_width() as f64,
-            rand::random::<f64>() * html().client_height() as f64,
-        )
-            .into();
-    }
-    pub fn update_el(&mut self) {
         self.el
             .set_attribute(
                 "style",
                 &format!(
                     "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0}); width: {:.2}px; height: {:.2}px;",
-                    self.position.y - 1.,
-                    self.position.x - 1.,
+                    position.y - 1.,
+                    position.x - 1.,
                     self.color.0,
                     self.color.1,
                     self.color.2,
-                    self.radius * 2.,
-                    self.radius * 2.,
+                    radius * 2.,
+                    radius * 2.,
                 ),
             )
             .unwrap()
+    }
+}
+
+impl Kinematics for DynamicElement<T>
+where
+    T: Kinematics,
+{
+    fn velocity(&self) -> Vec2 {
+        self.matter.velocity()
+    }
+    fn mutate_velocity(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
+        self.matter.mutate_velocity(f);
+    }
+
+    fn force(&self) -> Vec2 {
+        self.matter.force()
+    }
+    fn mutate_force(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
+        self.matter.mutate_force(f);
+    }
+
+    fn pos(&self) -> Vec2 {
+        self.matter.pos()
+    }
+    fn mutate_pos(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
+        self.matter.mutate_pos(f);
+    }
+}
+
+impl Matter for DynamicElement<T>
+where
+    T: Matter,
+{
+    fn mass(&self) -> f64 {
+        self.matter.mass()
+    }
+    fn mutate_mass(&mut self, f: impl FnOnce(f64) -> f64) {
+        self.matter.mutate_mass(f);
+    }
+}
+
+impl Dynamics for DynamicElement<T>
+where
+    T: Dynamics,
+{
+    fn apply_grav_force(&mut self, other: impl Matter) {
+        self.matter.apply_grav_force(other);
+    }
+
+    fn tick_forces(&mut self) {
+        self.matter.tick_forces();
     }
 }

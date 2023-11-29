@@ -1,3 +1,4 @@
+use graph::Vec2;
 use wasm_bindgen::prelude::*;
 
 use web_sys::HtmlElement;
@@ -5,6 +6,7 @@ mod circle;
 use circle::Circle;
 
 mod graph;
+pub mod physics;
 
 use std::cell::RefCell;
 use std::panic;
@@ -153,12 +155,12 @@ fn tick(circles: &mut [Circle], mouse_pos: (f64, f64), window_size: (f64, f64)) 
     }
 }
 
-fn update_pos(circle: &mut Circle, point: (f64, f64), point_mass: f64) {
-    let distance = (point.0 - circle.position.0, point.1 - circle.position.1);
+fn update_pos(circle: &mut Circle, point: Vec2, point_mass: f64) {
+    let distance = point - circle.position;
 
-    let dist = (distance.0.powi(2) + distance.1.powi(2)).sqrt();
+    let dist = circle.position.distance_from(&point);
 
-    let normal = (distance.0 / dist, distance.1 / dist);
+    let normal = point.normal(&circle.position);
 
     //calculate the force vector
     let force = GRAV_CONST * point_mass * circle.mass / dist;
@@ -183,7 +185,7 @@ fn update_pos(circle: &mut Circle, point: (f64, f64), point_mass: f64) {
     circle.position.1 += circle.velocity.1;
 }
 
-fn update_pos_given_mouse(circle: &mut Circle, mouse_pos: (f64, f64), mouse_mass: f64) {
+fn update_pos_given_mouse(circle: &mut Circle, mouse_pos: Vec2, mouse_mass: f64) {
     let distance = (
         mouse_pos.0 - circle.position.0,
         mouse_pos.1 - circle.position.1,
