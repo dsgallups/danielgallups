@@ -130,7 +130,7 @@ fn spawn_circles() -> Vec<Circle> {
     //let background = document.create_element("div").unwrap();
 
     let mut circles = Vec::new();
-    for _ in 0..20 {
+    for _ in 0..80 {
         let rand_color = (
             rand::random::<f64>() * 255.,
             rand::random::<f64>() * 255.,
@@ -185,9 +185,31 @@ impl Circle {
             .unwrap()
     }
 }
-
+#[allow(clippy::mem_replace_with_uninit)]
 fn tick(circles: &mut [Circle], mouse_pos: (f64, f64), window_size: (f64, f64)) {
-    let mouse_mass = 10.;
+    let mouse_mass = 3.;
+
+    for index in 0..circles.len() {
+        let mut refframe_circle = unsafe {
+            std::mem::replace(
+                &mut circles[index],
+                std::mem::MaybeUninit::zeroed().assume_init(),
+            )
+        };
+
+        for (i, circle) in circles.iter().enumerate() {
+            if i == index {
+                continue;
+            }
+
+            update_pos(&mut refframe_circle, circle.position, circle.mass);
+        }
+
+        //update_pos(&mut refframe_circle, mouse_pos, mouse_mass);
+        //todo
+
+        let _ = std::mem::replace(&mut circles[index], refframe_circle);
+    }
 
     for circle in circles.iter_mut() {
         if circle.position.0 < 0.
@@ -197,10 +219,6 @@ fn tick(circles: &mut [Circle], mouse_pos: (f64, f64), window_size: (f64, f64)) 
         {
             circle.reset();
         }
-        //note that the y axis is inverted
-        update_pos(circle, mouse_pos, mouse_mass);
-
-        //update the element
         circle.update_el();
     }
 }
@@ -213,10 +231,8 @@ fn update_pos(circle: &mut Circle, point: (f64, f64), point_mass: f64) {
     let normal = (distance.0 / dist, distance.1 / dist);
 
     //calculate the force vector
-    let force = (
-        normal.0 * point_mass * circle.mass / dist,
-        normal.1 * point_mass * circle.mass / dist,
-    );
+    let force = 0.05 * point_mass * circle.mass / dist;
+    let force = (normal.0 * force, normal.1 * force);
 
     //calculate the acceleration vector
 
