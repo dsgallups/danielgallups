@@ -125,8 +125,8 @@ impl<T> Dynamics for DynamicElement<T>
 where
     T: Dynamics,
 {
-    fn apply_grav_force(&mut self, other: &impl Matter) {
-        self.matter.apply_grav_force(other);
+    fn apply_grav_force(&mut self, other: &impl Matter) -> (f64, f64, bool) {
+        self.matter.apply_grav_force(other)
     }
 
     fn tick_forces(&mut self) {

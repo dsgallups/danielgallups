@@ -7,20 +7,16 @@ pub struct Vec2 {
 }
 
 impl Vec2 {
-    pub fn distance_from(&self, other: &Vec2) -> f64 {
-        ((self.x - other.x).powi(2) + (self.y - other.y).powi(2)).sqrt()
-    }
-
-    pub fn normal(&self, other: &Vec2) -> Vec2 {
-        let distance = self - other;
-        let dist = self.distance_from(other);
-        Vec2 {
-            x: distance.x / dist,
-            y: distance.y / dist,
-        }
-    }
     pub fn magnitude(&self) -> f64 {
         (self.x.powi(2) + self.y.powi(2)).sqrt()
+    }
+
+    pub fn normalize(&self) -> Vec2 {
+        let magnitude = self.magnitude();
+        Vec2 {
+            x: self.x / magnitude,
+            y: self.y / magnitude,
+        }
     }
 }
 

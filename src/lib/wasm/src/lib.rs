@@ -1,4 +1,5 @@
 use draw::DynamicElement;
+use graph::Vec2;
 use physics::{Circle, Dynamics, Kinematics, Matter, Point};
 use wasm_bindgen::prelude::*;
 
@@ -14,9 +15,9 @@ use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
-const GRAV_CONST: f64 = 1.;
+const GRAV_CONST: f64 = 0.005;
 const NUM_CIRCLES: usize = 2;
-const ENERGY_CONSERVED_ON_COLLISION: f64 = 0.7;
+const ENERGY_CONSERVED_ON_COLLISION: f64 = 1.;
 
 #[wasm_bindgen]
 extern "C" {
@@ -51,7 +52,8 @@ fn document() -> web_sys::Document {
 
 #[wasm_bindgen]
 pub fn run() -> Result<(), JsValue> {
-    //current mouse position
+    let max_ticks = 20;
+
     panic::set_hook(Box::new(console_error_panic_hook::hook));
 
     let mouse_pos = hook_mouse_pos()?;
@@ -63,15 +65,43 @@ pub fn run() -> Result<(), JsValue> {
     let f = Rc::new(RefCell::new(None));
     let g = f.clone();
 
+    let mut begin_ticking = false;
+
+    let mut ticks = 0;
+
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
-        let (pot_energy, kin_energy) =
+        if ticks > max_ticks {
+            let _ = f.borrow_mut().take();
+            return;
+        }
+
+        let (info, collision_occured) =
             tick(&mut circles, *mouse_pos.borrow(), *window_size.borrow());
-        let energy = pot_energy + kin_energy;
-        log(&format!(
-            "energy: {:.2}, potential: {:.2?}, kinetic: {:.2?}",
-            energy, pot_energy, kin_energy
-        ));
+
+        if collision_occured {
+            //begin_ticking = true;
+        }
+
+        let energy = info.potential_energy + info.kinetic_energy;
+
+        let mut msg = format!(
+            "tick {}\nenergy: {:.2}, potential: {:.2?}, kinetic: {:.2?}\n",
+            ticks, energy, info.potential_energy, info.kinetic_energy
+        );
+
+        for (i, circle) in info.circles.into_iter().enumerate() {
+            msg.push_str(&format!(
+                    "circle[{}]:\npos: {:?}\nvel: {:?}\ndist from other: {:?}\nforce: {:?}\nkin: {:.?}\npot: {:?}\nmass: {:?}\n\n",
+                    i, circle.position, circle.velocity, circle.dist_force_other, circle.force, circle.kin, circle.pot, circle.mass,
+                ));
+        }
+        msg.push('\n');
+        log(&msg);
+
         request_animation_frame(f.borrow().as_ref().unwrap());
+        if begin_ticking {
+            ticks += 1;
+        }
     }) as Box<dyn FnMut()>));
 
     request_animation_frame(g.borrow().as_ref().unwrap());
@@ -129,7 +159,9 @@ fn tick(
     circles: &mut [DynamicElement<Circle>],
     mouse_pos: (f64, f64),
     window_size: (f64, f64),
-) -> (f64, f64) {
+) -> (Information, bool) {
+    let mut start_tick = false;
+
     let mouse_mass = -40000.;
 
     let _mouse_matter = Point::new(mouse_mass, mouse_pos.into());
@@ -137,6 +169,8 @@ fn tick(
     let mut potential_energy = 0.;
 
     let mut kinetic_energy = 0.;
+
+    let mut dists = Vec::new();
 
     for index in 0..circles.len() {
         let mut refframe_circle = unsafe {
@@ -150,11 +184,11 @@ fn tick(
             if i == index {
                 continue;
             }
-
-            potential_energy += refframe_circle.mass()
-                * GRAV_CONST
-                * refframe_circle.pos().distance_from(&circle.pos());
-            refframe_circle.apply_grav_force(&circle.matter);
+            let (dist, force, begin_tick) = refframe_circle.apply_grav_force(&circle.matter);
+            dists.push((dist, force));
+            if begin_tick {
+                start_tick = true;
+            }
         }
 
         //update_pos_given_mouse(&mut refframe_circle, mouse_pos, mouse_mass);
@@ -163,8 +197,14 @@ fn tick(
         let _ = std::mem::replace(&mut circles[index], refframe_circle);
     }
 
+    let mut circle_information: Vec<CircleInformation> = Vec::new();
+
+    let mut forces = Vec::new();
+
     for circle in circles.iter_mut() {
+        forces.push(circle.force());
         circle.tick_forces();
+        circle.reset_forces();
 
         let position = circle.matter.pos();
 
@@ -186,11 +226,65 @@ fn tick(
             circle.mutate_velocity(|_| new_velocity);
         }
 
-        kinetic_energy += 0.5 * circle.mass() * circle.velocity().magnitude().powf(2.);
-
         circle.draw();
-        circle.reset_forces();
     }
 
-    (potential_energy, kinetic_energy)
+    for (i, refframe_circle) in circles.iter().enumerate() {
+        let mut circle_potential_energy = 0.;
+        let circle_kinetic_energy =
+            0.5 * refframe_circle.mass() * refframe_circle.velocity().magnitude().powf(2.);
+
+        for (j, circle) in circles.iter().enumerate() {
+            if i == j {
+                continue;
+            }
+
+            circle_potential_energy += refframe_circle.mass() * circle.mass() * GRAV_CONST
+                / (refframe_circle.pos() - circle.pos()).magnitude();
+        }
+
+        //then calcualte the whole potential energy of the system
+        for circle in circles.iter().skip(i + 1) {
+            potential_energy += refframe_circle.mass() * circle.mass() * GRAV_CONST
+                / (refframe_circle.pos() - circle.pos()).magnitude();
+        }
+
+        circle_information.push(CircleInformation {
+            position: refframe_circle.matter.pos(),
+            velocity: refframe_circle.matter.velocity(),
+            force: forces[i].clone(),
+            dist_force_other: dists[i],
+            mass: refframe_circle.matter.mass(),
+            pot: circle_potential_energy,
+            kin: circle_kinetic_energy,
+        });
+        kinetic_energy += circle_kinetic_energy;
+    }
+
+    (
+        Information {
+            potential_energy,
+            kinetic_energy,
+            circles: circle_information,
+        },
+        start_tick,
+    )
+}
+
+#[derive(Debug, Clone)]
+pub struct Information {
+    pub potential_energy: f64,
+    pub kinetic_energy: f64,
+    pub circles: Vec<CircleInformation>,
+}
+
+#[derive(Debug, Clone)]
+pub struct CircleInformation {
+    pub position: Vec2,
+    pub velocity: Vec2,
+    pub dist_force_other: (f64, f64),
+    pub force: Vec2,
+    pub mass: f64,
+    pub pot: f64,
+    pub kin: f64,
 }

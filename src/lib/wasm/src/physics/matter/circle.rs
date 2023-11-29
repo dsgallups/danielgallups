@@ -66,11 +66,10 @@ impl Matter for Circle {
 }
 
 impl Dynamics for Circle {
-    fn apply_grav_force(&mut self, other: &impl Matter) {
-        let distance = self.pos() - other.pos();
-        let mut dist = self.position.distance_from(&other.pos());
+    fn apply_grav_force(&mut self, other: &impl Matter) -> (f64, f64, bool) {
+        //let mut dist = self.position.distance_from(&other.pos());
 
-        if dist < (self.radius + other.mass().sqrt()) {
+        /*if dist < (self.radius + other.mass().sqrt()) {
             let radius = self.radius;
 
             self.mutate_velocity(|mut v| {
@@ -86,15 +85,22 @@ impl Dynamics for Circle {
             });
 
             dist = self.position.distance_from(&other.pos());
-        }
+        }*/
 
-        let normal = (-1. * distance.x / dist, -1. * distance.y / dist);
+        let distance = self.pos() - other.pos();
 
         //for this one, distance is squared again
-        let force = GRAV_CONST * other.mass() * self.mass / dist.powf(2.);
-        let force = (normal.0 * force, normal.1 * force);
+        let force_magnitude = GRAV_CONST * other.mass() * self.mass / distance.magnitude().sqrt();
 
-        self.apply_force(force.into());
+        let normal = distance.normalize() * -1.;
+        let force = normal * force_magnitude;
+
+        self.apply_force(force);
+        (
+            distance.magnitude(),
+            force_magnitude,
+            distance.magnitude() < (self.radius + other.mass().sqrt()),
+        )
     }
 
     fn tick_forces(&mut self) {
