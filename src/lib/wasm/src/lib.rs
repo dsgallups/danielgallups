@@ -1,19 +1,21 @@
+use draw::DynamicElement;
 use graph::Vec2;
+use physics::{Circle, Dynamics, Kinematics, Matter, Point};
 use wasm_bindgen::prelude::*;
 
 use web_sys::HtmlElement;
-mod circle;
-use circle::Circle;
 
 mod graph;
 pub mod physics;
+
+pub mod draw;
 
 use std::cell::RefCell;
 use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
-const GRAV_CONST: f64 = 0.00001;
+const GRAV_CONST: f64 = 1.;
 const NUM_CIRCLES: usize = 100;
 
 #[wasm_bindgen]
@@ -104,13 +106,12 @@ fn hook_window_size() -> Result<Rc<RefCell<(f64, f64)>>, JsValue> {
     Ok(window_size)
 }
 
-fn spawn_circles() -> Vec<Circle> {
-    //init background element
+fn spawn_circles() -> Vec<DynamicElement<Circle>> {
     let bg_el = document().get_element_by_id("background").unwrap();
 
     (0..NUM_CIRCLES)
         .map(|_| {
-            let circle = Circle::new();
+            let circle = DynamicElement::default();
             bg_el.append_child(&circle.el).unwrap();
             circle
         })
@@ -118,8 +119,10 @@ fn spawn_circles() -> Vec<Circle> {
 }
 
 #[allow(clippy::mem_replace_with_uninit)]
-fn tick(circles: &mut [Circle], mouse_pos: (f64, f64), window_size: (f64, f64)) {
+fn tick(circles: &mut [DynamicElement<Circle>], mouse_pos: (f64, f64), window_size: (f64, f64)) {
     let mouse_mass = -40000.;
+
+    let _mouse_matter = Point::new(mouse_mass, mouse_pos.into());
 
     for index in 0..circles.len() {
         let mut refframe_circle = unsafe {
@@ -134,7 +137,7 @@ fn tick(circles: &mut [Circle], mouse_pos: (f64, f64), window_size: (f64, f64)) 
                 continue;
             }
 
-            update_pos(&mut refframe_circle, circle.position, circle.mass);
+            refframe_circle.apply_grav_force(&circle.matter);
         }
 
         //update_pos_given_mouse(&mut refframe_circle, mouse_pos, mouse_mass);
@@ -144,70 +147,29 @@ fn tick(circles: &mut [Circle], mouse_pos: (f64, f64), window_size: (f64, f64)) 
     }
 
     for circle in circles.iter_mut() {
-        if circle.position.0 < 0. || circle.position.0 > window_size.0 {
-            circle.velocity.0 *= -1.;
+        circle.tick_forces();
+
+        let position = circle.matter.pos();
+
+        if position.x < 0.
+            || position.x > window_size.0
+            || position.y < 0.
+            || position.y > window_size.1
+        {
+            let mut new_velocity = circle.matter.velocity();
+
+            if position.x < 0. || position.x > window_size.0 {
+                new_velocity.x = -new_velocity.x;
+            }
+
+            if position.y < 0. || position.y > window_size.1 {
+                new_velocity.y = -new_velocity.y;
+            }
+
+            circle.mutate_velocity(|_| new_velocity);
         }
-        if circle.position.1 < 0. || circle.position.1 > window_size.1 {
-            circle.velocity.1 *= -1.;
-        }
 
-        circle.update_el();
+        circle.draw();
+        circle.reset_forces();
     }
-}
-
-fn update_pos(circle: &mut Circle, point: Vec2, point_mass: f64) {
-    let distance = point - circle.position;
-
-    let dist = circle.position.distance_from(&point);
-
-    let normal = point.normal(&circle.position);
-
-    //calculate the force vector
-    let force = GRAV_CONST * point_mass * circle.mass / dist;
-    let force = (normal.0 * force, normal.1 * force);
-
-    //calculate the acceleration vector
-
-    let acceleration = (force.0 / circle.mass, force.1 / circle.mass);
-
-    //calculate the velocity vector
-    circle.velocity.0 += acceleration.0;
-    circle.velocity.1 += acceleration.1;
-
-    //if the two circles are touching, bounce them off each other
-    if dist < (circle.mass.sqrt() + point_mass.sqrt()) {
-        circle.velocity.0 *= -1.;
-        circle.velocity.1 *= -1.;
-    }
-
-    //calculate the new position
-    circle.position.0 += circle.velocity.0;
-    circle.position.1 += circle.velocity.1;
-}
-
-fn update_pos_given_mouse(circle: &mut Circle, mouse_pos: Vec2, mouse_mass: f64) {
-    let distance = (
-        mouse_pos.0 - circle.position.0,
-        mouse_pos.1 - circle.position.1,
-    );
-
-    let dist = (distance.0.powi(2) + distance.1.powi(2)).sqrt();
-
-    let normal = (distance.0 / dist, distance.1 / dist);
-
-    //for this one, distance is squared again
-    let force = GRAV_CONST * mouse_mass * circle.mass / dist.powf(2.);
-    let force = (normal.0 * force, normal.1 * force);
-
-    //calculate the acceleration vector
-
-    let acceleration = (force.0 / circle.mass, force.1 / circle.mass);
-
-    //calculate the velocity vector
-    circle.velocity.0 += acceleration.0;
-    circle.velocity.1 += acceleration.1;
-
-    //calculate the new position
-    circle.position.0 += circle.velocity.0;
-    circle.position.1 += circle.velocity.1;
 }

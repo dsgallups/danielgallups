@@ -1,11 +1,25 @@
+use crate::{
+    document,
+    graph::Vec2,
+    html,
+    physics::{matter::Circle, Dynamics, Kinematics, Matter},
+};
+use web_sys::Element;
+
 pub struct DynamicElement<T> {
     pub el: Element,
     pub color: (f64, f64, f64),
     pub matter: T,
 }
 
+impl Default for DynamicElement<Circle> {
+    fn default() -> Self {
+        Self::new_rand()
+    }
+}
+
 impl DynamicElement<Circle> {
-    pub fn new() -> Self {
+    pub fn new_rand() -> Self {
         let rand_color = (
             128. + rand::random::<f64>() * 127.,
             128. + rand::random::<f64>() * 127.,
@@ -20,6 +34,8 @@ impl DynamicElement<Circle> {
         let rand_mass = 1. + rand::random::<f64>() * 9.;
 
         let matter: Circle = Circle::new(rand_mass, rand_position.into());
+
+        let radius = matter.radius();
 
         let document = document();
         let circle = document.create_element("div").unwrap();
@@ -47,7 +63,7 @@ impl DynamicElement<Circle> {
     }
 
     pub fn draw(&mut self) {
-        let position = self.matter.position();
+        let position = self.matter.pos();
         let radius = self.matter.radius();
 
         self.el
@@ -68,7 +84,7 @@ impl DynamicElement<Circle> {
     }
 }
 
-impl Kinematics for DynamicElement<T>
+impl<T> Kinematics for DynamicElement<T>
 where
     T: Kinematics,
 {
@@ -85,16 +101,9 @@ where
     fn mutate_force(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
         self.matter.mutate_force(f);
     }
-
-    fn pos(&self) -> Vec2 {
-        self.matter.pos()
-    }
-    fn mutate_pos(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
-        self.matter.mutate_pos(f);
-    }
 }
 
-impl Matter for DynamicElement<T>
+impl<T> Matter for DynamicElement<T>
 where
     T: Matter,
 {
@@ -104,13 +113,19 @@ where
     fn mutate_mass(&mut self, f: impl FnOnce(f64) -> f64) {
         self.matter.mutate_mass(f);
     }
+    fn pos(&self) -> Vec2 {
+        self.matter.pos()
+    }
+    fn mutate_pos(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
+        self.matter.mutate_pos(f);
+    }
 }
 
-impl Dynamics for DynamicElement<T>
+impl<T> Dynamics for DynamicElement<T>
 where
     T: Dynamics,
 {
-    fn apply_grav_force(&mut self, other: impl Matter) {
+    fn apply_grav_force(&mut self, other: &impl Matter) {
         self.matter.apply_grav_force(other);
     }
 
