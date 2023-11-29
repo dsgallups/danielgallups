@@ -130,7 +130,7 @@ fn spawn_circles() -> Vec<Circle> {
     //let background = document.create_element("div").unwrap();
 
     let mut circles = Vec::new();
-    for _ in 0..10 {
+    for _ in 0..1 {
         let rand_color = (
             rand::random::<f64>() * 255.,
             rand::random::<f64>() * 255.,
@@ -162,21 +162,42 @@ struct Circle {
 }
 
 fn tick(circles: &mut [Circle], mouse_pos: (f64, f64), window_size: (f64, f64)) {
+    let mouse_mass = 1.;
+
     for circle in circles.iter_mut() {
-        let mut force = (0., 0.);
+        //note that the y axis is inverted
+
+        //calculate the distance between the mouse and the circle
         let distance = (
             mouse_pos.0 - circle.position.0,
             mouse_pos.1 - circle.position.1,
         );
-        let distance_squared = distance.0.powi(2) + distance.1.powi(2);
-        let distance = distance_squared.sqrt();
-        let force_magnitude = 0.1 * circle.mass / distance_squared;
-        force.0 += force_magnitude * distance;
-        force.1 += force_magnitude * distance;
-        circle.velocity.0 += force.0 / circle.mass;
-        circle.velocity.1 += force.1 / circle.mass;
+
+        let dist = (distance.0.powi(2) + distance.1.powi(2)).sqrt();
+
+        let normal = (distance.0 / dist, distance.1 / dist);
+
+        //calculate the force vector
+        let force = (
+            normal.0 * mouse_mass * circle.mass / dist,
+            normal.1 * mouse_mass * circle.mass / dist,
+        );
+
+        //calculate the acceleration vector
+
+        let acceleration = (force.0 / circle.mass, force.1 / circle.mass);
+
+        //calculate the velocity vector
+        circle.velocity.0 += acceleration.0;
+        circle.velocity.1 += acceleration.1;
+
+        //calculate the new position
         circle.position.0 += circle.velocity.0;
         circle.position.1 += circle.velocity.1;
+
+        log(&format!("distance: {:04.2?}, force: {:04.2?}, acceleration: {:04.2?}, velocity: {:04.2?}, position: {:04.2?}", distance, force, acceleration, circle.velocity, circle.position));
+
+        //update the element
         circle
             .el
             .set_attribute(
