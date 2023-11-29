@@ -1,15 +1,16 @@
-mod paint;
-mod utils;
 use wasm_bindgen::prelude::*;
-use web_sys::Element;
-use web_sys::HtmlElement;
 
-use console_error_panic_hook;
+use web_sys::HtmlElement;
+mod circle;
+use circle::Circle;
+
 use std::cell::RefCell;
 use std::panic;
 use std::rc::Rc;
-use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
+
+const GRAV_CONST: f64 = 0.00001;
+const NUM_CIRCLES: usize = 100;
 
 #[wasm_bindgen]
 extern "C" {
@@ -56,8 +57,6 @@ pub fn run() -> Result<(), JsValue> {
     let f = Rc::new(RefCell::new(None));
     let g = f.clone();
 
-    let target = document().get_element_by_id("pagetext").unwrap();
-
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
         tick(&mut circles, *mouse_pos.borrow(), *window_size.borrow());
         request_animation_frame(f.borrow().as_ref().unwrap());
@@ -101,93 +100,22 @@ fn hook_window_size() -> Result<Rc<RefCell<(f64, f64)>>, JsValue> {
     Ok(window_size)
 }
 
-fn spawn_circle(left: f64, top: f64, color: (f64, f64, f64)) -> Element {
-    log("called");
-    let document = document();
-    let circle = document.create_element("div").unwrap();
-    circle.set_class_name("circle");
-    circle
-        .set_attribute(
-            "style",
-            &format!(
-                "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0});",
-                top - 1.,
-                left - 1.,
-                color.0,
-                color.1,
-                color.2
-            ),
-        )
-        .unwrap();
-
-    circle
-}
-
 fn spawn_circles() -> Vec<Circle> {
     //init background element
     let bg_el = document().get_element_by_id("background").unwrap();
 
-    //let background = document.create_element("div").unwrap();
-
-    let mut circles = Vec::new();
-    for _ in 0..10 {
-        let rand_color = (
-            rand::random::<f64>() * 255.,
-            rand::random::<f64>() * 255.,
-            rand::random::<f64>() * 255.,
-        );
-
-        let rand_position = (
-            rand::random::<f64>() * html().client_width() as f64,
-            rand::random::<f64>() * html().client_height() as f64,
-        );
-
-        let circle = spawn_circle(rand_position.0, rand_position.1, rand_color);
-        bg_el.append_child(&circle).unwrap();
-        circles.push(Circle {
-            el: circle,
-            velocity: (0., 0.),
-            mass: 1.,
-            position: rand_position,
-        });
-    }
-    circles
+    (0..NUM_CIRCLES)
+        .map(|_| {
+            let circle = Circle::new();
+            bg_el.append_child(&circle.el).unwrap();
+            circle
+        })
+        .collect::<Vec<_>>()
 }
 
-struct Circle {
-    pub el: Element,
-    pub velocity: (f64, f64),
-    pub mass: f64,
-    pub position: (f64, f64),
-}
-
-impl Circle {
-    pub fn reset(&mut self) {
-        self.velocity = (0., 0.);
-        self.position = (
-            rand::random::<f64>() * html().client_width() as f64,
-            rand::random::<f64>() * html().client_height() as f64,
-        );
-    }
-    pub fn update_el(&mut self) {
-        self.el
-            .set_attribute(
-                "style",
-                &format!(
-                    "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0});",
-                    self.position.1 - 1.,
-                    self.position.0 - 1.,
-                    255.,
-                    255.,
-                    255.
-                ),
-            )
-            .unwrap()
-    }
-}
 #[allow(clippy::mem_replace_with_uninit)]
 fn tick(circles: &mut [Circle], mouse_pos: (f64, f64), window_size: (f64, f64)) {
-    let mouse_mass = 3.;
+    let mouse_mass = -400.;
 
     for index in 0..circles.len() {
         let mut refframe_circle = unsafe {
@@ -205,7 +133,7 @@ fn tick(circles: &mut [Circle], mouse_pos: (f64, f64), window_size: (f64, f64)) 
             update_pos(&mut refframe_circle, circle.position, circle.mass);
         }
 
-        //update_pos(&mut refframe_circle, mouse_pos, mouse_mass);
+        update_pos_given_mouse(&mut refframe_circle, mouse_pos, mouse_mass);
         //todo
 
         let _ = std::mem::replace(&mut circles[index], refframe_circle);
@@ -231,7 +159,34 @@ fn update_pos(circle: &mut Circle, point: (f64, f64), point_mass: f64) {
     let normal = (distance.0 / dist, distance.1 / dist);
 
     //calculate the force vector
-    let force = 0.05 * point_mass * circle.mass / dist;
+    let force = GRAV_CONST * point_mass * circle.mass / dist;
+    let force = (normal.0 * force, normal.1 * force);
+
+    //calculate the acceleration vector
+
+    let acceleration = (force.0 / circle.mass, force.1 / circle.mass);
+
+    //calculate the velocity vector
+    circle.velocity.0 += acceleration.0;
+    circle.velocity.1 += acceleration.1;
+
+    //calculate the new position
+    circle.position.0 += circle.velocity.0;
+    circle.position.1 += circle.velocity.1;
+}
+
+fn update_pos_given_mouse(circle: &mut Circle, mouse_pos: (f64, f64), mouse_mass: f64) {
+    let distance = (
+        mouse_pos.0 - circle.position.0,
+        mouse_pos.1 - circle.position.1,
+    );
+
+    let dist = (distance.0.powi(2) + distance.1.powi(2)).sqrt();
+
+    let normal = (distance.0 / dist, distance.1 / dist);
+
+    //for this one, distance is squared again
+    let force = GRAV_CONST * mouse_mass * circle.mass / dist.powf(2.);
     let force = (normal.0 * force, normal.1 * force);
 
     //calculate the acceleration vector
