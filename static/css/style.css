@@ -1,6 +1,10 @@
 :root {
     --color-surface: #121323;
     --color-primary: #f5f5fa;
+    --color-orange: #e98b2a;
+    --color-yellow: #ffd241;
+    --color-green: #03ad00;
+    --color-blue: #6088f0;
 }
 
 .light-theme {
