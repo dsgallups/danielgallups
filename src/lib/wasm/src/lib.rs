@@ -115,7 +115,7 @@ fn spawn_circles() -> Vec<Circle> {
 
 #[allow(clippy::mem_replace_with_uninit)]
 fn tick(circles: &mut [Circle], mouse_pos: (f64, f64), window_size: (f64, f64)) {
-    let mouse_mass = -400.;
+    let mouse_mass = -40000.;
 
     for index in 0..circles.len() {
         let mut refframe_circle = unsafe {
