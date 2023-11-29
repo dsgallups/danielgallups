@@ -2,10 +2,11 @@
 	import '../app.css';
 	import { run } from '$lib/wasm/pkg/wasm';
 	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
-	if (browser) {
+	onMount(() => {
 		run();
-	}
+	});
 </script>
 
 <div class="page-container">
