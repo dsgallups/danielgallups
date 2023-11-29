@@ -4,6 +4,8 @@ use web_sys::HtmlElement;
 mod circle;
 use circle::Circle;
 
+mod graph;
+
 use std::cell::RefCell;
 use std::panic;
 use std::rc::Rc;
@@ -133,20 +135,20 @@ fn tick(circles: &mut [Circle], mouse_pos: (f64, f64), window_size: (f64, f64)) 
             update_pos(&mut refframe_circle, circle.position, circle.mass);
         }
 
-        update_pos_given_mouse(&mut refframe_circle, mouse_pos, mouse_mass);
+        //update_pos_given_mouse(&mut refframe_circle, mouse_pos, mouse_mass);
         //todo
 
         let _ = std::mem::replace(&mut circles[index], refframe_circle);
     }
 
     for circle in circles.iter_mut() {
-        if circle.position.0 < 0.
-            || circle.position.1 < 0.
-            || circle.position.0 > window_size.0
-            || circle.position.1 > window_size.1
-        {
-            circle.reset();
+        if circle.position.0 < 0. || circle.position.0 > window_size.0 {
+            circle.velocity.0 *= -1.;
         }
+        if circle.position.1 < 0. || circle.position.1 > window_size.1 {
+            circle.velocity.1 *= -1.;
+        }
+
         circle.update_el();
     }
 }
@@ -169,6 +171,12 @@ fn update_pos(circle: &mut Circle, point: (f64, f64), point_mass: f64) {
     //calculate the velocity vector
     circle.velocity.0 += acceleration.0;
     circle.velocity.1 += acceleration.1;
+
+    //if the two circles are touching, bounce them off each other
+    if dist < (circle.mass.sqrt() + point_mass.sqrt()) {
+        circle.velocity.0 *= -1.;
+        circle.velocity.1 *= -1.;
+    }
 
     //calculate the new position
     circle.position.0 += circle.velocity.0;

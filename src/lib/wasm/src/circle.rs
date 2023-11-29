@@ -1,13 +1,33 @@
 use web_sys::Element;
 
-use crate::{document, html};
+use crate::{document, graph::Vec2, html};
+
+#[derive(Clone, Debug, Default)]
+pub struct Kinematics {
+    pub position: Vec2,
+    pub velocity: Vec2,
+}
+
+impl Kinematics {
+    pub fn new(position: Vec2) -> Self {
+        Self {
+            position,
+            velocity: Vec2::default(),
+        }
+    }
+
+    pub fn pos(&self) -> Vec2 {
+        self.position.clone()
+    }
+}
 
 pub struct Circle {
     pub el: Element,
-    pub velocity: (f64, f64),
-    pub color: (f64, f64, f64),
+    pub cur_kinematics: Kinematics,
+    pub buf_kinematics: Option<Kinematics>,
+    color: (f64, f64, f64),
     pub mass: f64,
-    pub position: (f64, f64),
+    radius: f64,
 }
 
 impl Circle {
@@ -22,6 +42,8 @@ impl Circle {
             rand::random::<f64>() * html().client_width() as f64,
             rand::random::<f64>() * html().client_height() as f64,
         );
+
+        let kinematics = Kinematics::new(rand_position.into());
 
         let rand_mass = 1. + rand::random::<f64>() * 9.;
 
@@ -45,36 +67,40 @@ impl Circle {
                 ),
             )
             .unwrap();
+
         Self {
             el: circle,
-            velocity: (0., 0.),
+            cur_kinematics: kinematics,
+            buf_kinematics: None,
             color: rand_color,
             mass: rand_mass,
-            position: rand_position,
+            radius,
         }
     }
 
     pub fn reset(&mut self) {
-        self.velocity = (0., 0.);
-        self.position = (
+        let position = (
             rand::random::<f64>() * html().client_width() as f64,
             rand::random::<f64>() * html().client_height() as f64,
         );
+
+        self.buf_kinematics = None;
+        self.cur_kinematics = Kinematics::new(position.into());
     }
     pub fn update_el(&mut self) {
-        let radius = self.mass.sqrt();
+        let position = self.cur_kinematics.pos();
         self.el
             .set_attribute(
                 "style",
                 &format!(
                     "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0}); width: {:.2}px; height: {:.2}px;",
-                    self.position.1 - 1.,
-                    self.position.0 - 1.,
+                    position.y - 1.,
+                    position.x - 1.,
                     self.color.0,
                     self.color.1,
                     self.color.2,
-                    radius * 2.,
-                    radius * 2.,
+                    self.radius * 2.,
+                    self.radius * 2.,
                 ),
             )
             .unwrap()
