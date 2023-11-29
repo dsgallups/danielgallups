@@ -17,8 +17,8 @@
 
 <style lang="scss">
 	.page-container {
-		width: 100%;
-		height: 100%;
+		width: 100vw;
+		height: 100vh;
 		position: relative;
 		#background {
 			z-index: 0;
@@ -27,6 +27,7 @@
 			left: 0;
 			width: 100%;
 			height: 100%;
+			overflow: hidden;
 		}
 
 		:last-child {

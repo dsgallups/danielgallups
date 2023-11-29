@@ -169,10 +169,25 @@ impl Circle {
             rand::random::<f64>() * html().client_height() as f64,
         );
     }
+    pub fn update_el(&mut self) {
+        self.el
+            .set_attribute(
+                "style",
+                &format!(
+                    "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0});",
+                    self.position.1 - 1.,
+                    self.position.0 - 1.,
+                    255.,
+                    255.,
+                    255.
+                ),
+            )
+            .unwrap()
+    }
 }
 
 fn tick(circles: &mut [Circle], mouse_pos: (f64, f64), window_size: (f64, f64)) {
-    let mouse_mass = 1.;
+    let mouse_mass = 10.;
 
     for circle in circles.iter_mut() {
         if circle.position.0 < 0.
@@ -183,51 +198,35 @@ fn tick(circles: &mut [Circle], mouse_pos: (f64, f64), window_size: (f64, f64)) 
             circle.reset();
         }
         //note that the y axis is inverted
-
-        //calculate the distance between the mouse and the circle
-        let distance = (
-            mouse_pos.0 - circle.position.0,
-            mouse_pos.1 - circle.position.1,
-        );
-
-        let dist = (distance.0.powi(2) + distance.1.powi(2)).sqrt();
-
-        let normal = (distance.0 / dist, distance.1 / dist);
-
-        //calculate the force vector
-        let force = (
-            normal.0 * mouse_mass * circle.mass / dist,
-            normal.1 * mouse_mass * circle.mass / dist,
-        );
-
-        //calculate the acceleration vector
-
-        let acceleration = (force.0 / circle.mass, force.1 / circle.mass);
-
-        //calculate the velocity vector
-        circle.velocity.0 += acceleration.0;
-        circle.velocity.1 += acceleration.1;
-
-        //calculate the new position
-        circle.position.0 += circle.velocity.0;
-        circle.position.1 += circle.velocity.1;
-
-        log(&format!("distance: {:04.2?}, force: {:04.2?}, acceleration: {:04.2?}, velocity: {:04.2?}, position: {:04.2?}", distance, force, acceleration, circle.velocity, circle.position));
+        update_pos(circle, mouse_pos, mouse_mass);
 
         //update the element
-        circle
-            .el
-            .set_attribute(
-                "style",
-                &format!(
-                    "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0});",
-                    circle.position.1 - 1.,
-                    circle.position.0 - 1.,
-                    255.,
-                    255.,
-                    255.
-                ),
-            )
-            .unwrap();
+        circle.update_el();
     }
+}
+
+fn update_pos(circle: &mut Circle, point: (f64, f64), point_mass: f64) {
+    let distance = (point.0 - circle.position.0, point.1 - circle.position.1);
+
+    let dist = (distance.0.powi(2) + distance.1.powi(2)).sqrt();
+
+    let normal = (distance.0 / dist, distance.1 / dist);
+
+    //calculate the force vector
+    let force = (
+        normal.0 * point_mass * circle.mass / dist,
+        normal.1 * point_mass * circle.mass / dist,
+    );
+
+    //calculate the acceleration vector
+
+    let acceleration = (force.0 / circle.mass, force.1 / circle.mass);
+
+    //calculate the velocity vector
+    circle.velocity.0 += acceleration.0;
+    circle.velocity.1 += acceleration.1;
+
+    //calculate the new position
+    circle.position.0 += circle.velocity.0;
+    circle.position.1 += circle.velocity.1;
 }

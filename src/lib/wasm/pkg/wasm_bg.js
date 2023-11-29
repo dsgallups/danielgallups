@@ -522,17 +522,17 @@ export function __wbindgen_memory() {
 };
 
 export function __wbindgen_closure_wrapper77(arg0, arg1, arg2) {
-    const ret = makeMutClosure(arg0, arg1, 23, __wbg_adapter_24);
+    const ret = makeMutClosure(arg0, arg1, 22, __wbg_adapter_24);
     return addHeapObject(ret);
 };
 
 export function __wbindgen_closure_wrapper79(arg0, arg1, arg2) {
-    const ret = makeMutClosure(arg0, arg1, 23, __wbg_adapter_24);
+    const ret = makeMutClosure(arg0, arg1, 22, __wbg_adapter_24);
     return addHeapObject(ret);
 };
 
 export function __wbindgen_closure_wrapper81(arg0, arg1, arg2) {
-    const ret = makeMutClosure(arg0, arg1, 23, __wbg_adapter_29);
+    const ret = makeMutClosure(arg0, arg1, 22, __wbg_adapter_29);
     return addHeapObject(ret);
 };
 
