@@ -1,6 +1,6 @@
 <script>
 	import '../app.css';
-	import { greet, run } from '$lib/wasm/pkg/wasm';
+	import { run } from '$lib/wasm/pkg/wasm';
 	import { browser } from '$app/environment';
 
 	if (browser) {
@@ -9,6 +9,7 @@
 </script>
 
 <div class="page-container">
+	<div id="pagetext"></div>
 	<div id="background"></div>
 	<slot />
 </div>
@@ -26,6 +27,7 @@
 			width: 100%;
 			height: 100%;
 		}
+
 		:last-child {
 			z-index: 1;
 		}

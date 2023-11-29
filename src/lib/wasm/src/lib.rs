@@ -1,14 +1,31 @@
+mod paint;
 mod utils;
-
 use wasm_bindgen::prelude::*;
+use web_sys::Element;
+use web_sys::HtmlElement;
 
 use std::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
+#[wasm_bindgen]
+extern "C" {
+
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+
 fn window() -> web_sys::Window {
     web_sys::window().expect("no global `window` exists")
+}
+
+fn html() -> HtmlElement {
+    document()
+        .document_element()
+        .unwrap()
+        .dyn_into::<HtmlElement>()
+        .unwrap()
 }
 
 fn request_animation_frame(f: &Closure<dyn FnMut()>) {
@@ -25,24 +42,16 @@ fn document() -> web_sys::Document {
 
 #[wasm_bindgen]
 pub fn run() -> Result<(), JsValue> {
-    // Here we want to call `requestAnimationFrame` in a loop, but only a fixed
-    // number of times. After it's done we want all our resources cleaned up. To
-    // achieve this we're using an `Rc`. The `Rc` will eventually store the
-    // closure we want to execute on each frame, but to start out it contains
-    // `None`.
-    //
-    // After the `Rc` is made we'll actually create the closure, and the closure
-    // will reference one of the `Rc` instances. The other `Rc` reference is
-    // used to store the closure, request the first frame, and then is dropped
-    // by this function.
-    //
-    // Inside the closure we've got a persistent `Rc` reference, which we use
-    // for all future iterations of the loop
+    //current mouse position
+
+    let mouse_pos = hook_mouse_pos()?;
+
+    let window_size = hook_window_size()?;
+
     let f = Rc::new(RefCell::new(None));
     let g = f.clone();
 
-    let target = document().get_element_by_id("background").unwrap();
-
+    let target = document().get_element_by_id("pagetext").unwrap();
     let mut i = 0;
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
         /*if i > 300 {
@@ -59,6 +68,21 @@ pub fn run() -> Result<(), JsValue> {
         i += 1;
         let text = format!("requestAnimationFrame has been called {} times.", i);
         target.set_text_content(Some(&text));
+        target.set_attribute("top", &format!("{}px", i)).unwrap();
+
+        //use rand crate to generate color
+        let rand_color = (
+            rand::random::<f64>() * 255.,
+            rand::random::<f64>() * 255.,
+            rand::random::<f64>() * 255.,
+        );
+
+        let rand_position = (
+            rand::random::<f64>() * window_size.borrow().0,
+            rand::random::<f64>() * window_size.borrow().1,
+        );
+
+        let _circle = spawn_circle(rand_position.0, rand_position.1, rand_color);
 
         // Schedule ourself for another requestAnimationFrame callback.
         request_animation_frame(f.borrow().as_ref().unwrap());
@@ -68,12 +92,61 @@ pub fn run() -> Result<(), JsValue> {
     Ok(())
 }
 
-#[wasm_bindgen]
-extern "C" {
-    fn alert(s: &str);
+fn hook_mouse_pos() -> Result<Rc<RefCell<(f64, f64)>>, JsValue> {
+    let mouse_pos = Rc::new(RefCell::new((0.0, 0.0)));
+    {
+        let mouse_pos = mouse_pos.clone();
+        let closure = Closure::wrap(Box::new(move |event: web_sys::MouseEvent| {
+            mouse_pos.replace((event.offset_x() as f64, event.offset_y() as f64));
+            log(&format!("mouse_pos: {:.2?}", mouse_pos.borrow()));
+        }) as Box<dyn FnMut(_)>);
+        document()
+            .add_event_listener_with_callback("mousemove", closure.as_ref().unchecked_ref())?;
+        closure.forget();
+    }
+
+    Ok(mouse_pos)
 }
 
-#[wasm_bindgen]
-pub fn greet() {
-    alert("Hello, wasm!");
+fn hook_window_size() -> Result<Rc<RefCell<(f64, f64)>>, JsValue> {
+    let window_size = Rc::new(RefCell::new((
+        html().client_width() as f64,
+        html().client_height() as f64,
+    )));
+    {
+        let window_size = window_size.clone();
+        let closure = Closure::wrap(Box::new(move |_: web_sys::Event| {
+            window_size.replace((html().client_width() as f64, html().client_height() as f64));
+            log(&format!("window_size: {:.2?}", window_size.borrow()));
+        }) as Box<dyn FnMut(_)>);
+        window().add_event_listener_with_callback("resize", closure.as_ref().unchecked_ref())?;
+        closure.forget();
+    }
+
+    Ok(window_size)
+}
+
+fn spawn_circle(left: f64, top: f64, color: (f64, f64, f64)) -> Element {
+    log("called");
+    let document = document();
+    let circle = document.create_element("div").unwrap();
+    circle.set_class_name("circle");
+    circle
+        .set_attribute(
+            "style",
+            &format!(
+                "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0});",
+                top - 1.,
+                left - 1.,
+                color.0,
+                color.1,
+                color.2
+            ),
+        )
+        .unwrap();
+
+    let parent = document.get_element_by_id("background").unwrap();
+
+    parent.append_child(&circle).unwrap();
+    circle
 }
