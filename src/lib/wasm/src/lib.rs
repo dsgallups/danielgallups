@@ -161,10 +161,27 @@ struct Circle {
     pub position: (f64, f64),
 }
 
+impl Circle {
+    pub fn reset(&mut self) {
+        self.velocity = (0., 0.);
+        self.position = (
+            rand::random::<f64>() * html().client_width() as f64,
+            rand::random::<f64>() * html().client_height() as f64,
+        );
+    }
+}
+
 fn tick(circles: &mut [Circle], mouse_pos: (f64, f64), window_size: (f64, f64)) {
     let mouse_mass = 1.;
 
     for circle in circles.iter_mut() {
+        if circle.position.0 < 0.
+            || circle.position.1 < 0.
+            || circle.position.0 > window_size.0
+            || circle.position.1 > window_size.1
+        {
+            circle.reset();
+        }
         //note that the y axis is inverted
 
         //calculate the distance between the mouse and the circle
