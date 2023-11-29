@@ -130,7 +130,7 @@ fn spawn_circles() -> Vec<Circle> {
     //let background = document.create_element("div").unwrap();
 
     let mut circles = Vec::new();
-    for _ in 0..80 {
+    for _ in 0..10 {
         let rand_color = (
             rand::random::<f64>() * 255.,
             rand::random::<f64>() * 255.,
