@@ -1,16 +1,18 @@
 // Largely copy/pasted from https://github.com/fschutt/quadtree-f32
 
-//! Simple f32-based quadtree that can query rects and points
+//! Simple f64-based quadtree that can query rects and points
 //! in Olog(n) time.
 //!
 //! Note: For simplicity sake, there is no way to update the tree
 //! besides destroying and rebuilding it completely.
 
+#![allow(dead_code)]
+
 use std::collections::BTreeMap;
 use std::fmt;
 use std::iter::Iterator;
 
-/// f32-based Point
+/// f64-based Point
 #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
 pub struct QTPoint {
     pub x: f64,
@@ -202,7 +204,7 @@ fn test_overlap() {
         min_x: 0.0,
         min_y: 0.0,
     };
-    assert_eq!(a.overlaps_rect(&b), false);
+    assert!(!a.overlaps_rect(&b));
 }
 
 /// Instead of making a generic tree, the quadtree only
@@ -253,70 +255,67 @@ fn construct_quadtree(items: Vec<(Rect, ItemId)>, total_bbox: Rect, max_len: usi
         let current_items_len = knot_items.len();
 
         for knot in knot_items.iter_mut() {
-            match knot.clone() {
-                Knot::HasItems { bbox, items } => {
-                    if items.len() > max_len {
-                        // rect has too many items split it into 4 quarters and replace the original knot with
-                        let [top_left, top_right, bottom_left, bottom_right] = bbox.quarter();
+            if let Knot::HasItems { bbox, items } = knot.clone() {
+                if items.len() > max_len {
+                    // rect has too many items split it into 4 quarters and replace the original knot with
+                    let [top_left, top_right, bottom_left, bottom_right] = bbox.quarter();
 
-                        let top_left_rects = items
-                            .iter()
-                            .filter(|(r, _)| top_left.overlaps_rect(r))
-                            .copied()
-                            .collect::<Vec<_>>();
-                        let top_right_rects = items
-                            .iter()
-                            .filter(|(r, _)| top_right.overlaps_rect(r))
-                            .copied()
-                            .collect::<Vec<_>>();
-                        let bottom_left_rects = items
-                            .iter()
-                            .filter(|(r, _)| bottom_left.overlaps_rect(r))
-                            .copied()
-                            .collect::<Vec<_>>();
-                        let bottom_right_rects = items
-                            .iter()
-                            .filter(|(r, _)| bottom_right.overlaps_rect(r))
-                            .copied()
-                            .collect::<Vec<_>>();
+                    let top_left_rects = items
+                        .iter()
+                        .filter(|(r, _)| top_left.overlaps_rect(r))
+                        .copied()
+                        .collect::<Vec<_>>();
+                    let top_right_rects = items
+                        .iter()
+                        .filter(|(r, _)| top_right.overlaps_rect(r))
+                        .copied()
+                        .collect::<Vec<_>>();
+                    let bottom_left_rects = items
+                        .iter()
+                        .filter(|(r, _)| bottom_left.overlaps_rect(r))
+                        .copied()
+                        .collect::<Vec<_>>();
+                    let bottom_right_rects = items
+                        .iter()
+                        .filter(|(r, _)| bottom_right.overlaps_rect(r))
+                        .copied()
+                        .collect::<Vec<_>>();
 
-                        let top_left_knot = Knot::HasItems {
-                            bbox: top_left,
-                            items: top_left_rects,
-                        };
-                        let top_left_knot_id = current_items_len + items_to_push.len();
-                        items_to_push.push(top_left_knot);
+                    let top_left_knot = Knot::HasItems {
+                        bbox: top_left,
+                        items: top_left_rects,
+                    };
+                    let top_left_knot_id = current_items_len + items_to_push.len();
+                    items_to_push.push(top_left_knot);
 
-                        let top_right_knot = Knot::HasItems {
-                            bbox: top_right,
-                            items: top_right_rects,
-                        };
-                        let top_right_knot_id = current_items_len + items_to_push.len();
-                        items_to_push.push(top_right_knot);
+                    let top_right_knot = Knot::HasItems {
+                        bbox: top_right,
+                        items: top_right_rects,
+                    };
+                    let top_right_knot_id = current_items_len + items_to_push.len();
+                    items_to_push.push(top_right_knot);
 
-                        let bottom_left_knot = Knot::HasItems {
-                            bbox: bottom_left,
-                            items: bottom_left_rects,
-                        };
-                        let bottom_left_knot_id = current_items_len + items_to_push.len();
-                        items_to_push.push(bottom_left_knot);
+                    let bottom_left_knot = Knot::HasItems {
+                        bbox: bottom_left,
+                        items: bottom_left_rects,
+                    };
+                    let bottom_left_knot_id = current_items_len + items_to_push.len();
+                    items_to_push.push(bottom_left_knot);
 
-                        let bottom_right_knot = Knot::HasItems {
-                            bbox: bottom_right,
-                            items: bottom_right_rects,
-                        };
-                        let bottom_right_knot_id = current_items_len + items_to_push.len();
-                        items_to_push.push(bottom_right_knot);
+                    let bottom_right_knot = Knot::HasItems {
+                        bbox: bottom_right,
+                        items: bottom_right_rects,
+                    };
+                    let bottom_right_knot_id = current_items_len + items_to_push.len();
+                    items_to_push.push(bottom_right_knot);
 
-                        *knot = Knot::HasChildren([
-                            (InternalId(top_left_knot_id), top_left),
-                            (InternalId(top_right_knot_id), top_right),
-                            (InternalId(bottom_left_knot_id), bottom_left),
-                            (InternalId(bottom_right_knot_id), bottom_right),
-                        ]);
-                    }
+                    *knot = Knot::HasChildren([
+                        (InternalId(top_left_knot_id), top_left),
+                        (InternalId(top_right_knot_id), top_right),
+                        (InternalId(bottom_left_knot_id), bottom_left),
+                        (InternalId(bottom_right_knot_id), bottom_right),
+                    ]);
                 }
-                _ => {}
             }
         }
 
