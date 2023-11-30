@@ -17,7 +17,7 @@ use wasm_bindgen::JsCast;
 
 const LOG: bool = false;
 const GRAV_CONST: f64 = 0.00005;
-const NUM_CIRCLES: usize = 10;
+const NUM_CIRCLES: usize = 100;
 #[allow(dead_code)]
 const ENERGY_CONSERVED_ON_COLLISION: f64 = 1.;
 

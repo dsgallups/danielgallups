@@ -54,7 +54,7 @@ pub trait Dynamics: Matter + Kinematics {
         self.set_velocity((0., 0.).into());
         self.set_pos(
             (
-                rand::random::<f64>() * html().client_height() as f64,
+                rand::random::<f64>() * html().client_width() as f64,
                 rand::random::<f64>() * html().client_height() as f64,
             )
                 .into(),
