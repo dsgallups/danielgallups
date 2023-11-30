@@ -2,6 +2,7 @@ use draw::DynamicElement;
 use graph::Vec2;
 use physics::{Circle, Dynamics, Kinematics, Matter, Point};
 use wasm_bindgen::prelude::*;
+mod quadtree;
 
 use web_sys::HtmlElement;
 
