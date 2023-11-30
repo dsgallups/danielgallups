@@ -1,7 +1,7 @@
 use crate::{
     graph::Vec2,
     physics::{Dynamics, Kinematics, Matter},
-    ENERGY_CONSERVED_ON_COLLISION, GRAV_CONST,
+    ELASTICITY, GRAV_CONST,
 };
 use std::fmt::Debug;
 
@@ -103,8 +103,7 @@ impl Dynamics for Circle {
             let relative_velocity = self_velocity.clone() - other_velocity;
             let velocity_normal = relative_velocity.dot(collision_normal.clone());
 
-            let impulse =
-                2.0 * ENERGY_CONSERVED_ON_COLLISION * velocity_normal / (self_mass + other_mass);
+            let impulse = 2.0 * ELASTICITY * velocity_normal / (self_mass + other_mass);
             let self_impulse = impulse * other_mass;
 
             let self_new_velocity = self_velocity - collision_normal.clone() * self_impulse;

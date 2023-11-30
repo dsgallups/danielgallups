@@ -21,7 +21,9 @@ const GRAV_CONST: f64 = 0.00005;
 const NUM_CIRCLES: usize = 120;
 const MOUSE_MASS: f64 = 4000.;
 #[allow(dead_code)]
-const ENERGY_CONSERVED_ON_COLLISION: f64 = 0.8;
+//popcorn
+//const ELASTICITY: f64 = 1.5;
+const ELASTICITY: f64 = 1.;
 
 #[wasm_bindgen]
 extern "C" {
@@ -62,7 +64,7 @@ pub fn run() -> Result<(), JsValue> {
 
     let window_size = hook_window_size()?;
 
-    let mut circles = spawn_circles();
+    let mut circles = spawn_parallel_circles();
 
     let f = Rc::new(RefCell::new(None));
     let g = f.clone();
@@ -242,14 +244,21 @@ fn tick(
 
         let position = circle.matter.pos();
         let radius = circle.matter.mass().sqrt();
+        let mut new_position = circle.matter.pos();
 
-        if position.x + (radius + radius) < 0.
-            || position.x > window_size.0
-            || position.y + (radius + radius) < 0.
-            || position.y > window_size.1
-        {
-            circle.reset();
+        if position.x + (radius + radius) < 0. {
+            new_position.x = window_size.0 + radius;
+        } else if position.x > window_size.0 {
+            new_position.x = 0. - radius;
         }
+
+        if position.y + (radius + radius) < 0. {
+            new_position.y = window_size.0 + radius;
+        } else if position.y > window_size.1 {
+            new_position.y = 0. - radius;
+        }
+
+        circle.matter.set_pos(new_position);
 
         circle.draw();
     }
