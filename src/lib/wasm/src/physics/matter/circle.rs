@@ -108,20 +108,28 @@ impl Dynamics for Circle {
                 collision_normal * (self_radius + other_radius - collision_distance) / 2.;
 
             self.apply_pos(correction);
+
+            //in the real world, everything has an equal and opposite force. but because gravity
+            //isn't really a force, we don't apply it here so it velocity is conserved
+            (
+                distance.magnitude(),
+                0.,
+                distance.magnitude() < (self.radius + other.mass().sqrt()),
+            )
+        } else {
+            let force_magnitude =
+                GRAV_CONST * other.mass() * self.mass / distance.magnitude().sqrt();
+
+            let normal = distance.normalize() * -1.;
+            let force = normal * force_magnitude;
+
+            self.apply_force(force);
+            (
+                distance.magnitude(),
+                force_magnitude,
+                distance.magnitude() < (self.radius + other.mass().sqrt()),
+            )
         }
-
-        //for this one, distance is squared again
-        let force_magnitude = GRAV_CONST * other.mass() * self.mass / distance.magnitude().sqrt();
-
-        let normal = distance.normalize() * -1.;
-        let force = normal * force_magnitude;
-
-        self.apply_force(force);
-        (
-            distance.magnitude(),
-            force_magnitude,
-            distance.magnitude() < (self.radius + other.mass().sqrt()),
-        )
     }
 
     fn tick_forces(&mut self) {

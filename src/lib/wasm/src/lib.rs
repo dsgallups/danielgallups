@@ -15,7 +15,7 @@ use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
-const GRAV_CONST: f64 = 0.0005;
+const GRAV_CONST: f64 = 0.00005;
 const NUM_CIRCLES: usize = 10;
 const ENERGY_CONSERVED_ON_COLLISION: f64 = 1.;
 
@@ -159,7 +159,7 @@ fn spawn_conjoined_circles() -> Vec<DynamicElement<Circle>> {
 
     let circle_one = DynamicElement::new(5., (100., 100.).into());
     bg_el.append_child(&circle_one.el).unwrap();
-    let circle_two = DynamicElement::new(1., (106., 106.).into());
+    let circle_two = DynamicElement::new(3., (100., 108.).into());
     bg_el.append_child(&circle_two.el).unwrap();
     vec![circle_one, circle_two]
 }
