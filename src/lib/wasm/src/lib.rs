@@ -15,8 +15,8 @@ use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
-const GRAV_CONST: f64 = 0.005;
-const NUM_CIRCLES: usize = 2;
+const GRAV_CONST: f64 = 0.0005;
+const NUM_CIRCLES: usize = 10;
 const ENERGY_CONSERVED_ON_COLLISION: f64 = 1.;
 
 #[wasm_bindgen]
@@ -154,6 +154,16 @@ fn spawn_circles() -> Vec<DynamicElement<Circle>> {
         .collect::<Vec<_>>()
 }
 
+fn spawn_conjoined_circles() -> Vec<DynamicElement<Circle>> {
+    let bg_el = document().get_element_by_id("background").unwrap();
+
+    let circle_one = DynamicElement::new(5., (100., 100.).into());
+    bg_el.append_child(&circle_one.el).unwrap();
+    let circle_two = DynamicElement::new(1., (106., 106.).into());
+    bg_el.append_child(&circle_two.el).unwrap();
+    vec![circle_one, circle_two]
+}
+
 #[allow(clippy::mem_replace_with_uninit)]
 fn tick(
     circles: &mut [DynamicElement<Circle>],
@@ -207,19 +217,26 @@ fn tick(
         circle.reset_forces();
 
         let position = circle.matter.pos();
+        let velocity = circle.matter.velocity();
+
+        let radius = circle.matter.mass().sqrt();
 
         if position.x < 0.
-            || position.x > window_size.0
+            || position.x + radius > window_size.0
             || position.y < 0.
-            || position.y > window_size.1
+            || position.y + radius > window_size.1
         {
             let mut new_velocity = circle.matter.velocity();
 
-            if position.x < 0. || position.x > window_size.0 {
+            if position.x < 0. && velocity.x < 0.
+                || position.x + radius > window_size.0 && velocity.x > 0.
+            {
                 new_velocity.x = -new_velocity.x;
             }
 
-            if position.y < 0. || position.y > window_size.1 {
+            if position.y < 0. && velocity.y < 0.
+                || position.y + radius > window_size.1 && velocity.y > 0.
+            {
                 new_velocity.y = -new_velocity.y;
             }
 
@@ -239,13 +256,13 @@ fn tick(
                 continue;
             }
 
-            circle_potential_energy += refframe_circle.mass() * circle.mass() * GRAV_CONST
+            circle_potential_energy += -1.0 * refframe_circle.mass() * circle.mass() * GRAV_CONST
                 / (refframe_circle.pos() - circle.pos()).magnitude();
         }
 
         //then calcualte the whole potential energy of the system
         for circle in circles.iter().skip(i + 1) {
-            potential_energy += refframe_circle.mass() * circle.mass() * GRAV_CONST
+            potential_energy += -1.0 * refframe_circle.mass() * circle.mass() * GRAV_CONST
                 / (refframe_circle.pos() - circle.pos()).magnitude();
         }
 

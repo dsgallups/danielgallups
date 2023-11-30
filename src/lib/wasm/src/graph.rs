@@ -1,4 +1,4 @@
-use std::ops::{Add, Mul, Sub};
+use std::ops::{Add, Div, Mul, Sub};
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Vec2 {
@@ -17,6 +17,10 @@ impl Vec2 {
             x: self.x / magnitude,
             y: self.y / magnitude,
         }
+    }
+
+    pub fn dot(&self, other: Vec2) -> f64 {
+        self.x * other.x + self.y * other.y
     }
 }
 
@@ -72,6 +76,17 @@ impl Mul<f64> for Vec2 {
         Self {
             x: self.x * rhs,
             y: self.y * rhs,
+        }
+    }
+}
+
+impl Div<f64> for Vec2 {
+    type Output = Self;
+
+    fn div(self, rhs: f64) -> Self::Output {
+        Self {
+            x: self.x / rhs,
+            y: self.y / rhs,
         }
     }
 }

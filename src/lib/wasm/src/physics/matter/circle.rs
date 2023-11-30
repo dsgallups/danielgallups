@@ -66,28 +66,49 @@ impl Matter for Circle {
 }
 
 impl Dynamics for Circle {
-    fn apply_grav_force(&mut self, other: &impl Matter) -> (f64, f64, bool) {
+    fn apply_grav_force(&mut self, other: &impl Dynamics) -> (f64, f64, bool) {
         //let mut dist = self.position.distance_from(&other.pos());
-
-        /*if dist < (self.radius + other.mass().sqrt()) {
-            let radius = self.radius;
-
-            self.mutate_velocity(|mut v| {
-                v.x *= -ENERGY_CONSERVED_ON_COLLISION;
-                v.y *= -ENERGY_CONSERVED_ON_COLLISION;
-                v
-            });
-
-            //set the position to be the edge of the other circle
-            self.mutate_pos(|p| {
-                let normal = p.normal(&other.pos());
-                other.pos() + (normal * (radius + other.mass().sqrt()))
-            });
-
-            dist = self.position.distance_from(&other.pos());
-        }*/
-
         let distance = self.pos() - other.pos();
+
+        if distance.magnitude() < (self.radius + other.mass().sqrt()) {
+            /*
+               A vec 2 is
+               Vec2 {
+                   x: f64,
+                   y: f64,
+               }
+
+            */
+            let self_radius: f64 = self.radius;
+            let self_velocity: Vec2 = self.velocity();
+            let self_mass: f64 = self.mass();
+
+            let other_radius: f64 = other.mass().sqrt();
+            let other_velocity: Vec2 = other.velocity();
+            let other_mass: f64 = other.mass();
+            //determine the new velocity. Note that the other collider is a circle, so we can calculate the point of intersection
+            //and use that to determine the normal
+            let collision_vector = distance.clone();
+            let collision_distance = distance.magnitude();
+            let collision_normal = distance.normalize();
+
+            let relative_velocity = self_velocity.clone() - other_velocity;
+            let velocity_normal = relative_velocity.dot(collision_normal.clone());
+
+            let impulse = 2.0 * velocity_normal / (self_mass + other_mass);
+            let self_impulse = impulse * other_mass;
+
+            let self_new_velocity = self_velocity - collision_normal.clone() * self_impulse;
+
+            // Update velocities
+            self.set_velocity(self_new_velocity);
+
+            // correct the position to be just inside the outer circle for this logic to run again
+            let correction =
+                collision_normal * (self_radius + other_radius - collision_distance) / 2.;
+
+            self.apply_pos(correction);
+        }
 
         //for this one, distance is squared again
         let force_magnitude = GRAV_CONST * other.mass() * self.mass / distance.magnitude().sqrt();

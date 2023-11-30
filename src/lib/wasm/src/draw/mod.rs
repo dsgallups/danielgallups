@@ -19,6 +19,40 @@ impl Default for DynamicElement<Circle> {
 }
 
 impl DynamicElement<Circle> {
+    pub fn new(radius: f64, position: Vec2) -> Self {
+        let rand_color = (
+            128. + rand::random::<f64>() * 127.,
+            128. + rand::random::<f64>() * 127.,
+            128. + rand::random::<f64>() * 127.,
+        );
+
+        let mass = radius * radius;
+        let matter: Circle = Circle::new(mass, position.clone());
+
+        let document = document();
+        let circle = document.create_element("div").unwrap();
+        circle.set_class_name("circle");
+        circle
+            .set_attribute(
+                "style",
+                &format!(
+                    "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0}); width: {:.2}px; height: {:.2}px;",
+                    position.y - radius / 2.,
+                    position.x - radius / 2.,
+                    rand_color.0,
+                    rand_color.1,
+                    rand_color.2,
+                    radius * 2.,
+                    radius * 2.,
+                ),
+            )
+            .unwrap();
+        Self {
+            el: circle,
+            color: rand_color,
+            matter,
+        }
+    }
     pub fn new_rand() -> Self {
         let rand_color = (
             128. + rand::random::<f64>() * 127.,
@@ -31,7 +65,7 @@ impl DynamicElement<Circle> {
             rand::random::<f64>() * html().client_height() as f64,
         );
 
-        let rand_mass = 1. + rand::random::<f64>() * 9.;
+        let rand_mass = 25. + rand::random::<f64>() * 100.;
 
         let matter: Circle = Circle::new(rand_mass, rand_position.into());
 
@@ -45,8 +79,8 @@ impl DynamicElement<Circle> {
                 "style",
                 &format!(
                     "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0}); width: {:.2}px; height: {:.2}px;",
-                    rand_position.1 - 1.,
-                    rand_position.0 - 1.,
+                    rand_position.1 - radius / 2.,
+                    rand_position.0 - radius / 2.,
                     rand_color.0,
                     rand_color.1,
                     rand_color.2,
@@ -71,8 +105,8 @@ impl DynamicElement<Circle> {
                 "style",
                 &format!(
                     "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0}); width: {:.2}px; height: {:.2}px;",
-                    position.y - 1.,
-                    position.x - 1.,
+                    position.y - radius / 2.,
+                    position.x - radius / 2.,
                     self.color.0,
                     self.color.1,
                     self.color.2,
@@ -125,7 +159,7 @@ impl<T> Dynamics for DynamicElement<T>
 where
     T: Dynamics,
 {
-    fn apply_grav_force(&mut self, other: &impl Matter) -> (f64, f64, bool) {
+    fn apply_grav_force(&mut self, other: &impl Dynamics) -> (f64, f64, bool) {
         self.matter.apply_grav_force(other)
     }
 
