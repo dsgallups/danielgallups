@@ -45,6 +45,8 @@ pub trait Matter {
 }
 
 pub trait Dynamics: Matter + Kinematics {
+    fn apply_grav_force_for_mass(&mut self, other: &impl Matter);
+
     fn apply_grav_force(&mut self, other: &impl Dynamics) -> (f64, f64, bool);
 
     fn tick_forces(&mut self);

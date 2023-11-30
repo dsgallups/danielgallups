@@ -17,7 +17,8 @@ use wasm_bindgen::JsCast;
 
 const LOG: bool = false;
 const GRAV_CONST: f64 = 0.00005;
-const NUM_CIRCLES: usize = 100;
+const NUM_CIRCLES: usize = 20;
+const MOUSE_MASS: f64 = 2000.;
 #[allow(dead_code)]
 const ENERGY_CONSERVED_ON_COLLISION: f64 = 1.;
 
@@ -66,8 +67,10 @@ pub fn run() -> Result<(), JsValue> {
     let g = f.clone();
 
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
+        let mouse_pos = mouse_pos.borrow();
+
         let (info, _collision_occured) =
-            tick(&mut circles, *mouse_pos.borrow(), *window_size.borrow());
+            tick(&mut circles, mouse_pos.as_ref(), *window_size.borrow());
 
         if LOG {
             let energy = info.potential_energy + info.kinetic_energy;
@@ -94,16 +97,33 @@ pub fn run() -> Result<(), JsValue> {
     Ok(())
 }
 
-fn hook_mouse_pos() -> Result<Rc<RefCell<(f64, f64)>>, JsValue> {
-    let mouse_pos = Rc::new(RefCell::new((0.0, 0.0)));
+fn hook_mouse_pos() -> Result<Rc<RefCell<Option<Point>>>, JsValue> {
+    let mouse_pos = Rc::new(RefCell::new(None));
     {
         let mouse_pos = mouse_pos.clone();
         let closure = Closure::wrap(Box::new(move |event: web_sys::MouseEvent| {
-            mouse_pos.replace((event.offset_x() as f64, event.offset_y() as f64));
+            let point = Point::new(
+                MOUSE_MASS,
+                (event.offset_x() as f64, event.offset_y() as f64).into(),
+            );
+            mouse_pos.replace(Some(point));
             //log(&format!("mouse_pos: {:.2?}", mouse_pos.borrow()));
         }) as Box<dyn FnMut(_)>);
         document()
             .add_event_listener_with_callback("mousemove", closure.as_ref().unchecked_ref())?;
+        closure.forget();
+    }
+
+    {
+        let mouse_pos = mouse_pos.clone();
+        let closure = Closure::wrap(Box::new(move |_: web_sys::MouseEvent| {
+            mouse_pos.replace(None);
+            //log(&format!("mouse_pos: {:.2?}", mouse_pos.borrow()));
+        }) as Box<dyn FnMut(_)>);
+        document()
+            .document_element()
+            .unwrap()
+            .add_event_listener_with_callback("mouseleave", closure.as_ref().unchecked_ref())?;
         closure.forget();
     }
 
@@ -154,14 +174,10 @@ fn spawn_conjoined_circles() -> Vec<DynamicElement<Circle>> {
 #[allow(clippy::mem_replace_with_uninit)]
 fn tick(
     circles: &mut [DynamicElement<Circle>],
-    mouse_pos: (f64, f64),
+    mouse_pos: Option<&Point>,
     window_size: (f64, f64),
 ) -> (Information, bool) {
     let mut start_tick = false;
-
-    let mouse_mass = -40000.;
-
-    let _mouse_matter = Point::new(mouse_mass, mouse_pos.into());
 
     let mut potential_energy = 0.;
 
@@ -186,6 +202,10 @@ fn tick(
             if begin_tick {
                 start_tick = true;
             }
+        }
+
+        if let Some(mouse_pos) = mouse_pos {
+            refframe_circle.apply_grav_force_for_mass(mouse_pos);
         }
 
         //update_pos_given_mouse(&mut refframe_circle, mouse_pos, mouse_mass);
