@@ -26,4 +26,7 @@ impl Matter for Point {
     fn mutate_pos(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
         self.position = f(self.position.clone());
     }
+    fn radius(&self) -> f64 {
+        0.
+    }
 }

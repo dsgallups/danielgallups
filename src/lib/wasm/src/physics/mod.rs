@@ -1,6 +1,7 @@
 use crate::{graph::Vec2, html};
 pub mod matter;
 pub use matter::*;
+use std::fmt::Debug;
 /// If an item doesnt have a velocity, then it can't be kinematic
 /// as a logical consequence, you cannot apply a force to an item without velocity
 pub trait Kinematics {
@@ -42,12 +43,14 @@ pub trait Matter {
     fn apply_pos(&mut self, pos: Vec2) {
         self.mutate_pos(|p| p + pos);
     }
+    //this is temporary and should be removed
+    fn radius(&self) -> f64;
 }
 
 pub trait Dynamics: Matter + Kinematics {
     fn apply_grav_force_for_mass(&mut self, other: &impl Matter);
 
-    fn apply_grav_force(&mut self, other: &impl Dynamics) -> (f64, f64, bool);
+    fn apply_grav_force(&mut self, other: &(impl Dynamics + Debug)) -> (f64, f64, bool);
 
     fn tick_forces(&mut self);
 

@@ -1,9 +1,12 @@
 use crate::{
     graph::Vec2,
+    log,
     physics::{Dynamics, Kinematics, Matter},
-    GRAV_CONST,
+    ENERGY_CONSERVED_ON_COLLISION, GRAV_CONST,
 };
+use std::fmt::Debug;
 
+#[derive(Debug)]
 pub struct Circle {
     pub mass: f64,
     radius: f64,
@@ -63,6 +66,9 @@ impl Matter for Circle {
     fn mutate_pos(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
         self.position = f(self.position.clone());
     }
+    fn radius(&self) -> f64 {
+        self.radius
+    }
 }
 
 impl Dynamics for Circle {
@@ -78,11 +84,20 @@ impl Dynamics for Circle {
         self.apply_force(force);
     }
 
-    fn apply_grav_force(&mut self, other: &impl Dynamics) -> (f64, f64, bool) {
+    fn apply_grav_force(&mut self, other: &(impl Dynamics + Debug)) -> (f64, f64, bool) {
         //let mut dist = self.position.distance_from(&other.pos());
         let distance = self.pos() - other.pos();
 
-        if distance.magnitude() < (self.radius + other.mass().sqrt()) {
+        if distance.magnitude() < (self.radius() + other.radius()) {
+            let msg = format!(
+                "collision between {:?} and {:?}\nmagnitude: {}\nradius + other_radius: {}\n\n",
+                self,
+                other,
+                distance.magnitude(),
+                self.radius() + other.radius()
+            );
+            log(&msg);
+
             /*
                A vec 2 is
                Vec2 {
@@ -91,11 +106,11 @@ impl Dynamics for Circle {
                }
 
             */
-            let self_radius: f64 = self.radius;
+            let self_radius: f64 = self.radius();
             let self_velocity: Vec2 = self.velocity();
             let self_mass: f64 = self.mass();
 
-            let other_radius: f64 = other.mass().sqrt();
+            let other_radius: f64 = other.radius();
             let other_velocity: Vec2 = other.velocity();
             let other_mass: f64 = other.mass();
             //determine the new velocity. Note that the other collider is a circle, so we can calculate the point of intersection
@@ -109,7 +124,8 @@ impl Dynamics for Circle {
             let impulse = 2.0 * velocity_normal / (self_mass + other_mass);
             let self_impulse = impulse * other_mass;
 
-            let self_new_velocity = self_velocity - collision_normal.clone() * self_impulse;
+            let self_new_velocity = (self_velocity - collision_normal.clone() * self_impulse)
+                * ENERGY_CONSERVED_ON_COLLISION;
 
             // Update velocities
             self.set_velocity(self_new_velocity);
@@ -119,28 +135,18 @@ impl Dynamics for Circle {
                 collision_normal * (self_radius + other_radius - collision_distance) / 2.;
 
             self.apply_pos(correction);
-
-            //in the real world, everything has an equal and opposite force. but because gravity
-            //isn't really a force, we don't apply it here so it velocity is conserved
-            (
-                distance.magnitude(),
-                0.,
-                distance.magnitude() < (self.radius + other.mass().sqrt()),
-            )
-        } else {
-            let force_magnitude =
-                GRAV_CONST * other.mass() * self.mass / distance.magnitude().sqrt();
-
-            let normal = distance.normalize() * -1.;
-            let force = normal * force_magnitude;
-
-            self.apply_force(force);
-            (
-                distance.magnitude(),
-                force_magnitude,
-                distance.magnitude() < (self.radius + other.mass().sqrt()),
-            )
         }
+        let force_magnitude = GRAV_CONST * other.mass() * self.mass / distance.magnitude().sqrt();
+
+        let normal = distance.normalize() * -1.;
+        let force = normal * force_magnitude;
+
+        self.apply_force(force);
+        (
+            distance.magnitude(),
+            force_magnitude,
+            distance.magnitude() < (self.radius + other.mass().sqrt()),
+        )
     }
 
     fn tick_forces(&mut self) {

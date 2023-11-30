@@ -4,8 +4,8 @@ use crate::{
     html,
     physics::{matter::Circle, Dynamics, Kinematics, Matter},
 };
+use std::fmt::Debug;
 use web_sys::Element;
-
 pub struct DynamicElement<T> {
     pub el: Element,
     pub color: (f64, f64, f64),
@@ -29,6 +29,8 @@ impl DynamicElement<Circle> {
         let mass = radius * radius;
         let matter: Circle = Circle::new(mass, position.clone());
 
+        let radius = matter.radius();
+
         let document = document();
         let circle = document.create_element("div").unwrap();
         circle.set_class_name("circle");
@@ -36,9 +38,9 @@ impl DynamicElement<Circle> {
             .set_attribute(
                 "style",
                 &format!(
-                    "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0}); width: {:.2}px; height: {:.2}px;",
-                    position.y - radius / 2.,
-                    position.x - radius / 2.,
+                    "top: {:.0}px; left: {:.0}px; background-color: rgb({:.0}, {:.0}, {:.0}); width: {:.0}px; height: {:.0}px;",
+                    position.y,
+                    position.x,
                     rand_color.0,
                     rand_color.1,
                     rand_color.2,
@@ -78,9 +80,9 @@ impl DynamicElement<Circle> {
             .set_attribute(
                 "style",
                 &format!(
-                    "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0}); width: {:.2}px; height: {:.2}px;",
-                    rand_position.1 - radius / 2.,
-                    rand_position.0 - radius / 2.,
+                    "top: {:.0}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0}); width: {:.2}px; height: {:.2}px;",
+                    rand_position.1 - radius,
+                    rand_position.0 - radius,
                     rand_color.0,
                     rand_color.1,
                     rand_color.2,
@@ -105,8 +107,8 @@ impl DynamicElement<Circle> {
                 "style",
                 &format!(
                     "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0}); width: {:.2}px; height: {:.2}px;",
-                    position.y - radius / 2.,
-                    position.x - radius / 2.,
+                    position.y - radius,
+                    position.x - radius,
                     self.color.0,
                     self.color.1,
                     self.color.2,
@@ -153,6 +155,9 @@ where
     fn mutate_pos(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
         self.matter.mutate_pos(f);
     }
+    fn radius(&self) -> f64 {
+        self.matter.radius()
+    }
 }
 
 impl<T> Dynamics for DynamicElement<T>
@@ -163,7 +168,7 @@ where
         self.matter.apply_grav_force_for_mass(other);
     }
 
-    fn apply_grav_force(&mut self, other: &impl Dynamics) -> (f64, f64, bool) {
+    fn apply_grav_force(&mut self, other: &(impl Dynamics + Debug)) -> (f64, f64, bool) {
         self.matter.apply_grav_force(other)
     }
 

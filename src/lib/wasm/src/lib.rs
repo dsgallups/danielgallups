@@ -171,6 +171,19 @@ fn spawn_conjoined_circles() -> Vec<DynamicElement<Circle>> {
     vec![circle_one, circle_two]
 }
 
+#[allow(dead_code)]
+fn spawn_parallel_circles() -> Vec<DynamicElement<Circle>> {
+    let bg_el = document().get_element_by_id("background").unwrap();
+
+    let circle_one = DynamicElement::new(5., (200., 200.).into());
+    bg_el.append_child(&circle_one.el).unwrap();
+    let circle_two = DynamicElement::new(3., (800., 200.).into());
+    bg_el.append_child(&circle_two.el).unwrap();
+    let circle_three = DynamicElement::new(20., (1600., 200.).into());
+    bg_el.append_child(&circle_three.el).unwrap();
+    vec![circle_one, circle_two, circle_three]
+}
+
 #[allow(clippy::mem_replace_with_uninit)]
 fn tick(
     circles: &mut [DynamicElement<Circle>],
