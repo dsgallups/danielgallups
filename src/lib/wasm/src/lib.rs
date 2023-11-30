@@ -17,10 +17,10 @@ use wasm_bindgen::JsCast;
 
 const LOG: bool = false;
 const GRAV_CONST: f64 = 0.00005;
-const NUM_CIRCLES: usize = 20;
+const NUM_CIRCLES: usize = 120;
 const MOUSE_MASS: f64 = 4000.;
 #[allow(dead_code)]
-const ENERGY_CONSERVED_ON_COLLISION: f64 = 0.6;
+const ENERGY_CONSERVED_ON_COLLISION: f64 = 0.8;
 
 #[wasm_bindgen]
 extern "C" {
