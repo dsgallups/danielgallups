@@ -1,7 +1,7 @@
 use crate::{
     graph::Vec2,
     physics::{Dynamics, Kinematics, Matter},
-    ENERGY_CONSERVED_ON_COLLISION, GRAV_CONST,
+    GRAV_CONST,
 };
 
 pub struct Circle {
@@ -88,7 +88,6 @@ impl Dynamics for Circle {
             let other_mass: f64 = other.mass();
             //determine the new velocity. Note that the other collider is a circle, so we can calculate the point of intersection
             //and use that to determine the normal
-            let collision_vector = distance.clone();
             let collision_distance = distance.magnitude();
             let collision_normal = distance.normalize();
 

@@ -1,4 +1,4 @@
-use crate::graph::Vec2;
+use crate::{graph::Vec2, html};
 pub mod matter;
 pub use matter::*;
 /// If an item doesnt have a velocity, then it can't be kinematic
@@ -48,4 +48,16 @@ pub trait Dynamics: Matter + Kinematics {
     fn apply_grav_force(&mut self, other: &impl Dynamics) -> (f64, f64, bool);
 
     fn tick_forces(&mut self);
+
+    fn reset(&mut self) {
+        self.reset_forces();
+        self.set_velocity((0., 0.).into());
+        self.set_pos(
+            (
+                rand::random::<f64>() * html().client_height() as f64,
+                rand::random::<f64>() * html().client_height() as f64,
+            )
+                .into(),
+        );
+    }
 }

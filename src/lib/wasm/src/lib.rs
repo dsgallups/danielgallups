@@ -15,8 +15,10 @@ use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
+const LOG: bool = false;
 const GRAV_CONST: f64 = 0.00005;
 const NUM_CIRCLES: usize = 10;
+#[allow(dead_code)]
 const ENERGY_CONSERVED_ON_COLLISION: f64 = 1.;
 
 #[wasm_bindgen]
@@ -52,8 +54,6 @@ fn document() -> web_sys::Document {
 
 #[wasm_bindgen]
 pub fn run() -> Result<(), JsValue> {
-    let max_ticks = 20;
-
     panic::set_hook(Box::new(console_error_panic_hook::hook));
 
     let mouse_pos = hook_mouse_pos()?;
@@ -65,43 +65,29 @@ pub fn run() -> Result<(), JsValue> {
     let f = Rc::new(RefCell::new(None));
     let g = f.clone();
 
-    let mut begin_ticking = false;
-
-    let mut ticks = 0;
-
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
-        if ticks > max_ticks {
-            let _ = f.borrow_mut().take();
-            return;
-        }
-
-        let (info, collision_occured) =
+        let (info, _collision_occured) =
             tick(&mut circles, *mouse_pos.borrow(), *window_size.borrow());
 
-        if collision_occured {
-            //begin_ticking = true;
+        if LOG {
+            let energy = info.potential_energy + info.kinetic_energy;
+
+            let mut msg = format!(
+                "energy: {:.2}, potential: {:.2?}, kinetic: {:.2?}\n",
+                energy, info.potential_energy, info.kinetic_energy
+            );
+
+            for (i, circle) in info.circles.into_iter().enumerate() {
+                msg.push_str(&format!(
+                        "circle[{}]:\npos: {:?}\nvel: {:?}\ndist from other: {:?}\nforce: {:?}\nkin: {:.?}\npot: {:?}\nmass: {:?}\n\n",
+                        i, circle.position, circle.velocity, circle.dist_force_other, circle.force, circle.kin, circle.pot, circle.mass,
+                    ));
+            }
+            msg.push('\n');
+            log(&msg);
         }
-
-        let energy = info.potential_energy + info.kinetic_energy;
-
-        let mut msg = format!(
-            "tick {}\nenergy: {:.2}, potential: {:.2?}, kinetic: {:.2?}\n",
-            ticks, energy, info.potential_energy, info.kinetic_energy
-        );
-
-        for (i, circle) in info.circles.into_iter().enumerate() {
-            msg.push_str(&format!(
-                    "circle[{}]:\npos: {:?}\nvel: {:?}\ndist from other: {:?}\nforce: {:?}\nkin: {:.?}\npot: {:?}\nmass: {:?}\n\n",
-                    i, circle.position, circle.velocity, circle.dist_force_other, circle.force, circle.kin, circle.pot, circle.mass,
-                ));
-        }
-        msg.push('\n');
-        log(&msg);
 
         request_animation_frame(f.borrow().as_ref().unwrap());
-        if begin_ticking {
-            ticks += 1;
-        }
     }) as Box<dyn FnMut()>));
 
     request_animation_frame(g.borrow().as_ref().unwrap());
@@ -154,6 +140,7 @@ fn spawn_circles() -> Vec<DynamicElement<Circle>> {
         .collect::<Vec<_>>()
 }
 
+#[allow(dead_code)]
 fn spawn_conjoined_circles() -> Vec<DynamicElement<Circle>> {
     let bg_el = document().get_element_by_id("background").unwrap();
 
@@ -217,30 +204,14 @@ fn tick(
         circle.reset_forces();
 
         let position = circle.matter.pos();
-        let velocity = circle.matter.velocity();
-
         let radius = circle.matter.mass().sqrt();
 
-        if position.x < 0.
-            || position.x + radius > window_size.0
-            || position.y < 0.
-            || position.y + radius > window_size.1
+        if position.x + (radius + radius) < 0.
+            || position.x > window_size.0
+            || position.y + (radius + radius) < 0.
+            || position.y > window_size.1
         {
-            let mut new_velocity = circle.matter.velocity();
-
-            if position.x < 0. && velocity.x < 0.
-                || position.x + radius > window_size.0 && velocity.x > 0.
-            {
-                new_velocity.x = -new_velocity.x;
-            }
-
-            if position.y < 0. && velocity.y < 0.
-                || position.y + radius > window_size.1 && velocity.y > 0.
-            {
-                new_velocity.y = -new_velocity.y;
-            }
-
-            circle.mutate_velocity(|_| new_velocity);
+            circle.reset();
         }
 
         circle.draw();
