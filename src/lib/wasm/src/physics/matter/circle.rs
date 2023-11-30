@@ -1,6 +1,5 @@
 use crate::{
     graph::Vec2,
-    log,
     physics::{Dynamics, Kinematics, Matter},
     ENERGY_CONSERVED_ON_COLLISION, GRAV_CONST,
 };
@@ -89,23 +88,6 @@ impl Dynamics for Circle {
         let distance = self.pos() - other.pos();
 
         if distance.magnitude() < (self.radius() + other.radius()) {
-            let msg = format!(
-                "collision between {:?} and {:?}\nmagnitude: {}\nradius + other_radius: {}\n\n",
-                self,
-                other,
-                distance.magnitude(),
-                self.radius() + other.radius()
-            );
-            log(&msg);
-
-            /*
-               A vec 2 is
-               Vec2 {
-                   x: f64,
-                   y: f64,
-               }
-
-            */
             let self_radius: f64 = self.radius();
             let self_velocity: Vec2 = self.velocity();
             let self_mass: f64 = self.mass();
@@ -121,11 +103,11 @@ impl Dynamics for Circle {
             let relative_velocity = self_velocity.clone() - other_velocity;
             let velocity_normal = relative_velocity.dot(collision_normal.clone());
 
-            let impulse = 2.0 * velocity_normal / (self_mass + other_mass);
+            let impulse =
+                2.0 * ENERGY_CONSERVED_ON_COLLISION * velocity_normal / (self_mass + other_mass);
             let self_impulse = impulse * other_mass;
 
-            let self_new_velocity = (self_velocity - collision_normal.clone() * self_impulse)
-                * ENERGY_CONSERVED_ON_COLLISION;
+            let self_new_velocity = self_velocity - collision_normal.clone() * self_impulse;
 
             // Update velocities
             self.set_velocity(self_new_velocity);

@@ -18,9 +18,9 @@ use wasm_bindgen::JsCast;
 const LOG: bool = false;
 const GRAV_CONST: f64 = 0.00005;
 const NUM_CIRCLES: usize = 20;
-const MOUSE_MASS: f64 = 2000.;
+const MOUSE_MASS: f64 = 4000.;
 #[allow(dead_code)]
-const ENERGY_CONSERVED_ON_COLLISION: f64 = 1.;
+const ENERGY_CONSERVED_ON_COLLISION: f64 = 0.6;
 
 #[wasm_bindgen]
 extern "C" {
@@ -104,12 +104,14 @@ fn hook_mouse_pos() -> Result<Rc<RefCell<Option<Point>>>, JsValue> {
         let closure = Closure::wrap(Box::new(move |event: web_sys::MouseEvent| {
             let point = Point::new(
                 MOUSE_MASS,
-                (event.offset_x() as f64, event.offset_y() as f64).into(),
+                (event.client_x() as f64, event.client_y() as f64).into(),
             );
             mouse_pos.replace(Some(point));
             //log(&format!("mouse_pos: {:.2?}", mouse_pos.borrow()));
         }) as Box<dyn FnMut(_)>);
         document()
+            .document_element()
+            .unwrap()
             .add_event_listener_with_callback("mousemove", closure.as_ref().unchecked_ref())?;
         closure.forget();
     }
@@ -118,7 +120,7 @@ fn hook_mouse_pos() -> Result<Rc<RefCell<Option<Point>>>, JsValue> {
         let mouse_pos = mouse_pos.clone();
         let closure = Closure::wrap(Box::new(move |_: web_sys::MouseEvent| {
             mouse_pos.replace(None);
-            //log(&format!("mouse_pos: {:.2?}", mouse_pos.borrow()));
+            log("mouse_pos: None");
         }) as Box<dyn FnMut(_)>);
         document()
             .document_element()
@@ -190,6 +192,7 @@ fn tick(
     mouse_pos: Option<&Point>,
     window_size: (f64, f64),
 ) -> (Information, bool) {
+    log(&format!("mouse_pos: {:?}", mouse_pos));
     let mut start_tick = false;
 
     let mut potential_energy = 0.;

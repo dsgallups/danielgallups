@@ -1,6 +1,6 @@
 use crate::{graph::Vec2, physics::Matter};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Point {
     pub mass: f64,
     pub position: Vec2,
