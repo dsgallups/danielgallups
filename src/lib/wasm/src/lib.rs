@@ -15,12 +15,10 @@ use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
-const LOG: bool = false;
-const GRAV_CONST: f64 = 0.00005;
-const NUM_CIRCLES: usize = 120;
-const MOUSE_MASS: f64 = 4000.;
-#[allow(dead_code)]
-const ENERGY_CONSERVED_ON_COLLISION: f64 = 0.8;
+const LOG: bool = true;
+const GRAV_CONST: f64 = 0.5;
+const NUM_CIRCLES: usize = 2;
+const MOUSE_MASS: f64 = 400.;
 
 #[wasm_bindgen]
 extern "C" {
@@ -55,6 +53,7 @@ fn document() -> web_sys::Document {
 
 #[wasm_bindgen]
 pub fn run() -> Result<(), JsValue> {
+    let tick_after = 20;
     panic::set_hook(Box::new(console_error_panic_hook::hook));
 
     let mouse_pos = hook_mouse_pos()?;
@@ -66,18 +65,29 @@ pub fn run() -> Result<(), JsValue> {
     let f = Rc::new(RefCell::new(None));
     let g = f.clone();
 
+    let mut tick_count = 0;
+    let mut begin_ticking = false;
+
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
+        if tick_count >= tick_after {
+            f.take().unwrap();
+            return;
+        }
         let mouse_pos = mouse_pos.borrow();
 
-        let (info, _collision_occured) =
+        let (info, collision_occured) =
             tick(&mut circles, mouse_pos.as_ref(), *window_size.borrow());
+
+        if collision_occured {
+            begin_ticking = true;
+        }
 
         if LOG {
             let energy = info.potential_energy + info.kinetic_energy;
 
             let mut msg = format!(
-                "energy: {:.2}, potential: {:.2?}, kinetic: {:.2?}\n",
-                energy, info.potential_energy, info.kinetic_energy
+                "tick {}\nenergy: {:.2}, potential: {:.2?}, kinetic: {:.2?}\n",
+                tick_count, energy, info.potential_energy, info.kinetic_energy
             );
 
             for (i, circle) in info.circles.into_iter().enumerate() {
@@ -90,6 +100,9 @@ pub fn run() -> Result<(), JsValue> {
             log(&msg);
         }
 
+        if begin_ticking {
+            tick_count += 1;
+        }
         request_animation_frame(f.borrow().as_ref().unwrap());
     }) as Box<dyn FnMut()>));
 
@@ -221,7 +234,7 @@ fn tick(
         }
 
         if let Some(mouse_pos) = mouse_pos {
-            refframe_circle.apply_grav_force_for_mass(mouse_pos);
+            //refframe_circle.apply_grav_force_for_mass(mouse_pos);
         }
 
         //update_pos_given_mouse(&mut refframe_circle, mouse_pos, mouse_mass);
