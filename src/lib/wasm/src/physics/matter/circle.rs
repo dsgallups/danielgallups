@@ -1,8 +1,8 @@
 use crate::{
     graph::Vec2,
     log,
-    physics::{Dynamics, Kinematics, Matter},
-    ENERGY_CONSERVED_ON_COLLISION, GRAV_CONST,
+    physics::{Dynamics, Interaction, Kinematics, Matter},
+    GRAV_CONST, LOG,
 };
 use std::fmt::Debug;
 
@@ -72,7 +72,7 @@ impl Matter for Circle {
 }
 
 impl Dynamics for Circle {
-    fn apply_grav_force_for_mass(&mut self, other: &impl Matter) {
+    fn apply_grav_force_for_mass(&self, other: &impl Matter) -> Interaction {
         let distance = self.pos() - other.pos();
 
         let distance_magnitude = if distance.magnitude() < 1.0 {
@@ -87,10 +87,15 @@ impl Dynamics for Circle {
         let force = GRAV_CONST * other.mass() * self.mass / distance_magnitude.powi(2);
         let force = normal * force;
 
-        self.apply_force(force);
+        //self.apply_force(force);
+        Interaction {
+            distance,
+            force: Some(force),
+            velocity: None,
+        }
     }
 
-    fn apply_grav_force(&mut self, other: &(impl Dynamics + Debug)) -> (f64, f64, bool) {
+    fn apply_grav_force(&self, other: &(impl Dynamics + Debug)) -> Interaction {
         //let mut dist = self.position.distance_from(&other.pos());
         let distance = self.pos() - other.pos();
 
@@ -104,52 +109,42 @@ impl Dynamics for Circle {
             let other_mass: f64 = other.mass();
             //determine the new velocity. Note that the other collider is a circle, so we can calculate the point of intersection
             //and use that to determine the normal
-            let collision_distance = distance.magnitude();
-            let collision_normal = distance.normalize();
 
-            let relative_velocity = self_velocity.clone() - other_velocity;
-            let velocity_normal = relative_velocity.dot(collision_normal.clone());
+            let el_vel = (self_velocity * (self_mass - other_mass)
+                + (2. * other_mass * other_velocity))
+                / (self_mass + other_mass);
 
-            let impulse =
-                2.0 * ENERGY_CONSERVED_ON_COLLISION * velocity_normal / (self_mass + other_mass);
-            let self_impulse = impulse * other_mass;
-
-            let self_new_velocity = self_velocity - collision_normal.clone() * self_impulse;
-
-            // Update velocities
-            self.set_velocity(self_new_velocity);
-
-            // correct the position to be just inside the outer circle for this logic to run again
             let correction =
-                collision_normal * (self_radius + other_radius - collision_distance) / 2.;
-
-            self.apply_pos(correction);
+                distance.normalize() * (self_radius + other_radius - distance.magnitude()) / 2.;
 
             //since they've collided, the force magnitude for these two masses are zero, and no force should be applied.
-            log("Collision has occured! Calculated values from collision:");
-            log(&format!(
-                "\n\nself: {:?}\nother: {:?}\n\nvelocity: {:?}\n",
-                self,
-                other,
-                self.velocity()
-            ));
-            (
-                distance.magnitude(),
-                0.,
-                distance.magnitude() < (self.radius + other.mass().sqrt()),
-            )
+            if LOG {
+                log("Collision has occured! Calculated values from collision:");
+                log(&format!(
+                    "\n\nself: {:?}\nother: {:?}\n\ncur v: {:?}\nela v: {:?}\n",
+                    self,
+                    other,
+                    self.velocity(),
+                    el_vel
+                ));
+            }
+
+            Interaction {
+                distance,
+                force: None,
+                velocity: Some(el_vel - self.velocity()),
+            }
         } else {
             let force_magnitude =
                 GRAV_CONST * other.mass() * self.mass / distance.magnitude().powi(2);
             let normal = distance.normalize() * -1.;
             let force = normal * force_magnitude;
 
-            self.apply_force(force);
-            (
-                distance.magnitude(),
-                force_magnitude,
-                distance.magnitude() < (self.radius + other.mass().sqrt()),
-            )
+            Interaction {
+                distance,
+                force: Some(force),
+                velocity: None,
+            }
         }
     }
 

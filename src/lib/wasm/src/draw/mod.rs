@@ -2,7 +2,7 @@ use crate::{
     document,
     graph::Vec2,
     html,
-    physics::{matter::Circle, Dynamics, Kinematics, Matter},
+    physics::{matter::Circle, Dynamics, Interaction, Kinematics, Matter},
 };
 use std::fmt::Debug;
 use web_sys::Element;
@@ -164,11 +164,11 @@ impl<T> Dynamics for DynamicElement<T>
 where
     T: Dynamics,
 {
-    fn apply_grav_force_for_mass(&mut self, other: &impl Matter) {
-        self.matter.apply_grav_force_for_mass(other);
+    fn apply_grav_force_for_mass(&self, other: &impl Matter) -> Interaction {
+        self.matter.apply_grav_force_for_mass(other)
     }
 
-    fn apply_grav_force(&mut self, other: &(impl Dynamics + Debug)) -> (f64, f64, bool) {
+    fn apply_grav_force(&self, other: &(impl Dynamics + Debug)) -> Interaction {
         self.matter.apply_grav_force(other)
     }
 
