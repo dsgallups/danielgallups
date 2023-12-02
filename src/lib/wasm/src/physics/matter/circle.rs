@@ -74,10 +74,16 @@ impl Dynamics for Circle {
     fn apply_grav_force_for_mass(&mut self, other: &impl Matter) {
         let distance = self.pos() - other.pos();
 
+        let distance_magnitude = if distance.magnitude() < 1.0 {
+            1.0
+        } else {
+            distance.magnitude()
+        };
+
         let normal = distance.normalize() * -1.;
 
         //for this one, distance is squared again
-        let force = GRAV_CONST * other.mass() * self.mass / distance.magnitude().sqrt();
+        let force = GRAV_CONST * other.mass() * self.mass / distance_magnitude.powi(2);
         let force = normal * force;
 
         self.apply_force(force);
@@ -118,7 +124,7 @@ impl Dynamics for Circle {
 
             self.apply_pos(correction);
         }
-        let force_magnitude = GRAV_CONST * other.mass() * self.mass / distance.magnitude().sqrt();
+        let force_magnitude = GRAV_CONST * other.mass() * self.mass / distance.magnitude().powi(2);
 
         let normal = distance.normalize() * -1.;
         let force = normal * force_magnitude;

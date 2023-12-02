@@ -2,7 +2,6 @@ use draw::DynamicElement;
 use graph::Vec2;
 use physics::{Circle, Dynamics, Kinematics, Matter, Point};
 use wasm_bindgen::prelude::*;
-
 use web_sys::HtmlElement;
 
 mod graph;
@@ -15,9 +14,9 @@ use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
-const LOG: bool = false;
-const GRAV_CONST: f64 = 0.00005;
-const NUM_CIRCLES: usize = 220;
+const LOG: bool = true;
+const GRAV_CONST: f64 = 0.05;
+const NUM_CIRCLES: usize = 120;
 const MOUSE_MASS: f64 = 4000.;
 #[allow(dead_code)]
 const ENERGY_CONSERVED_ON_COLLISION: f64 = 0.8;
@@ -61,7 +60,7 @@ pub fn run() -> Result<(), JsValue> {
 
     let window_size = hook_window_size()?;
 
-    let mut circles = spawn_circles();
+    let mut circles = spawn_conjoined_circles();
 
     let f = Rc::new(RefCell::new(None));
     let g = f.clone();
@@ -120,7 +119,7 @@ fn hook_mouse_pos() -> Result<Rc<RefCell<Option<Point>>>, JsValue> {
         let mouse_pos = mouse_pos.clone();
         let closure = Closure::wrap(Box::new(move |_: web_sys::MouseEvent| {
             mouse_pos.replace(None);
-            log("mouse_pos: None");
+            //log("mouse_pos: None");
         }) as Box<dyn FnMut(_)>);
         document()
             .document_element()
@@ -166,9 +165,9 @@ fn spawn_circles() -> Vec<DynamicElement<Circle>> {
 fn spawn_conjoined_circles() -> Vec<DynamicElement<Circle>> {
     let bg_el = document().get_element_by_id("background").unwrap();
 
-    let circle_one = DynamicElement::new(5., (100., 100.).into());
+    let circle_one = DynamicElement::new(30., (600., 600.).into());
     bg_el.append_child(&circle_one.el).unwrap();
-    let circle_two = DynamicElement::new(3., (100., 108.).into());
+    let circle_two = DynamicElement::new(30., (600., 900.).into());
     bg_el.append_child(&circle_two.el).unwrap();
     vec![circle_one, circle_two]
 }
@@ -192,7 +191,7 @@ fn tick(
     mouse_pos: Option<&Point>,
     window_size: (f64, f64),
 ) -> (Information, bool) {
-    log(&format!("mouse_pos: {:?}", mouse_pos));
+    //log(&format!("mouse_pos: {:?}", mouse_pos));
     let mut start_tick = false;
 
     let mut potential_energy = 0.;
