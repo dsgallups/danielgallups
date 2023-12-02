@@ -1,5 +1,6 @@
 use crate::{
     graph::Vec2,
+    log,
     physics::{Dynamics, Kinematics, Matter},
     ENERGY_CONSERVED_ON_COLLISION, GRAV_CONST,
 };
@@ -123,18 +124,33 @@ impl Dynamics for Circle {
                 collision_normal * (self_radius + other_radius - collision_distance) / 2.;
 
             self.apply_pos(correction);
+
+            //since they've collided, the force magnitude for these two masses are zero, and no force should be applied.
+            log("Collision has occured! Calculated values from collision:");
+            log(&format!(
+                "\n\nself: {:?}\nother: {:?}\n\nvelocity: {:?}\n",
+                self,
+                other,
+                self.velocity()
+            ));
+            (
+                distance.magnitude(),
+                0.,
+                distance.magnitude() < (self.radius + other.mass().sqrt()),
+            )
+        } else {
+            let force_magnitude =
+                GRAV_CONST * other.mass() * self.mass / distance.magnitude().powi(2);
+            let normal = distance.normalize() * -1.;
+            let force = normal * force_magnitude;
+
+            self.apply_force(force);
+            (
+                distance.magnitude(),
+                force_magnitude,
+                distance.magnitude() < (self.radius + other.mass().sqrt()),
+            )
         }
-        let force_magnitude = GRAV_CONST * other.mass() * self.mass / distance.magnitude().powi(2);
-
-        let normal = distance.normalize() * -1.;
-        let force = normal * force_magnitude;
-
-        self.apply_force(force);
-        (
-            distance.magnitude(),
-            force_magnitude,
-            distance.magnitude() < (self.radius + other.mass().sqrt()),
-        )
     }
 
     fn tick_forces(&mut self) {

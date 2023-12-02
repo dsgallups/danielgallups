@@ -14,7 +14,7 @@ use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
-const LOG: bool = true;
+const LOG: bool = false;
 const GRAV_CONST: f64 = 0.05;
 const NUM_CIRCLES: usize = 120;
 const MOUSE_MASS: f64 = 4000.;
@@ -54,6 +54,10 @@ fn document() -> web_sys::Document {
 
 #[wasm_bindgen]
 pub fn run() -> Result<(), JsValue> {
+    let mut begin_ticking = false;
+    let tick_after = 3;
+    let mut tick_count = 0;
+
     panic::set_hook(Box::new(console_error_panic_hook::hook));
 
     let mouse_pos = hook_mouse_pos()?;
@@ -66,10 +70,18 @@ pub fn run() -> Result<(), JsValue> {
     let g = f.clone();
 
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
+        if tick_count >= tick_after {
+            f.take().unwrap();
+            return;
+        }
         let mouse_pos = mouse_pos.borrow();
 
-        let (info, _collision_occured) =
+        let (info, collision_occured) =
             tick(&mut circles, mouse_pos.as_ref(), *window_size.borrow());
+
+        if collision_occured {
+            begin_ticking = true;
+        }
 
         if LOG {
             let energy = info.potential_energy + info.kinetic_energy;
@@ -90,6 +102,9 @@ pub fn run() -> Result<(), JsValue> {
         }
 
         request_animation_frame(f.borrow().as_ref().unwrap());
+        if begin_ticking {
+            tick_count += 1;
+        }
     }) as Box<dyn FnMut()>));
 
     request_animation_frame(g.borrow().as_ref().unwrap());
