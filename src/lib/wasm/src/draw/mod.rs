@@ -19,14 +19,13 @@ impl Default for DynamicElement<Circle> {
 }
 
 impl DynamicElement<Circle> {
-    pub fn new(radius: f64, position: Vec2) -> Self {
+    pub fn new(mass: f64, position: Vec2) -> Self {
         let rand_color = (
             128. + rand::random::<f64>() * 127.,
             128. + rand::random::<f64>() * 127.,
             128. + rand::random::<f64>() * 127.,
         );
 
-        let mass = radius * radius;
         let matter: Circle = Circle::new(mass, position.clone());
 
         let radius = matter.radius();
@@ -67,7 +66,7 @@ impl DynamicElement<Circle> {
             rand::random::<f64>() * html().client_height() as f64,
         );
 
-        let rand_mass = 25. + rand::random::<f64>() * 100.;
+        let rand_mass = 25. + rand::random::<f64>() * 3000.;
 
         let matter: Circle = Circle::new(rand_mass, rand_position.into());
 

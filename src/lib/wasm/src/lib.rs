@@ -10,12 +10,14 @@ pub mod physics;
 pub mod draw;
 
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
 const LOG: bool = false;
 
+#[allow(dead_code)]
 static TICKING: (i32, i32) = (60, 0);
 
 const GRAV_CONST: f64 = 0.05;
@@ -67,48 +69,23 @@ pub fn run() -> Result<(), JsValue> {
 
     let window_size = hook_window_size()?;
 
-    /*let mut circles = spawn_two_circles(vec![
-        (30., (700., 600.)),
-        (30., (600., 900.)),
-        (30., (900., 820.)),
-    ]);*/
-
     let mut circles = spawn_circles();
+
+    /*let mut circles = spawn_circles_with_props(vec![
+        (300., (700., 600.)),
+        (300., (600., 900.)),
+        (300., (900., 820.)),
+    ]);*/
 
     let f = Rc::new(RefCell::new(None));
     let g = f.clone();
 
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
-        /*if tick_count >= tick_after {
-            f.take().unwrap();
-            return;
-        }*/
         let mouse_pos = mouse_pos.borrow();
 
         tick(&mut circles, mouse_pos.as_ref(), *window_size.borrow());
 
-        /*if LOG {
-            let energy = info.potential_energy + info.kinetic_energy;
-
-            let mut msg = format!(
-                "energy: {:.2}, potential: {:.2?}, kinetic: {:.2?}\n",
-                energy, info.potential_energy, info.kinetic_energy
-            );
-
-            for (i, circle) in info.circles.into_iter().enumerate() {
-                msg.push_str(&format!(
-                        "circle[{}]:\npos: {:?}\nvel: {:?}\ndist from other: {:?}\nforce: {:?}\nkin: {:.?}\npot: {:?}\nmass: {:?}\n\n",
-                        i, circle.position, circle.velocity, circle.dist_force_other, circle.force, circle.kin, circle.pot, circle.mass,
-                    ));
-            }
-            msg.push('\n');
-            log(&msg);
-        }*/
-
         request_animation_frame(f.borrow().as_ref().unwrap());
-        /*if begin_ticking {
-            tick_count += 1;
-        }*/
     }) as Box<dyn FnMut()>));
 
     request_animation_frame(g.borrow().as_ref().unwrap());
@@ -181,7 +158,7 @@ fn spawn_circles() -> Vec<DynamicElement<Circle>> {
 }
 
 #[allow(dead_code)]
-fn spawn_two_circles(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<DynamicElement<Circle>> {
+fn spawn_circles_with_props(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<DynamicElement<Circle>> {
     let bg_el = document().get_element_by_id("background").unwrap();
 
     circle_vals
@@ -210,15 +187,12 @@ fn spawn_parallel_circles() -> Vec<DynamicElement<Circle>> {
 #[allow(clippy::mem_replace_with_uninit)]
 fn tick(
     circles: &mut [DynamicElement<Circle>],
-    mouse_pos: Option<&Point>,
+    _mouse_pos: Option<&Point>,
     window_size: (f64, f64),
 ) {
-    //log(&format!("mouse_pos: {:?}", mouse_pos));
-    let mut start_tick = false;
-
     let mut all_interactions = Vec::new();
 
-    let mut collisions = Vec::new();
+    let mut collisions: HashMap<usize, Vec<Vec2>> = HashMap::new();
     for (i, refframe_circle) in circles.iter().enumerate() {
         let mut interactions = Vec::new();
         for (j, circle) in circles.iter().enumerate() {
@@ -228,13 +202,27 @@ fn tick(
             let interaction = refframe_circle.apply_grav_force(&circle.matter);
 
             if interaction.distance.magnitude() < refframe_circle.radius() + circle.radius() {
-                collisions.push((
-                    (i, j),
-                    interaction.distance.normalize()
-                        * (refframe_circle.radius() + circle.radius()
-                            - interaction.distance.magnitude())
-                        / 2.,
-                ));
+                match collisions.get_mut(&i) {
+                    Some(collisions) => {
+                        collisions.push(
+                            interaction.distance.normalize()
+                                * (refframe_circle.radius() + circle.radius()
+                                    - interaction.distance.magnitude())
+                                / 2.,
+                        );
+                    }
+                    None => {
+                        collisions.insert(
+                            i,
+                            vec![
+                                interaction.distance.normalize()
+                                    * (refframe_circle.radius() + circle.radius()
+                                        - interaction.distance.magnitude())
+                                    / 2.,
+                            ],
+                        );
+                    }
+                };
             }
 
             interactions.push(interaction);
@@ -242,14 +230,18 @@ fn tick(
         all_interactions.push(interactions);
     }
 
-    //apply any positional corrections
-    for collision in collisions {
-        let ref_circle = circles.get_mut(collision.0 .0).unwrap();
-        ref_circle.apply_pos(collision.1);
+    for (i, circle) in circles.iter_mut().enumerate() {
+        if let Some(collisions) = collisions.get(&i) {
+            let mut position_adj = Vec2::default();
+            for collision in collisions.iter() {
+                position_adj += collision.clone();
+            }
+            circle.apply_pos(position_adj);
+        }
     }
 
     //now apply the interactions to every cirlce
-    for ((i, circle), interactions) in circles.iter_mut().enumerate().zip(all_interactions) {
+    for ((_i, circle), interactions) in circles.iter_mut().enumerate().zip(all_interactions) {
         let mut net_velocity = Vec2::default();
         let mut net_force = Vec2::default();
         for Interaction {
@@ -271,7 +263,7 @@ fn tick(
         if net_velocity != Vec2::default() {
             let normal = net_velocity.normalize();
             let cur_v_mag = circle.velocity().magnitude();
-            circle.set_velocity(normal * cur_v_mag);
+            circle.set_velocity(normal * cur_v_mag * ENERGY_CONSERVED_ON_COLLISION);
         }
 
         circle.tick_forces();

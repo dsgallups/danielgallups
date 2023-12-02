@@ -17,7 +17,7 @@ pub struct Circle {
 
 impl Circle {
     pub fn new(mass: f64, position: Vec2) -> Self {
-        let radius = mass.sqrt();
+        let radius = mass.sqrt() * 1.;
 
         Self {
             mass,
@@ -100,22 +100,22 @@ impl Dynamics for Circle {
         let distance = self.pos() - other.pos();
 
         if distance.magnitude() < (self.radius() + other.radius()) {
-            let self_radius: f64 = self.radius();
             let self_velocity: Vec2 = self.velocity();
             let self_mass: f64 = self.mass();
 
-            let other_radius: f64 = other.radius();
             let other_velocity: Vec2 = other.velocity();
             let other_mass: f64 = other.mass();
             //determine the new velocity. Note that the other collider is a circle, so we can calculate the point of intersection
             //and use that to determine the normal
-
-            let el_vel = (self_velocity * (self_mass - other_mass)
-                + (2. * other_mass * other_velocity))
+            let el_vel_x = (self_velocity.x * (self_mass - other_mass)
+                + (2. * other_mass * other_velocity.x))
                 / (self_mass + other_mass);
 
-            let correction =
-                distance.normalize() * (self_radius + other_radius - distance.magnitude()) / 2.;
+            let el_vel_y = (self_velocity.y * (self_mass - other_mass)
+                + (2. * other_mass * other_velocity.y))
+                / (self_mass + other_mass);
+
+            let el_vel: Vec2 = (el_vel_x, el_vel_y).into();
 
             //since they've collided, the force magnitude for these two masses are zero, and no force should be applied.
             if LOG {
