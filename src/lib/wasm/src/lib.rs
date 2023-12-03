@@ -1,6 +1,6 @@
 use draw::DynamicElement;
 use graph::Vec2;
-use physics::{Circle, Dynamics, Interaction, Kinematics, Matter, Point};
+use physics::{Circle, Dynamics, Interaction, Kinematics, Matter, Momentum, Point};
 use wasm_bindgen::prelude::*;
 use web_sys::HtmlElement;
 
@@ -22,7 +22,7 @@ static TICKING: (i32, i32) = (60, 0);
 
 const GRAV_CONST: f64 = 0.00005;
 const NUM_CIRCLES: usize = 120;
-const MOUSE_MASS: f64 = 4000.;
+const MOUSE_MASS: f64 = 40000.;
 #[allow(dead_code)]
 const ENERGY_CONSERVED_ON_COLLISION: f64 = 0.97;
 
@@ -72,9 +72,9 @@ pub fn run() -> Result<(), JsValue> {
     let mut circles = spawn_circles();
 
     /*let mut circles = spawn_circles_with_props(vec![
-        (300., (700., 600.)),
-        (300., (600., 900.)),
-        (300., (900., 820.)),
+        (3000., (700., 600.)),
+        (3000., (600., 900.)),
+        (3000., (900., 820.)),
     ]);*/
 
     let f = Rc::new(RefCell::new(None));
@@ -187,7 +187,7 @@ fn spawn_parallel_circles() -> Vec<DynamicElement<Circle>> {
 #[allow(clippy::mem_replace_with_uninit)]
 fn tick(
     circles: &mut [DynamicElement<Circle>],
-    _mouse_pos: Option<&Point>,
+    mouse_pos: Option<&Point>,
     window_size: (f64, f64),
 ) {
     let mut all_interactions = Vec::new();
@@ -227,6 +227,11 @@ fn tick(
 
             interactions.push(interaction);
         }
+        if let Some(mouse_pos) = mouse_pos {
+            let interaction = refframe_circle.apply_grav_force_for_mass(mouse_pos);
+            interactions.push(interaction);
+        }
+
         all_interactions.push(interactions);
     }
 
@@ -243,28 +248,39 @@ fn tick(
     //now apply the interactions to every cirlce
     for ((_i, circle), interactions) in circles.iter_mut().enumerate().zip(all_interactions) {
         let mut net_velocity = Vec2::default();
+        let mut fake_object_momentum = Vec2::default();
+        let mut fake_object_mass = 0.;
         let mut net_force = Vec2::default();
         for Interaction {
             distance: _,
             force,
-            velocity,
+            other_mass,
         } in interactions
         {
             if let Some(force) = force {
                 net_force += force;
             }
-            if let Some(velocity) = velocity {
-                net_velocity += velocity;
+            if let Some(momentum) = other_mass {
+                fake_object_mass += momentum.mass;
+                fake_object_momentum += momentum.mass * momentum.velocity;
             }
         }
 
         circle.set_force(net_force);
 
-        if net_velocity != Vec2::default() {
+        if fake_object_mass != 0. {
+            let fake_object_velocity = fake_object_momentum / fake_object_mass;
+            let el_vel = (circle.velocity() * (circle.mass() - fake_object_mass)
+                + (2. * fake_object_mass * fake_object_velocity))
+                / (circle.mass() + fake_object_mass);
+            circle.set_velocity(el_vel * ENERGY_CONSERVED_ON_COLLISION);
+        }
+
+        /*if net_velocity != Vec2::default() {
             let normal = net_velocity.normalize();
             let cur_v_mag = circle.velocity().magnitude();
             circle.set_velocity(normal * cur_v_mag * ENERGY_CONSERVED_ON_COLLISION);
-        }
+        }*/
 
         circle.tick_forces();
         circle.reset_forces();

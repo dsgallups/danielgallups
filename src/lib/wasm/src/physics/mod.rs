@@ -71,5 +71,11 @@ pub trait Dynamics: Matter + Kinematics {
 pub struct Interaction {
     pub distance: Vec2,
     pub force: Option<Vec2>,
-    pub velocity: Option<Vec2>,
+    pub other_mass: Option<Momentum>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct Momentum {
+    pub velocity: Vec2,
+    pub mass: f64,
 }

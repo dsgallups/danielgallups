@@ -1,7 +1,7 @@
 use crate::{
     graph::Vec2,
     log,
-    physics::{Dynamics, Interaction, Kinematics, Matter},
+    physics::{Dynamics, Interaction, Kinematics, Matter, Momentum},
     GRAV_CONST, LOG,
 };
 use std::fmt::Debug;
@@ -75,23 +75,17 @@ impl Dynamics for Circle {
     fn apply_grav_force_for_mass(&self, other: &impl Matter) -> Interaction {
         let distance = self.pos() - other.pos();
 
-        let distance_magnitude = if distance.magnitude() < 1.0 {
-            1.0
-        } else {
-            distance.magnitude()
-        };
-
         let normal = distance.normalize() * -1.;
 
         //for this one, distance is squared again
-        let force = GRAV_CONST * other.mass() * self.mass / distance_magnitude.powi(2);
+        let force = GRAV_CONST * other.mass() * self.mass / distance.magnitude().sqrt();
         let force = normal * force;
 
         //self.apply_force(force);
         Interaction {
             distance,
             force: Some(force),
-            velocity: None,
+            other_mass: None,
         }
     }
 
@@ -107,32 +101,31 @@ impl Dynamics for Circle {
             let other_mass: f64 = other.mass();
             //determine the new velocity. Note that the other collider is a circle, so we can calculate the point of intersection
             //and use that to determine the normal
-            let el_vel_x = (self_velocity.x * (self_mass - other_mass)
-                + (2. * other_mass * other_velocity.x))
-                / (self_mass + other_mass);
 
-            let el_vel_y = (self_velocity.y * (self_mass - other_mass)
-                + (2. * other_mass * other_velocity.y))
-                / (self_mass + other_mass);
-
-            let el_vel: Vec2 = (el_vel_x, el_vel_y).into();
+            /*let el_vel = (self_velocity * (self_mass - other_mass)
+            + (2. * other_mass * other_velocity))
+            / (self_mass + other_mass);*/
 
             //since they've collided, the force magnitude for these two masses are zero, and no force should be applied.
             if LOG {
                 log("Collision has occured! Calculated values from collision:");
                 log(&format!(
-                    "\n\nself: {:?}\nother: {:?}\n\ncur v: {:?}\nela v: {:?}\n",
+                    "\n\nself: {:?}\nother: {:?}\n\ncur v: {:?}\nela v: \n",
                     self,
                     other,
                     self.velocity(),
-                    el_vel
+                    //el_vel
                 ));
             }
 
             Interaction {
                 distance,
                 force: None,
-                velocity: Some(el_vel - self.velocity()),
+                //velocity: Some(el_vel - self.velocity()),
+                other_mass: Some(Momentum {
+                    velocity: other_velocity,
+                    mass: other_mass,
+                }),
             }
         } else {
             let force_magnitude =
@@ -143,7 +136,7 @@ impl Dynamics for Circle {
             Interaction {
                 distance,
                 force: Some(force),
-                velocity: None,
+                other_mass: None,
             }
         }
     }
