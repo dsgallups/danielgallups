@@ -24,7 +24,7 @@ const GRAV_CONST: f64 = 0.05;
 const NUM_CIRCLES: usize = 120;
 const MOUSE_MASS: f64 = 4000.;
 #[allow(dead_code)]
-const ENERGY_CONSERVED_ON_COLLISION: f64 = 0.8;
+const ENERGY_CONSERVED_ON_COLLISION: f64 = 0.97;
 
 #[wasm_bindgen]
 extern "C" {
@@ -261,6 +261,9 @@ fn tick(
         circle.set_force(net_force);
 
         if net_velocity != Vec2::default() {
+            if net_velocity.magnitude() < 0.02 {
+                continue;
+            }
             let normal = net_velocity.normalize();
             let cur_v_mag = circle.velocity().magnitude();
             circle.set_velocity(normal * cur_v_mag * ENERGY_CONSERVED_ON_COLLISION);
