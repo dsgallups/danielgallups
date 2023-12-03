@@ -20,7 +20,7 @@ const LOG: bool = false;
 #[allow(dead_code)]
 static TICKING: (i32, i32) = (60, 0);
 
-const GRAV_CONST: f64 = 0.05;
+const GRAV_CONST: f64 = 0.00005;
 const NUM_CIRCLES: usize = 120;
 const MOUSE_MASS: f64 = 4000.;
 #[allow(dead_code)]
@@ -261,9 +261,6 @@ fn tick(
         circle.set_force(net_force);
 
         if net_velocity != Vec2::default() {
-            if net_velocity.magnitude() < 0.02 {
-                continue;
-            }
             let normal = net_velocity.normalize();
             let cur_v_mag = circle.velocity().magnitude();
             circle.set_velocity(normal * cur_v_mag * ENERGY_CONSERVED_ON_COLLISION);

@@ -66,7 +66,7 @@ impl DynamicElement<Circle> {
             rand::random::<f64>() * html().client_height() as f64,
         );
 
-        let rand_mass = 25. + rand::random::<f64>() * 3000.;
+        let rand_mass = 25. + rand::random::<f64>() * 300.;
 
         let matter: Circle = Circle::new(rand_mass, rand_position.into());
 

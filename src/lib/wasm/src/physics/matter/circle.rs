@@ -136,7 +136,7 @@ impl Dynamics for Circle {
             }
         } else {
             let force_magnitude =
-                GRAV_CONST * other.mass() * self.mass / distance.magnitude().powi(2);
+                GRAV_CONST * other.mass() * self.mass / distance.magnitude().sqrt();
             let normal = distance.normalize() * -1.;
             let force = normal * force_magnitude;
 
