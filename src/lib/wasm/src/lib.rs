@@ -1,6 +1,6 @@
 use draw::DynamicElement;
 use graph::Vec2;
-use physics::{Circle, Dynamics, Interaction, Kinematics, Matter, Momentum, Point};
+use physics::{Circle, Dynamics, Interaction, Kinematics, Matter, Point};
 use wasm_bindgen::prelude::*;
 use web_sys::HtmlElement;
 
@@ -20,9 +20,9 @@ const LOG: bool = false;
 #[allow(dead_code)]
 static TICKING: (i32, i32) = (60, 0);
 
-const GRAV_CONST: f64 = 0.0005;
+const GRAV_CONST: f64 = 0.005;
 const NUM_CIRCLES: usize = 120;
-const MOUSE_MASS: f64 = 400.;
+const MOUSE_MASS: f64 = 10.;
 #[allow(dead_code)]
 const ENERGY_CONSERVED_ON_COLLISION: f64 = 1.0;
 
@@ -247,7 +247,6 @@ fn tick(
 
     //now apply the interactions to every cirlce
     for ((_i, circle), interactions) in circles.iter_mut().enumerate().zip(all_interactions) {
-        let mut net_velocity = Vec2::default();
         let mut fake_object_momentum = Vec2::default();
         let mut fake_object_mass = 0.;
         let mut net_force = Vec2::default();
@@ -308,17 +307,17 @@ fn tick(
             let mut circle_potential_energy = 0.;
 
             for (j, circle) in circles.iter().enumerate() {
-                if i == j {
+                if i >= j {
                     continue;
                 }
 
-                circle_potential_energy +=
-                    -1.0 * refframe_circle.mass() * circle.mass() * GRAV_CONST
-                        / (refframe_circle.pos() - circle.pos()).magnitude();
+                circle_potential_energy += refframe_circle.mass() * circle.mass() * GRAV_CONST
+                    / (refframe_circle.pos() - circle.pos()).magnitude();
             }
             let circle_kinetic_energy =
-                0.5 * refframe_circle.mass() * refframe_circle.velocity().magnitude().powf(2.);
-            potential_energy += circle_potential_energy;
+                0.5 * refframe_circle.mass() * refframe_circle.velocity().magnitude().powi(2);
+
+            potential_energy -= circle_potential_energy;
             kinetic_energy += circle_kinetic_energy;
         }
 
