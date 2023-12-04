@@ -20,7 +20,7 @@ const LOG: bool = false;
 #[allow(dead_code)]
 static TICKING: (i32, i32) = (60, 0);
 
-const GRAV_CONST: f64 = 0.05;
+const GRAV_CONST: f64 = 0.005;
 const NUM_CIRCLES: usize = 1000;
 const MOUSE_MASS: f64 = 10.;
 #[allow(dead_code)]
@@ -353,9 +353,9 @@ pub struct CircleInformation {
 fn spawn_circle_rows() -> Vec<DynamicElement<Circle>> {
     let mut vals = Vec::new();
 
-    for i in 0..10 {
-        for j in 0..10 {
-            vals.push((20., ((i as f64 * 100.), (j as f64 * 100.))));
+    for i in 0..16 {
+        for j in 0..16 {
+            vals.push((16., (((i as f64 * 32.) + 1200.), ((j as f64 * 32.) + 400.))));
         }
     }
 
