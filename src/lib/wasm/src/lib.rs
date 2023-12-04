@@ -20,11 +20,11 @@ const LOG: bool = false;
 #[allow(dead_code)]
 static TICKING: (i32, i32) = (60, 0);
 
-const GRAV_CONST: f64 = 0.00005;
+const GRAV_CONST: f64 = 0.0005;
 const NUM_CIRCLES: usize = 120;
-const MOUSE_MASS: f64 = 40000.;
+const MOUSE_MASS: f64 = 400.;
 #[allow(dead_code)]
-const ENERGY_CONSERVED_ON_COLLISION: f64 = 0.97;
+const ENERGY_CONSERVED_ON_COLLISION: f64 = 1.0;
 
 #[wasm_bindgen]
 extern "C" {
@@ -273,7 +273,9 @@ fn tick(
             let el_vel = (circle.velocity() * (circle.mass() - fake_object_mass)
                 + (2. * fake_object_mass * fake_object_velocity))
                 / (circle.mass() + fake_object_mass);
-            circle.set_velocity(el_vel * ENERGY_CONSERVED_ON_COLLISION);
+
+            circle.apply_velocity((el_vel - circle.velocity()) * ENERGY_CONSERVED_ON_COLLISION);
+            //circle.set_velocity(el_vel * ENERGY_CONSERVED_ON_COLLISION);
         }
 
         /*if net_velocity != Vec2::default() {
