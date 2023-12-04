@@ -20,11 +20,11 @@ const LOG: bool = false;
 #[allow(dead_code)]
 static TICKING: (i32, i32) = (60, 0);
 
-const GRAV_CONST: f64 = 0.005;
-const NUM_CIRCLES: usize = 120;
+const GRAV_CONST: f64 = 0.05;
+const NUM_CIRCLES: usize = 1000;
 const MOUSE_MASS: f64 = 10.;
 #[allow(dead_code)]
-const ENERGY_CONSERVED_ON_COLLISION: f64 = 1.0;
+const ENERGY_CONSERVED_ON_COLLISION: f64 = 0.99;
 
 #[wasm_bindgen]
 extern "C" {
@@ -69,7 +69,9 @@ pub fn run() -> Result<(), JsValue> {
 
     let window_size = hook_window_size()?;
 
-    let mut circles = spawn_circles();
+    //let mut circles = spawn_circles();
+
+    let mut circles = spawn_circle_rows();
 
     /*let mut circles = spawn_circles_with_props(vec![
         (3000., (700., 600.)),
@@ -241,7 +243,7 @@ fn tick(
             for collision in collisions.iter() {
                 position_adj += collision.clone();
             }
-            circle.apply_pos(position_adj);
+            //circle.apply_pos(position_adj);
         }
     }
 
@@ -346,4 +348,16 @@ pub struct CircleInformation {
     pub mass: f64,
     pub pot: f64,
     pub kin: f64,
+}
+
+fn spawn_circle_rows() -> Vec<DynamicElement<Circle>> {
+    let mut vals = Vec::new();
+
+    for i in 0..10 {
+        for j in 0..10 {
+            vals.push((20., ((i as f64 * 100.), (j as f64 * 100.))));
+        }
+    }
+
+    spawn_circles_with_props(vals)
 }

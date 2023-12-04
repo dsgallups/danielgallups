@@ -77,7 +77,7 @@ impl Dynamics for Circle {
         let normal = distance.normalize() * -1.;
 
         //for this one, distance is squared again
-        let force = GRAV_CONST * other.mass() * self.mass / distance.magnitude().sqrt();
+        let force = GRAV_CONST * other.mass() * self.mass / distance.magnitude();
         let force = normal * force;
 
         //self.apply_force(force);
@@ -92,6 +92,7 @@ impl Dynamics for Circle {
         //let mut dist = self.position.distance_from(&other.pos());
         let distance = self.pos() - other.pos();
 
+        //this
         if distance.magnitude() < (self.radius() + other.radius()) {
             Interaction {
                 distance,
