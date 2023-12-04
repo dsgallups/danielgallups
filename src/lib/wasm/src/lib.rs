@@ -243,7 +243,7 @@ fn tick(
             for collision in collisions.iter() {
                 position_adj += collision.clone();
             }
-            //circle.apply_pos(position_adj);
+            circle.apply_pos(position_adj);
         }
     }
 
