@@ -24,7 +24,7 @@ const GRAV_CONST: f64 = 0.05;
 const NUM_CIRCLES: usize = 1000;
 const MOUSE_MASS: f64 = 10.;
 #[allow(dead_code)]
-const ENERGY_CONSERVED_ON_COLLISION: f64 = 0.99;
+const ENERGY_CONSERVED_ON_COLLISION: f64 = 1.;
 
 #[wasm_bindgen]
 extern "C" {
