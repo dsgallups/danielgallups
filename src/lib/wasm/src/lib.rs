@@ -231,7 +231,7 @@ fn tick(
         }
         if let Some(mouse_pos) = mouse_pos {
             let interaction = refframe_circle.apply_grav_force_for_mass(mouse_pos);
-            interactions.push(interaction);
+            //interactions.push(interaction);
         }
 
         all_interactions.push(interactions);
@@ -296,7 +296,7 @@ fn tick(
             || position.y + (radius + radius) < 0.
             || position.y > window_size.1
         {
-            circle.reset();
+            //circle.reset();
         }
 
         circle.draw();
