@@ -20,7 +20,7 @@ const LOG: bool = false;
 #[allow(dead_code)]
 static TICKING: (i32, i32) = (60, 0);
 
-const GRAV_CONST: f64 = 0.005;
+const GRAV_CONST: f64 = 0.05;
 const NUM_CIRCLES: usize = 1000;
 const MOUSE_MASS: f64 = 10.;
 #[allow(dead_code)]
