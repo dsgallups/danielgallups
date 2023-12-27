@@ -1,6 +1,6 @@
 use crate::{
     graph::Vec2,
-    physics::{Dynamics, Interaction, Kinematics, Matter, Momentum},
+    physics::{Dynamics, Force, Kinematics, Matter},
     CFG,
 };
 use std::fmt::Debug;
@@ -80,7 +80,22 @@ impl Matter for Circle {
 }
 
 impl Dynamics for Circle {
-    fn apply_grav_force_for_mass(&self, other: &dyn Matter) -> Interaction {
+    fn force_due_to_gravity(&self, other: &dyn Matter) -> Force {
+        let distance_from_com = self.pos() - other.pos();
+        let force_magnitude = CFG.mass_grav.0 * other.mass() * self.mass
+            / distance_from_com.magnitude().powf(CFG.mass_grav.1);
+        let normal = distance_from_com.normalize() * -1.;
+        let force = normal * force_magnitude;
+        //log(&format!("force_magnitude: {:?}", force_magnitude));
+        //log(&format!("force: {:?}", force));
+        Force(force)
+    }
+    fn collision_occured(&self, other: &dyn Matter) -> bool {
+        let other_obj_closest_point = other.closest_point_on_edge(self.pos());
+        let distance_from_other_obj_closest_point = other_obj_closest_point - self.position;
+        distance_from_other_obj_closest_point.magnitude() < self.radius()
+    }
+    /*fn apply_grav_force_for_mass(&self, other: &dyn Matter) -> Interaction {
         let distance = self.pos() - other.pos();
 
         let normal = distance.normalize() * -1.;
@@ -162,6 +177,7 @@ impl Dynamics for Circle {
         }
         */
     }
+    */
 
     fn tick_forces(&mut self) {
         //calculate the acceleration vector

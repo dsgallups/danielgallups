@@ -1,7 +1,7 @@
 use crate::{graph::Vec2, html};
 pub mod matter;
 pub use matter::*;
-use std::fmt::Debug;
+use std::{fmt::Debug, ops::Deref};
 /// If an item doesnt have a velocity, then it can't be kinematic
 /// as a logical consequence, you cannot apply a force to an item without velocity
 pub trait Kinematics {
@@ -38,9 +38,9 @@ pub trait Matter {
 }
 
 pub trait Dynamics: Matter + Kinematics {
-    fn apply_grav_force_for_mass(&self, other: &dyn Matter) -> Interaction;
+    fn force_due_to_gravity(&self, other: &dyn Matter) -> Force;
 
-    fn apply_grav_force(&self, other: &dyn Dynamics) -> Interaction;
+    fn collision_occured(&self, other: &dyn Matter) -> bool;
 
     fn tick_forces(&mut self);
 
@@ -54,6 +54,15 @@ pub trait Dynamics: Matter + Kinematics {
             )
                 .into(),
         );
+    }
+}
+
+pub struct Force(Vec2);
+impl Deref for Force {
+    type Target = Vec2;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
 

@@ -2,7 +2,7 @@ use crate::{
     document,
     graph::Vec2,
     html,
-    physics::{matter::Circle, Dynamics, Interaction, Kinematics, Matter, Shape},
+    physics::{matter::Circle, Dynamics, Shape},
 };
 use web_sys::Element;
 
@@ -66,7 +66,7 @@ impl DrawableElement {
     pub fn draw(&mut self) {
         let position = self.matter.pos();
 
-        match self.shape() {
+        match self.matter.shape() {
             Shape::Circle(radius) => {
                 self.el
                     .set_attribute(
@@ -119,59 +119,5 @@ impl DrawableElement {
                     .unwrap()
             }
         }
-    }
-}
-
-impl Kinematics for DrawableElement {
-    fn velocity(&self) -> Vec2 {
-        self.matter.velocity()
-    }
-
-    fn set_velocity(&mut self, velocity: Vec2) {
-        self.matter.set_velocity(velocity);
-    }
-    fn force(&self) -> Vec2 {
-        self.matter.force()
-    }
-    fn set_force(&mut self, force: Vec2) {
-        self.matter.set_force(force);
-    }
-}
-
-impl Matter for DrawableElement {
-    fn mass(&self) -> f64 {
-        self.matter.mass()
-    }
-    fn set_mass(&mut self, mass: f64) {
-        self.matter.set_mass(mass);
-    }
-
-    fn pos(&self) -> Vec2 {
-        self.matter.pos()
-    }
-
-    fn closest_point_on_edge(&self, other_point: Vec2) -> Vec2 {
-        self.matter.closest_point_on_edge(other_point)
-    }
-    fn set_pos(&mut self, pos: Vec2) {
-        self.matter.set_pos(pos);
-    }
-
-    fn shape(&self) -> Shape {
-        self.matter.shape()
-    }
-}
-
-impl Dynamics for DrawableElement {
-    fn apply_grav_force_for_mass(&self, other: &dyn Matter) -> Interaction {
-        self.matter.apply_grav_force_for_mass(other)
-    }
-
-    fn apply_grav_force(&self, other: &dyn Dynamics) -> Interaction {
-        self.matter.apply_grav_force(other)
-    }
-
-    fn tick_forces(&mut self) {
-        self.matter.tick_forces();
     }
 }

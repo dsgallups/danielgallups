@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 use draw::DrawableElement;
 use graph::Vec2;
-use physics::{Dynamics, Interaction, Kinematics, Matter, Point};
+use physics::{Force, Interaction, Point};
 use settings::{Settings, CONFIGS};
 use wasm_bindgen::prelude::*;
 use web_sys::HtmlElement;
@@ -14,7 +14,7 @@ use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
-const CFG: Settings = CONFIGS[2];
+const CFG: Settings = CONFIGS[0];
 
 static mut TICK_COUNT: Option<i32> = None;
 static mut STOP_TICKING: bool = false;
@@ -86,8 +86,25 @@ pub fn run() -> Result<(), JsValue> {
         }
 
         let mouse_pos = mouse_pos.borrow();
+        let window_size = *window_size.borrow();
 
-        tick(&mut elements, mouse_pos.as_ref(), *window_size.borrow());
+        //calculate
+        tick(&mut elements, mouse_pos.as_ref(), window_size);
+
+        //then draw
+        elements.iter_mut().for_each(|el| {
+            let position = el.matter.pos();
+            let radius = el.matter.mass().sqrt();
+
+            if position.x + (radius + radius) < 0.
+                || position.x > window_size.0
+                || position.y + (radius + radius) < 0.
+                || position.y > window_size.1
+            {
+                //circle.reset();
+            }
+            el.draw()
+        });
 
         request_animation_frame(f.borrow().as_ref().unwrap());
     }) as Box<dyn FnMut()>));
@@ -163,54 +180,71 @@ fn spawn_elements_with_props(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<Drawabl
         .collect::<Vec<_>>()
 }
 
-#[allow(clippy::mem_replace_with_uninit)]
-fn tick(elements: &mut [DrawableElement], mouse_pos: Option<&Point>, window_size: (f64, f64)) {
-    let mut all_interactions = Vec::new();
+fn get_forces_and_collisions(
+    elements: &mut [DrawableElement],
+) -> (Vec<Vec<Force>>, Vec<Vec<usize>>) {
+    let mut all_forces = Vec::new();
 
     //contains groups of indices in elements in which collisions have occured.
     let mut collision_groups: Vec<Vec<usize>> = Vec::new();
-
     for (i, refframe_element) in elements.iter().enumerate() {
-        let mut interactions = Vec::new();
-        for (j, circle) in elements.iter().enumerate() {
+        let mut forces = Vec::new();
+        for (j, element) in elements.iter().enumerate() {
             if i == j {
                 continue;
             }
-            let interaction = refframe_element.apply_grav_force(circle.matter.as_ref());
+            let collision_occured = refframe_element
+                .matter
+                .collision_occured(element.matter.as_ref());
+            let force_due_to_gravity = refframe_element
+                .matter
+                .force_due_to_gravity(element.matter.as_ref());
+            //let interaction = refframe_element.apply_grav_force(circle.matter.as_ref());
 
-            if interaction.collision_occured {
-                if collision_groups.is_empty() {
-                    collision_groups.push(vec![i, j]);
-                }
-                for i in 0..collision_groups.len() {
-                    let collision_group = &mut collision_groups[i];
-
+            if collision_occured {
+                let mut added = false;
+                for collision_group in collision_groups.iter_mut() {
                     match (collision_group.contains(&i), collision_group.contains(&j)) {
                         (true, true) => {
+                            added = true;
                             break;
                         }
                         (true, false) => {
                             collision_group.push(j);
+                            added = true;
                             break;
                         }
                         (false, true) => {
                             collision_group.push(i);
+                            added = true;
                             break;
                         }
-                        (false, false) => collision_groups.push(vec![i, j]),
+                        (false, false) => {}
                     }
+                }
+                if !added {
+                    collision_groups.push(vec![i, j]);
                 }
             }
 
-            interactions.push(interaction);
+            forces.push(force_due_to_gravity);
         }
-        if let Some(mouse_pos) = mouse_pos {
-            let interaction = refframe_element.apply_grav_force_for_mass(mouse_pos);
-            interactions.push(interaction);
-        }
+        /*if let Some(mouse_pos) = mouse_pos {
+            let force_due_to_gravity = refframe_element.matter.force_due_to_gravity(mouse_pos);
+            //let interaction = refframe_element.apply_grav_force_for_mass(mouse_pos);
+            forces.push(force_due_to_gravity);
+        }*/
 
-        all_interactions.push(interactions);
+        all_forces.push(forces);
     }
+    (all_forces, collision_groups)
+}
+
+#[allow(clippy::mem_replace_with_uninit)]
+fn tick(elements: &mut [DrawableElement], _mouse_pos: Option<&Point>, window_size: (f64, f64)) {
+    let (all_forces, collision_groups) = get_forces_and_collisions(elements);
+
+    // Logging for collision groups
     if let Some(log_opts) = CFG.log {
         if !collision_groups.is_empty() {
             log(&format!("collisions: \n{:#?}", collision_groups));
@@ -234,101 +268,6 @@ fn tick(elements: &mut [DrawableElement], mouse_pos: Option<&Point>, window_size
             }
         }
     }
-
-    /*for (i, circle) in elements.iter_mut().enumerate() {
-        if let Some(collisions) = collisions.get(&i) {
-            let mut position_adj = Vec2::default();
-            for collision in collisions.iter() {
-                position_adj += *collision;
-            }
-            circle.apply_pos(position_adj);
-        }
-    }*/
-
-    //now apply the interactions to every cirlce
-    for ((_i, circle), interactions) in elements.iter_mut().enumerate().zip(all_interactions) {
-        let mut fake_object_momentum = Vec2::default();
-        let mut fake_object_mass = 0.;
-        let mut net_force = Vec2::default();
-        for Interaction {
-            collision_occured: _,
-            distance: _,
-            force,
-            other_mass,
-        } in interactions
-        {
-            if let Some(force) = force {
-                net_force += force;
-            }
-            if let Some(momentum) = other_mass {
-                fake_object_mass += momentum.mass;
-                fake_object_momentum += momentum.mass * momentum.velocity;
-            }
-        }
-
-        circle.set_force(net_force);
-
-        if fake_object_mass != 0. {
-            let fake_object_velocity = fake_object_momentum / fake_object_mass;
-            let el_vel = (circle.velocity() * (circle.mass() - fake_object_mass)
-                + (2. * fake_object_mass * fake_object_velocity))
-                / (circle.mass() + fake_object_mass);
-
-            circle.apply_velocity((el_vel - circle.velocity()) * CFG.energy_conservation);
-            //circle.set_velocity(el_vel * ENERGY_CONSERVED_ON_COLLISION);
-        }
-
-        /*if net_velocity != Vec2::default() {
-            let normal = net_velocity.normalize();
-            let cur_v_mag = circle.velocity().magnitude();
-            circle.set_velocity(normal * cur_v_mag * ENERGY_CONSERVED_ON_COLLISION);
-        }*/
-
-        circle.tick_forces();
-        circle.reset_forces();
-
-        let position = circle.matter.pos();
-        let radius = circle.matter.mass().sqrt();
-
-        if position.x + (radius + radius) < 0.
-            || position.x > window_size.0
-            || position.y + (radius + radius) < 0.
-            || position.y > window_size.1
-        {
-            //circle.reset();
-        }
-
-        circle.draw();
-    }
-
-    /*if CFG.log.is_some() {
-        let mut potential_energy = 0.;
-        let mut kinetic_energy = 0.;
-        for (i, refframe_element) in elements.iter().enumerate() {
-            let mut circle_potential_energy = 0.;
-
-            for (j, circle) in elements.iter().enumerate() {
-                if i >= j {
-                    continue;
-                }
-
-                circle_potential_energy += refframe_element.mass() * circle.mass() * CFG.mass_grav.0
-                    / (refframe_element.pos() - circle.pos()).magnitude();
-            }
-            let circle_kinetic_energy =
-                0.5 * refframe_element.mass() * refframe_element.velocity().magnitude().powi(2);
-
-            potential_energy -= circle_potential_energy;
-            kinetic_energy += circle_kinetic_energy;
-        }
-
-        log(&format!(
-            "energy: {}\n, pot: {}\n, kin: {}",
-            kinetic_energy + potential_energy,
-            potential_energy,
-            kinetic_energy
-        ));
-    }*/
 }
 
 #[derive(Debug, Clone)]

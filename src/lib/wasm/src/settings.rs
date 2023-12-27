@@ -73,7 +73,7 @@ const EXP_TWO_INVERSE_GRAV: Settings = Settings {
     energy_conservation: 1.,
     //log: Some((60, 0)),
     log: Some(LogParams {
-        stop_tick_after: Some(2),
+        stop_tick_after: None,
         energy: false,
         collision: true,
     }),
