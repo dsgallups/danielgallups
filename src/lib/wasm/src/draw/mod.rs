@@ -6,19 +6,19 @@ use crate::{
 };
 use std::fmt::Debug;
 use web_sys::Element;
-pub struct DynamicElement<T> {
+pub struct DrawableElement<T> {
     pub el: Element,
     pub color: (f64, f64, f64),
     pub matter: T,
 }
 
-impl Default for DynamicElement<Circle> {
+impl Default for DrawableElement<Circle> {
     fn default() -> Self {
         Self::new_rand()
     }
 }
 
-impl DynamicElement<Circle> {
+impl DrawableElement<Circle> {
     pub fn new(mass: f64, position: Vec2) -> Self {
         let rand_color = (
             128. + rand::random::<f64>() * 127.,
@@ -119,7 +119,7 @@ impl DynamicElement<Circle> {
     }
 }
 
-impl<T> Kinematics for DynamicElement<T>
+impl<T> Kinematics for DrawableElement<T>
 where
     T: Kinematics,
 {
@@ -138,7 +138,7 @@ where
     }
 }
 
-impl<T> Matter for DynamicElement<T>
+impl<T> Matter for DrawableElement<T>
 where
     T: Matter,
 {
@@ -159,7 +159,7 @@ where
     }
 }
 
-impl<T> Dynamics for DynamicElement<T>
+impl<T> Dynamics for DrawableElement<T>
 where
     T: Dynamics,
 {

@@ -5,13 +5,13 @@ use crate::{
 };
 use std::fmt::Debug;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Circle {
-    pub mass: f64,
+    mass: f64,
     radius: f64,
-    pub force: Vec2,
-    pub velocity: Vec2,
-    pub position: Vec2,
+    force: Vec2,
+    velocity: Vec2,
+    position: Vec2,
 }
 
 impl Circle {
@@ -25,10 +25,6 @@ impl Circle {
             velocity: (0., 0.).into(),
             position,
         }
-    }
-
-    pub fn radius(&self) -> f64 {
-        self.radius
     }
 
     pub fn reset_forces(&mut self) {

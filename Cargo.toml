@@ -23,7 +23,7 @@ rand = { version = "0.8.5" }
 getrandom = { version = "0.2", features = ["js"] }
 
 [dev-dependencies]
-wasm-bindgen-test = "0.3.34"
+wasm-bindgen-test = "0.3.39"
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.

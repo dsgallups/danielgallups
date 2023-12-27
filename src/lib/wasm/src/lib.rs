@@ -1,4 +1,4 @@
-use draw::DynamicElement;
+use draw::DrawableElement;
 use graph::Vec2;
 use physics::{Circle, Dynamics, Interaction, Kinematics, Matter, Point};
 use settings::{Settings, CONFIGS};
@@ -141,13 +141,13 @@ fn hook_window_size() -> Result<Rc<RefCell<(f64, f64)>>, JsValue> {
     Ok(window_size)
 }
 
-fn spawn_circles_with_props(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<DynamicElement<Circle>> {
+fn spawn_circles_with_props(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<DrawableElement<Circle>> {
     let bg_el = document().get_element_by_id("background").unwrap();
 
     circle_vals
         .into_iter()
         .map(|val| {
-            let circle = DynamicElement::new(val.0, val.1.into());
+            let circle = DrawableElement::new(val.0, val.1.into());
             bg_el.append_child(&circle.el).unwrap();
             circle
         })
@@ -156,7 +156,7 @@ fn spawn_circles_with_props(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<DynamicE
 
 #[allow(clippy::mem_replace_with_uninit)]
 fn tick(
-    circles: &mut [DynamicElement<Circle>],
+    circles: &mut [DrawableElement<Circle>],
     mouse_pos: Option<&Point>,
     window_size: (f64, f64),
 ) {

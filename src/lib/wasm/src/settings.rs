@@ -1,4 +1,4 @@
-use crate::{document, draw::DynamicElement, physics::Circle};
+use crate::{document, draw::DrawableElement, physics::Circle};
 
 pub type GravitySettings = (f64, f64);
 
@@ -13,7 +13,7 @@ pub struct Settings {
     pub energy_conservation: f64,
     pub log: Option<(i32, i32)>,
     pub spawning_fn:
-        fn(fn(Vec<CircleVal>) -> Vec<DynamicElement<Circle>>) -> Vec<DynamicElement<Circle>>,
+        fn(fn(Vec<CircleVal>) -> Vec<DrawableElement<Circle>>) -> Vec<DrawableElement<Circle>>,
 }
 
 const SLOW_FIREWORKS_WITH_SMALL_BALLS: Settings = Settings {
@@ -51,7 +51,7 @@ const RANDOM_BALLS_INVERSE_GRAV: Settings = Settings {
 
         (0..220)
             .map(|_| {
-                let circle = DynamicElement::new_rand();
+                let circle = DrawableElement::new_rand();
                 bg_el.append_child(&circle.el).unwrap();
                 circle
             })
@@ -62,25 +62,25 @@ const RANDOM_BALLS_INVERSE_GRAV: Settings = Settings {
 pub const CONFIGS: [Settings; 2] = [SLOW_FIREWORKS_WITH_SMALL_BALLS, RANDOM_BALLS_INVERSE_GRAV];
 
 #[allow(dead_code)]
-fn spawn_parallel_circles() -> Vec<DynamicElement<Circle>> {
+fn spawn_parallel_circles() -> Vec<DrawableElement<Circle>> {
     let bg_el = document().get_element_by_id("background").unwrap();
 
-    let circle_one = DynamicElement::new(5., (200., 200.).into());
+    let circle_one = DrawableElement::new(5., (200., 200.).into());
     bg_el.append_child(&circle_one.el).unwrap();
-    let circle_two = DynamicElement::new(3., (800., 200.).into());
+    let circle_two = DrawableElement::new(3., (800., 200.).into());
     bg_el.append_child(&circle_two.el).unwrap();
-    let circle_three = DynamicElement::new(20., (1600., 200.).into());
+    let circle_three = DrawableElement::new(20., (1600., 200.).into());
     bg_el.append_child(&circle_three.el).unwrap();
     vec![circle_one, circle_two, circle_three]
 }
 
 #[allow(dead_code)]
-fn spawn_circles() -> Vec<DynamicElement<Circle>> {
+fn spawn_circles() -> Vec<DrawableElement<Circle>> {
     let bg_el = document().get_element_by_id("background").unwrap();
 
     (0..100)
         .map(|_| {
-            let circle = DynamicElement::default();
+            let circle = DrawableElement::default();
             bg_el.append_child(&circle.el).unwrap();
             circle
         })
