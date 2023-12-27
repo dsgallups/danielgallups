@@ -1,4 +1,4 @@
-use crate::{document, draw::DrawableElement, physics::Circle};
+use crate::{document, draw::DrawableElement};
 
 pub type GravitySettings = (f64, f64);
 
@@ -19,8 +19,7 @@ pub struct Settings {
     pub mass_grav: GravitySettings,
     pub energy_conservation: f64,
     pub log: Option<LogParams>,
-    pub spawning_fn:
-        fn(fn(Vec<CircleVal>) -> Vec<DrawableElement<Circle>>) -> Vec<DrawableElement<Circle>>,
+    pub spawning_fn: fn(fn(Vec<CircleVal>) -> Vec<DrawableElement>) -> Vec<DrawableElement>,
 }
 
 const SLOW_FIREWORKS_WITH_SMALL_BALLS: Settings = Settings {
@@ -58,7 +57,7 @@ const RANDOM_BALLS_INVERSE_GRAV: Settings = Settings {
 
         (0..220)
             .map(|_| {
-                let circle = DrawableElement::new_rand();
+                let circle = DrawableElement::new_rand_circle();
                 bg_el.append_child(&circle.el).unwrap();
                 circle
             })
@@ -98,7 +97,7 @@ const EXP_TWO_INVERSE_GRAV: Settings = Settings {
         circle_presets
             .iter()
             .map(|(mass, pos)| {
-                let circle = DrawableElement::new(*mass, (*pos).into());
+                let circle = DrawableElement::new_circle(*mass, (*pos).into());
                 bg_el.append_child(&circle.el).unwrap();
                 circle
             })
@@ -118,7 +117,7 @@ const EXP_RANDOM_BALLS_INVERSE_GRAV: Settings = Settings {
 
         (0..220)
             .map(|_| {
-                let circle = DrawableElement::new_rand();
+                let circle = DrawableElement::new_rand_circle();
                 bg_el.append_child(&circle.el).unwrap();
                 circle
             })
@@ -134,25 +133,25 @@ pub const CONFIGS: [Settings; 4] = [
 ];
 
 #[allow(dead_code)]
-fn spawn_parallel_circles() -> Vec<DrawableElement<Circle>> {
+fn spawn_parallel_circles() -> Vec<DrawableElement> {
     let bg_el = document().get_element_by_id("background").unwrap();
 
-    let circle_one = DrawableElement::new(5., (200., 200.).into());
+    let circle_one = DrawableElement::new_circle(5., (200., 200.).into());
     bg_el.append_child(&circle_one.el).unwrap();
-    let circle_two = DrawableElement::new(3., (800., 200.).into());
+    let circle_two = DrawableElement::new_circle(3., (800., 200.).into());
     bg_el.append_child(&circle_two.el).unwrap();
-    let circle_three = DrawableElement::new(20., (1600., 200.).into());
+    let circle_three = DrawableElement::new_circle(20., (1600., 200.).into());
     bg_el.append_child(&circle_three.el).unwrap();
     vec![circle_one, circle_two, circle_three]
 }
 
 #[allow(dead_code)]
-fn spawn_circles() -> Vec<DrawableElement<Circle>> {
+fn spawn_circles() -> Vec<DrawableElement> {
     let bg_el = document().get_element_by_id("background").unwrap();
 
     (0..100)
         .map(|_| {
-            let circle = DrawableElement::default();
+            let circle = DrawableElement::new_rand_circle();
             bg_el.append_child(&circle.el).unwrap();
             circle
         })

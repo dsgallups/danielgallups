@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 use draw::DrawableElement;
 use graph::Vec2;
-use physics::{Circle, Dynamics, Interaction, Kinematics, Matter, Point};
+use physics::{Dynamics, Interaction, Kinematics, Matter, Point};
 use settings::{Settings, CONFIGS};
 use wasm_bindgen::prelude::*;
 use web_sys::HtmlElement;
@@ -150,13 +150,13 @@ fn hook_window_size() -> Result<Rc<RefCell<(f64, f64)>>, JsValue> {
     Ok(window_size)
 }
 
-fn spawn_circles_with_props(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<DrawableElement<Circle>> {
+fn spawn_circles_with_props(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<DrawableElement> {
     let bg_el = document().get_element_by_id("background").unwrap();
 
     circle_vals
         .into_iter()
         .map(|val| {
-            let circle = DrawableElement::new(val.0, val.1.into());
+            let circle = DrawableElement::new_circle(val.0, val.1.into());
             bg_el.append_child(&circle.el).unwrap();
             circle
         })
@@ -164,11 +164,7 @@ fn spawn_circles_with_props(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<Drawable
 }
 
 #[allow(clippy::mem_replace_with_uninit)]
-fn tick(
-    circles: &mut [DrawableElement<Circle>],
-    mouse_pos: Option<&Point>,
-    window_size: (f64, f64),
-) {
+fn tick(circles: &mut [DrawableElement], mouse_pos: Option<&Point>, window_size: (f64, f64)) {
     let mut all_interactions = Vec::new();
 
     let mut collisions: HashMap<usize, Vec<Vec2>> = HashMap::new();
@@ -178,7 +174,7 @@ fn tick(
             if i == j {
                 continue;
             }
-            let interaction = refframe_circle.apply_grav_force(&circle.matter);
+            let interaction = refframe_circle.apply_grav_force(circle.matter.as_ref());
 
             if interaction.collision_occured {
                 match collisions.get_mut(&i) {

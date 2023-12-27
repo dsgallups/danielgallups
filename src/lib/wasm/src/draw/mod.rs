@@ -2,24 +2,18 @@ use crate::{
     document,
     graph::Vec2,
     html,
-    physics::{matter::Circle, Dynamics, Interaction, Kinematics, Matter},
+    physics::{matter::Circle, Dynamics, Interaction, Kinematics, Matter, Shape},
 };
-use std::fmt::Debug;
 use web_sys::Element;
-pub struct DrawableElement<T> {
+
+pub struct DrawableElement {
     pub el: Element,
     pub color: (f64, f64, f64),
-    pub matter: T,
+    pub matter: Box<dyn Dynamics>,
 }
 
-impl Default for DrawableElement<Circle> {
-    fn default() -> Self {
-        Self::new_rand()
-    }
-}
-
-impl DrawableElement<Circle> {
-    pub fn new(mass: f64, position: Vec2) -> Self {
+impl DrawableElement {
+    pub fn new_circle(mass: f64, position: Vec2) -> Self {
         let rand_color = (
             128. + rand::random::<f64>() * 127.,
             128. + rand::random::<f64>() * 127.,
@@ -51,10 +45,10 @@ impl DrawableElement<Circle> {
         Self {
             el: circle,
             color: rand_color,
-            matter,
+            matter: Box::new(matter),
         }
     }
-    pub fn new_rand() -> Self {
+    pub fn new_rand_circle() -> Self {
         let rand_color = (
             128. + rand::random::<f64>() * 127.,
             128. + rand::random::<f64>() * 127.,
@@ -93,84 +87,114 @@ impl DrawableElement<Circle> {
         Self {
             el: circle,
             color: rand_color,
-            matter,
+            matter: Box::new(matter),
         }
     }
     pub fn draw(&mut self) {
         let position = self.matter.pos();
-        let radius = self.matter.radius();
 
-        self.el
-            .set_attribute(
-                "style",
-                &format!(
-                    "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0}); width: {:.2}px; height: {:.2}px;",
-                    position.y - radius,
-                    position.x - radius,
-                    self.color.0,
-                    self.color.1,
-                    self.color.2,
-                    radius * 2.,
-                    radius * 2.,
-                ),
-            )
-            .unwrap()
-    }
-
-    pub fn radius(&self) -> f64 {
-        self.matter.radius()
+        match self.shape() {
+            Shape::Circle(radius) => {
+                self.el
+                    .set_attribute(
+                        "style",
+                        &format!(
+                            "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0}); width: {:.2}px; height: {:.2}px;",
+                            position.y - radius,
+                            position.x - radius,
+                            self.color.0,
+                            self.color.1,
+                            self.color.2,
+                            radius * 2.,
+                            radius * 2.,
+                        ),
+                    )
+                    .unwrap()
+            }
+            Shape::Point => {
+                self.el
+                    .set_attribute(
+                        "style",
+                        &format!(
+                            "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0}); width: {:.2}px; height: {:.2}px;",
+                            position.y,
+                            position.x,
+                            self.color.0,
+                            self.color.1,
+                            self.color.2,
+                            1.,
+                            1.,
+                        ),
+                    )
+                    .unwrap()
+            }
+            Shape::Square(width, height ) => {
+                self.el
+                    .set_attribute(
+                        "style",
+                        &format!(
+                            "top: {:.2}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0}); width: {:.2}px; height: {:.2}px;",
+                            position.y,
+                            position.x,
+                            self.color.0,
+                            self.color.1,
+                            self.color.2,
+                            width,
+                            height,
+                        ),
+                    )
+                    .unwrap()
+            }
+        }
     }
 }
 
-impl<T> Kinematics for DrawableElement<T>
-where
-    T: Kinematics,
-{
+impl Kinematics for DrawableElement {
     fn velocity(&self) -> Vec2 {
         self.matter.velocity()
     }
-    fn mutate_velocity(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
-        self.matter.mutate_velocity(f);
-    }
 
+    fn set_velocity(&mut self, velocity: Vec2) {
+        self.matter.set_velocity(velocity);
+    }
     fn force(&self) -> Vec2 {
         self.matter.force()
     }
-    fn mutate_force(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
-        self.matter.mutate_force(f);
+    fn set_force(&mut self, force: Vec2) {
+        self.matter.set_force(force);
     }
 }
 
-impl<T> Matter for DrawableElement<T>
-where
-    T: Matter,
-{
+impl Matter for DrawableElement {
     fn mass(&self) -> f64 {
         self.matter.mass()
     }
-    fn mutate_mass(&mut self, f: impl FnOnce(&mut f64)) {
-        self.matter.mutate_mass(f);
+    fn set_mass(&mut self, mass: f64) {
+        self.matter.set_mass(mass);
     }
-    fn pos(&self) -> &Vec2 {
+
+    fn pos(&self) -> Vec2 {
         self.matter.pos()
     }
-    fn mutate_pos(&mut self, f: impl FnOnce(&mut Vec2)) {
-        self.matter.mutate_pos(f);
-    }
-    fn closest_point_on_edge(&self, other_point: &Vec2) -> Vec2 {
+
+    fn closest_point_on_edge(&self, other_point: Vec2) -> Vec2 {
         self.matter.closest_point_on_edge(other_point)
+    }
+    fn set_pos(&mut self, pos: Vec2) {
+        self.matter.set_pos(pos);
+    }
+
+    fn shape(&self) -> Shape {
+        self.matter.shape()
     }
 }
 
-impl<T> Dynamics for DrawableElement<T>
-where
-    T: Dynamics,
-{
-    fn apply_grav_force_for_mass(&self, other: &impl Matter) -> Interaction {
+impl Dynamics for DrawableElement {
+    fn apply_grav_force_for_mass(&self, other: &dyn Matter) -> Interaction {
         self.matter.apply_grav_force_for_mass(other)
     }
 
-    fn apply_grav_force(&self, other: &(impl Dynamics + Debug)) -> Interaction {
+    fn apply_grav_force(&self, other: &dyn Dynamics) -> Interaction {
         self.matter.apply_grav_force(other)
     }
 

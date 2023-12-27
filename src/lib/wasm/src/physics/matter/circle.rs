@@ -5,6 +5,8 @@ use crate::{
 };
 use std::fmt::Debug;
 
+use super::Shape;
+
 #[derive(Debug, Clone)]
 pub struct Circle {
     mass: f64,
@@ -40,15 +42,15 @@ impl Kinematics for Circle {
     fn velocity(&self) -> Vec2 {
         self.velocity
     }
-    fn mutate_velocity(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
-        self.velocity = f(self.velocity);
+    fn set_velocity(&mut self, velocity: Vec2) {
+        self.velocity = velocity;
     }
 
     fn force(&self) -> Vec2 {
         self.force
     }
-    fn mutate_force(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
-        self.force = f(self.force);
+    fn set_force(&mut self, force: Vec2) {
+        self.force = force;
     }
 }
 
@@ -56,25 +58,29 @@ impl Matter for Circle {
     fn mass(&self) -> f64 {
         self.mass
     }
-    fn mutate_mass(&mut self, f: impl FnOnce(&mut f64)) {
-        f(&mut self.mass);
+    fn set_mass(&mut self, mass: f64) {
+        self.mass = mass;
     }
 
-    fn pos(&self) -> &Vec2 {
-        &self.position
+    fn pos(&self) -> Vec2 {
+        self.position
     }
-    fn mutate_pos(&mut self, f: impl FnOnce(&mut Vec2)) {
-        f(&mut self.position);
+    fn set_pos(&mut self, pos: Vec2) {
+        self.position = pos;
     }
-    fn closest_point_on_edge(&self, other_com: &Vec2) -> Vec2 {
-        let center_of_mass_distance = self.position - *other_com;
+    fn closest_point_on_edge(&self, other_com: Vec2) -> Vec2 {
+        let center_of_mass_distance = self.position - other_com;
         let normal = center_of_mass_distance.normalize() * -1.;
-        *self.pos() + (normal * self.radius())
+        self.pos() + (normal * self.radius())
+    }
+
+    fn shape(&self) -> Shape {
+        Shape::Circle(self.radius)
     }
 }
 
 impl Dynamics for Circle {
-    fn apply_grav_force_for_mass(&self, other: &impl Matter) -> Interaction {
+    fn apply_grav_force_for_mass(&self, other: &dyn Matter) -> Interaction {
         let distance = self.pos() - other.pos();
 
         let normal = distance.normalize() * -1.;
@@ -93,7 +99,7 @@ impl Dynamics for Circle {
         }
     }
 
-    fn apply_grav_force(&self, other: &(impl Dynamics + Debug)) -> Interaction {
+    fn apply_grav_force(&self, other: &dyn Dynamics) -> Interaction {
         let distance_from_com = self.pos() - other.pos();
         let other_obj_closest_point = other.closest_point_on_edge(self.pos());
         let distance_from_other_obj_closest_point = other_obj_closest_point - self.position;

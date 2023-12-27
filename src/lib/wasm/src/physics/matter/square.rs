@@ -1,5 +1,7 @@
 use crate::{graph::Vec2, physics::Matter};
 
+use super::Shape;
+
 #[derive(Debug, Clone)]
 pub struct Square {
     mass: f64,
@@ -33,18 +35,18 @@ impl Matter for Square {
     fn mass(&self) -> f64 {
         self.mass
     }
-    fn mutate_mass(&mut self, f: impl FnOnce(&mut f64)) {
-        f(&mut self.mass);
+    fn set_mass(&mut self, mass: f64) {
+        self.mass = mass;
     }
 
-    fn pos(&self) -> &Vec2 {
-        &self.position
+    fn pos(&self) -> Vec2 {
+        self.position
     }
-    fn mutate_pos(&mut self, f: impl FnOnce(&mut Vec2)) {
-        f(&mut self.position);
+    fn set_pos(&mut self, pos: Vec2) {
+        self.position = pos;
     }
     //GPT generated, unknown if this working
-    fn closest_point_on_edge(&self, other_point: &Vec2) -> Vec2 {
+    fn closest_point_on_edge(&self, other_point: Vec2) -> Vec2 {
         let mut closest_point = self.position;
         let mut closest_distance = f64::MAX;
 
@@ -62,15 +64,18 @@ impl Matter for Square {
 
         for edge in edges {
             let (edge_start, edge_end) = edge;
-            let distance = distance_to_line_segment(&edge_start, &edge_end, other_point);
+            let distance = distance_to_line_segment(&edge_start, &edge_end, &other_point);
 
             if distance < closest_distance {
                 closest_distance = distance;
-                closest_point = closest_point_on_line_segment(&edge_start, &edge_end, other_point);
+                closest_point = closest_point_on_line_segment(&edge_start, &edge_end, &other_point);
             }
         }
 
         closest_point
+    }
+    fn shape(&self) -> Shape {
+        Shape::Square(self.width, self.height)
     }
 }
 

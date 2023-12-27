@@ -6,21 +6,16 @@ use std::fmt::Debug;
 /// as a logical consequence, you cannot apply a force to an item without velocity
 pub trait Kinematics {
     fn velocity(&self) -> Vec2;
-    fn mutate_velocity(&mut self, f: impl FnOnce(Vec2) -> Vec2);
-    fn set_velocity(&mut self, velocity: Vec2) {
-        self.mutate_velocity(|_| velocity);
-    }
+    fn set_velocity(&mut self, velocity: Vec2);
     fn apply_velocity(&mut self, velocity: Vec2) {
-        self.mutate_velocity(|v| v + velocity);
+        self.set_velocity(self.velocity() + velocity);
     }
 
     fn force(&self) -> Vec2;
-    fn mutate_force(&mut self, f: impl FnOnce(Vec2) -> Vec2);
-    fn set_force(&mut self, force: Vec2) {
-        self.mutate_force(|_| force);
-    }
+    fn set_force(&mut self, force: Vec2);
+
     fn apply_force(&mut self, force: Vec2) {
-        self.mutate_force(|f| f + force);
+        self.set_force(self.force() + force);
     }
     fn reset_forces(&mut self) {
         self.set_force((0., 0.).into());
@@ -30,26 +25,22 @@ pub trait Kinematics {
 /// all matter should have a position
 pub trait Matter {
     fn mass(&self) -> f64;
-    fn mutate_mass(&mut self, f: impl FnOnce(&mut f64));
-    fn set_mass(&mut self, mass: f64) {
-        self.mutate_mass(|mass_to_set| *mass_to_set = mass);
-    }
+    fn set_mass(&mut self, mass: f64);
 
-    fn pos(&self) -> &Vec2;
-    fn mutate_pos(&mut self, f: impl FnOnce(&mut Vec2));
-    fn set_pos(&mut self, pos: Vec2) {
-        self.mutate_pos(|pos_to_set| *pos_to_set = pos);
-    }
+    fn pos(&self) -> Vec2;
+    fn set_pos(&mut self, pos: Vec2);
     fn apply_pos(&mut self, pos: Vec2) {
-        self.mutate_pos(|p| *p += pos);
+        self.set_pos(self.pos() + pos);
     }
-    fn closest_point_on_edge(&self, other_point: &Vec2) -> Vec2;
+    fn closest_point_on_edge(&self, other_point: Vec2) -> Vec2;
+
+    fn shape(&self) -> Shape;
 }
 
 pub trait Dynamics: Matter + Kinematics {
-    fn apply_grav_force_for_mass(&self, other: &impl Matter) -> Interaction;
+    fn apply_grav_force_for_mass(&self, other: &dyn Matter) -> Interaction;
 
-    fn apply_grav_force(&self, other: &(impl Dynamics + Debug)) -> Interaction;
+    fn apply_grav_force(&self, other: &dyn Dynamics) -> Interaction;
 
     fn tick_forces(&mut self);
 
