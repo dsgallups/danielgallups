@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use draw::DrawableElement;
 use graph::Vec2;
 use physics::{Circle, Dynamics, Interaction, Kinematics, Matter, Point};
