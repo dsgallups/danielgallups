@@ -96,7 +96,6 @@ impl DrawableElement<Circle> {
             matter,
         }
     }
-
     pub fn draw(&mut self) {
         let position = self.matter.pos();
         let radius = self.matter.radius();

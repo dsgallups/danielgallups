@@ -15,7 +15,10 @@ use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
-const CFG: Settings = CONFIGS[3];
+const CFG: Settings = CONFIGS[2];
+
+static mut TICK_COUNT: Option<i32> = None;
+static mut STOP_TICKING: bool = false;
 
 #[wasm_bindgen]
 extern "C" {
@@ -76,6 +79,13 @@ pub fn run() -> Result<(), JsValue> {
     let g = f.clone();
 
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
+        unsafe {
+            if STOP_TICKING {
+                f.borrow_mut().take();
+                return;
+            }
+        }
+
         let mouse_pos = mouse_pos.borrow();
 
         tick(&mut circles, mouse_pos.as_ref(), *window_size.borrow());
@@ -170,7 +180,7 @@ fn tick(
             }
             let interaction = refframe_circle.apply_grav_force(&circle.matter);
 
-            if interaction.distance.magnitude() < refframe_circle.radius() + circle.radius() {
+            if interaction.collision_occured {
                 match collisions.get_mut(&i) {
                     Some(collisions) => {
                         collisions.push(
@@ -203,6 +213,29 @@ fn tick(
 
         all_interactions.push(interactions);
     }
+    if let Some(log_opts) = CFG.log {
+        if !collisions.is_empty() {
+            log(&format!("collisions: \n{:#?}", collisions));
+
+            unsafe {
+                if TICK_COUNT.is_none() {
+                    TICK_COUNT = Some(0);
+                }
+            }
+        }
+
+        unsafe {
+            if let (Some(tick_count), Some(stop_tick_after)) =
+                (TICK_COUNT.as_mut(), log_opts.stop_tick_after)
+            {
+                *tick_count += 1;
+                if *tick_count >= stop_tick_after {
+                    TICK_COUNT = None;
+                    STOP_TICKING = true;
+                }
+            }
+        }
+    }
 
     for (i, circle) in circles.iter_mut().enumerate() {
         if let Some(collisions) = collisions.get(&i) {
@@ -220,6 +253,7 @@ fn tick(
         let mut fake_object_mass = 0.;
         let mut net_force = Vec2::default();
         for Interaction {
+            collision_occured: _,
             distance: _,
             force,
             other_mass,

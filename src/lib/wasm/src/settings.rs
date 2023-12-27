@@ -4,14 +4,21 @@ pub type GravitySettings = (f64, f64);
 
 pub type CircleVal = (f64, (f64, f64));
 
-#[derive(Copy, Clone)]
+#[derive(Clone, Copy)]
+pub struct LogParams {
+    pub stop_tick_after: Option<i32>,
+    pub energy: bool,
+    pub collision: bool,
+}
+
+#[derive(Clone, Copy)]
 #[allow(clippy::type_complexity)]
 pub struct Settings {
     pub mouse_grav: GravitySettings,
     pub mouse_mass: f64,
     pub mass_grav: GravitySettings,
     pub energy_conservation: f64,
-    pub log: Option<(i32, i32)>,
+    pub log: Option<LogParams>,
     pub spawning_fn:
         fn(fn(Vec<CircleVal>) -> Vec<DrawableElement<Circle>>) -> Vec<DrawableElement<Circle>>,
 }
@@ -59,19 +66,39 @@ const RANDOM_BALLS_INVERSE_GRAV: Settings = Settings {
     },
 };
 
-const TWO_INVERSE_GRAV: Settings = Settings {
+const EXP_TWO_INVERSE_GRAV: Settings = Settings {
     mouse_grav: (0.00005, 0.5),
     mouse_mass: 0.,
     mass_grav: (0.00005, 0.5),
-    energy_conservation: 1.0,
+    energy_conservation: 1.,
     //log: Some((60, 0)),
-    log: Some((60, 0)),
+    log: Some(LogParams {
+        stop_tick_after: Some(2),
+        energy: false,
+        collision: true,
+    }),
     spawning_fn: |_| {
         let bg_el = document().get_element_by_id("background").unwrap();
 
-        (0..2)
-            .map(|i| {
-                let circle = DrawableElement::new(4000., (1200., 400. * (i as f64 + 1.)).into());
+        let circle_presets = [
+            //top
+            (400., (1000., 300.)),
+            //left
+            (400., (800., 500.)),
+            //(400., (700., 500.)),
+            //bottom
+            (400., (1000., 700.)),
+            //right
+            (400., (1200., 500.)),
+            //(400., (1300., 500.)),
+            //center
+            (400., (1000., 500.)),
+        ];
+
+        circle_presets
+            .iter()
+            .map(|(mass, pos)| {
+                let circle = DrawableElement::new(*mass, (*pos).into());
                 bg_el.append_child(&circle.el).unwrap();
                 circle
             })
@@ -83,7 +110,7 @@ const EXP_RANDOM_BALLS_INVERSE_GRAV: Settings = Settings {
     mouse_grav: (0.0005, 0.5),
     mouse_mass: 4000.,
     mass_grav: (0.0005, 0.5),
-    energy_conservation: 0.,
+    energy_conservation: 0.8,
     //log: Some((60, 0)),
     log: None,
     spawning_fn: |_| {
@@ -102,7 +129,7 @@ const EXP_RANDOM_BALLS_INVERSE_GRAV: Settings = Settings {
 pub const CONFIGS: [Settings; 4] = [
     SLOW_FIREWORKS_WITH_SMALL_BALLS,
     RANDOM_BALLS_INVERSE_GRAV,
-    TWO_INVERSE_GRAV,
+    EXP_TWO_INVERSE_GRAV,
     EXP_RANDOM_BALLS_INVERSE_GRAV,
 ];
 

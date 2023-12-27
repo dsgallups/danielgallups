@@ -86,6 +86,7 @@ impl Dynamics for Circle {
 
         //self.apply_force(force);
         Interaction {
+            collision_occured: false,
             distance,
             force: Some(force),
             other_mass: None,
@@ -104,6 +105,7 @@ impl Dynamics for Circle {
                 distance_from_other_obj_closest_point
             ));*/
             Interaction {
+                collision_occured: true,
                 distance: distance_from_com,
                 force: None,
                 //velocity: Some(el_vel - self.velocity()),
@@ -121,6 +123,7 @@ impl Dynamics for Circle {
             //log(&format!("force: {:?}", force));
 
             Interaction {
+                collision_occured: false,
                 distance: distance_from_com,
                 force: Some(force),
                 other_mass: None,
