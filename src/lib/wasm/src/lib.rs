@@ -1,11 +1,12 @@
 use draw::DynamicElement;
 use graph::Vec2;
 use physics::{Circle, Dynamics, Interaction, Kinematics, Matter, Point};
+use settings::{Settings, CONFIGS};
 use wasm_bindgen::prelude::*;
 use web_sys::HtmlElement;
-
 mod graph;
 pub mod physics;
+mod settings;
 
 pub mod draw;
 
@@ -15,16 +16,7 @@ use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
-const LOG: bool = false;
-
-#[allow(dead_code)]
-static TICKING: (i32, i32) = (60, 0);
-
-const GRAV_CONST: f64 = 0.008;
-const NUM_CIRCLES: usize = 1000;
-const MOUSE_MASS: f64 = 10.;
-#[allow(dead_code)]
-const ENERGY_CONSERVED_ON_COLLISION: f64 = 1.;
+const CFG: Settings = CONFIGS[1];
 
 #[wasm_bindgen]
 extern "C" {
@@ -71,7 +63,9 @@ pub fn run() -> Result<(), JsValue> {
 
     //let mut circles = spawn_circles();
 
-    let mut circles = spawn_circle_rows();
+    let mut circles = (CFG.spawning_fn)(spawn_circles_with_props);
+
+    //let another = (CURRENT_CONFIG.spawning_fn)(spawn_circles_with_props);
 
     /*let mut circles = spawn_circles_with_props(vec![
         (3000., (700., 600.)),
@@ -100,11 +94,11 @@ fn hook_mouse_pos() -> Result<Rc<RefCell<Option<Point>>>, JsValue> {
         let mouse_pos = mouse_pos.clone();
         let closure = Closure::wrap(Box::new(move |event: web_sys::MouseEvent| {
             let point = Point::new(
-                MOUSE_MASS,
+                CFG.mouse_mass,
                 (event.client_x() as f64, event.client_y() as f64).into(),
             );
             mouse_pos.replace(Some(point));
-            //log(&format!("mouse_pos: {:.2?}", mouse_pos.borrow()));
+            log(&format!("mouse_pos: {:.2?}", mouse_pos.borrow()));
         }) as Box<dyn FnMut(_)>);
         document()
             .document_element()
@@ -147,19 +141,6 @@ fn hook_window_size() -> Result<Rc<RefCell<(f64, f64)>>, JsValue> {
     Ok(window_size)
 }
 
-fn spawn_circles() -> Vec<DynamicElement<Circle>> {
-    let bg_el = document().get_element_by_id("background").unwrap();
-
-    (0..NUM_CIRCLES)
-        .map(|_| {
-            let circle = DynamicElement::default();
-            bg_el.append_child(&circle.el).unwrap();
-            circle
-        })
-        .collect::<Vec<_>>()
-}
-
-#[allow(dead_code)]
 fn spawn_circles_with_props(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<DynamicElement<Circle>> {
     let bg_el = document().get_element_by_id("background").unwrap();
 
@@ -171,19 +152,6 @@ fn spawn_circles_with_props(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<DynamicE
             circle
         })
         .collect::<Vec<_>>()
-}
-
-#[allow(dead_code)]
-fn spawn_parallel_circles() -> Vec<DynamicElement<Circle>> {
-    let bg_el = document().get_element_by_id("background").unwrap();
-
-    let circle_one = DynamicElement::new(5., (200., 200.).into());
-    bg_el.append_child(&circle_one.el).unwrap();
-    let circle_two = DynamicElement::new(3., (800., 200.).into());
-    bg_el.append_child(&circle_two.el).unwrap();
-    let circle_three = DynamicElement::new(20., (1600., 200.).into());
-    bg_el.append_child(&circle_three.el).unwrap();
-    vec![circle_one, circle_two, circle_three]
 }
 
 #[allow(clippy::mem_replace_with_uninit)]
@@ -231,7 +199,7 @@ fn tick(
         }
         if let Some(mouse_pos) = mouse_pos {
             let interaction = refframe_circle.apply_grav_force_for_mass(mouse_pos);
-            //interactions.push(interaction);
+            interactions.push(interaction);
         }
 
         all_interactions.push(interactions);
@@ -275,7 +243,7 @@ fn tick(
                 + (2. * fake_object_mass * fake_object_velocity))
                 / (circle.mass() + fake_object_mass);
 
-            circle.apply_velocity((el_vel - circle.velocity()) * ENERGY_CONSERVED_ON_COLLISION);
+            circle.apply_velocity((el_vel - circle.velocity()) * CFG.energy_conservation);
             //circle.set_velocity(el_vel * ENERGY_CONSERVED_ON_COLLISION);
         }
 
@@ -302,7 +270,7 @@ fn tick(
         circle.draw();
     }
 
-    if LOG {
+    if CFG.log.is_some() {
         let mut potential_energy = 0.;
         let mut kinetic_energy = 0.;
         for (i, refframe_circle) in circles.iter().enumerate() {
@@ -313,7 +281,7 @@ fn tick(
                     continue;
                 }
 
-                circle_potential_energy += refframe_circle.mass() * circle.mass() * GRAV_CONST
+                circle_potential_energy += refframe_circle.mass() * circle.mass() * CFG.mass_grav.0
                     / (refframe_circle.pos() - circle.pos()).magnitude();
             }
             let circle_kinetic_energy =
@@ -348,16 +316,4 @@ pub struct CircleInformation {
     pub mass: f64,
     pub pot: f64,
     pub kin: f64,
-}
-
-fn spawn_circle_rows() -> Vec<DynamicElement<Circle>> {
-    let mut vals = Vec::new();
-
-    for i in 0..16 {
-        for j in 0..16 {
-            vals.push((16., (((i as f64 * 32.) + 1200.), ((j as f64 * 32.) + 400.))));
-        }
-    }
-
-    spawn_circles_with_props(vals)
 }

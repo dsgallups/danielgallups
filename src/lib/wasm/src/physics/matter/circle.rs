@@ -1,7 +1,7 @@
 use crate::{
     graph::Vec2,
     physics::{Dynamics, Interaction, Kinematics, Matter, Momentum},
-    GRAV_CONST,
+    CFG,
 };
 use std::fmt::Debug;
 
@@ -77,7 +77,8 @@ impl Dynamics for Circle {
         let normal = distance.normalize() * -1.;
 
         //for this one, distance is squared again
-        let force = GRAV_CONST * other.mass() * self.mass / distance.magnitude();
+        let force = CFG.mouse_grav.0 * other.mass() * self.mass
+            / distance.magnitude().powf(CFG.mouse_grav.1);
         let force = normal * force;
 
         //self.apply_force(force);
@@ -104,8 +105,8 @@ impl Dynamics for Circle {
                 }),
             }
         } else {
-            let force_magnitude =
-                GRAV_CONST * other.mass() * self.mass / distance.magnitude().powi(2);
+            let force_magnitude = CFG.mass_grav.0 * other.mass() * self.mass
+                / distance.magnitude().powf(CFG.mass_grav.1);
             let normal = distance.normalize() * -1.;
             let force = normal * force_magnitude;
 
