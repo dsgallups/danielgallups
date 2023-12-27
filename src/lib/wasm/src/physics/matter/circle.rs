@@ -66,9 +66,9 @@ impl Matter for Circle {
     fn mutate_pos(&mut self, f: impl FnOnce(&mut Vec2)) {
         f(&mut self.position);
     }
-    fn closest_point_on_edge(&self, other_point: &Vec2) -> Vec2 {
-        let center_of_mass_distance = self.position - *other_point;
-        let normal = center_of_mass_distance.normalize();
+    fn closest_point_on_edge(&self, other_com: &Vec2) -> Vec2 {
+        let center_of_mass_distance = self.position - *other_com;
+        let normal = center_of_mass_distance.normalize() * -1.;
         *self.pos() + (normal * self.radius())
     }
 }
@@ -94,10 +94,15 @@ impl Dynamics for Circle {
 
     fn apply_grav_force(&self, other: &(impl Dynamics + Debug)) -> Interaction {
         let distance_from_com = self.pos() - other.pos();
-        let other_obj_closest_point = self.closest_point_on_edge(other.pos());
+        let other_obj_closest_point = other.closest_point_on_edge(self.pos());
         let distance_from_other_obj_closest_point = other_obj_closest_point - self.position;
 
-        if self.radius() < distance_from_other_obj_closest_point.magnitude() {
+        if distance_from_other_obj_closest_point.magnitude() < self.radius() {
+            /*log(&format!(
+                "collision\nself.radius(): {:?}\ndistance_from_other_obj_closest_point: {:?}",
+                self.radius(),
+                distance_from_other_obj_closest_point
+            ));*/
             Interaction {
                 distance: distance_from_com,
                 force: None,
@@ -112,6 +117,8 @@ impl Dynamics for Circle {
                 / distance_from_com.magnitude().powf(CFG.mass_grav.1);
             let normal = distance_from_com.normalize() * -1.;
             let force = normal * force_magnitude;
+            //log(&format!("force_magnitude: {:?}", force_magnitude));
+            //log(&format!("force: {:?}", force));
 
             Interaction {
                 distance: distance_from_com,

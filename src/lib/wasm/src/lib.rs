@@ -15,7 +15,7 @@ use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
-const CFG: Settings = CONFIGS[2];
+const CFG: Settings = CONFIGS[3];
 
 #[wasm_bindgen]
 extern "C" {
@@ -97,7 +97,7 @@ fn hook_mouse_pos() -> Result<Rc<RefCell<Option<Point>>>, JsValue> {
                 (event.client_x() as f64, event.client_y() as f64).into(),
             );
             mouse_pos.replace(Some(point));
-            log(&format!("mouse_pos: {:.2?}", mouse_pos.borrow()));
+            //log(&format!("mouse_pos: {:.2?}", mouse_pos.borrow()));
         }) as Box<dyn FnMut(_)>);
         document()
             .document_element()

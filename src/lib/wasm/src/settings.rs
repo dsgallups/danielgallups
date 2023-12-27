@@ -79,10 +79,31 @@ const TWO_INVERSE_GRAV: Settings = Settings {
     },
 };
 
-pub const CONFIGS: [Settings; 3] = [
+const EXP_RANDOM_BALLS_INVERSE_GRAV: Settings = Settings {
+    mouse_grav: (0.0005, 0.5),
+    mouse_mass: 4000.,
+    mass_grav: (0.0005, 0.5),
+    energy_conservation: 0.,
+    //log: Some((60, 0)),
+    log: None,
+    spawning_fn: |_| {
+        let bg_el = document().get_element_by_id("background").unwrap();
+
+        (0..220)
+            .map(|_| {
+                let circle = DrawableElement::new_rand();
+                bg_el.append_child(&circle.el).unwrap();
+                circle
+            })
+            .collect::<Vec<_>>()
+    },
+};
+
+pub const CONFIGS: [Settings; 4] = [
     SLOW_FIREWORKS_WITH_SMALL_BALLS,
     RANDOM_BALLS_INVERSE_GRAV,
     TWO_INVERSE_GRAV,
+    EXP_RANDOM_BALLS_INVERSE_GRAV,
 ];
 
 #[allow(dead_code)]
