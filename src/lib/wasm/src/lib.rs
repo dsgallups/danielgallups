@@ -1,8 +1,7 @@
 use draw::DynamicElement;
 use graph::Vec2;
-use physics::{Circle, Dynamics, Kinematics, Matter, Point};
+use physics::{Circle, Dynamics, Interaction, Kinematics, Matter, Point};
 use wasm_bindgen::prelude::*;
-
 use web_sys::HtmlElement;
 
 mod graph;
@@ -11,16 +10,21 @@ pub mod physics;
 pub mod draw;
 
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
 const LOG: bool = false;
-const GRAV_CONST: f64 = 0.00005;
-const NUM_CIRCLES: usize = 220;
-const MOUSE_MASS: f64 = 4000.;
+
 #[allow(dead_code)]
-const ENERGY_CONSERVED_ON_COLLISION: f64 = 0.8;
+static TICKING: (i32, i32) = (60, 0);
+
+const GRAV_CONST: f64 = 0.008;
+const NUM_CIRCLES: usize = 1000;
+const MOUSE_MASS: f64 = 10.;
+#[allow(dead_code)]
+const ENERGY_CONSERVED_ON_COLLISION: f64 = 1.;
 
 #[wasm_bindgen]
 extern "C" {
@@ -55,13 +59,25 @@ fn document() -> web_sys::Document {
 
 #[wasm_bindgen]
 pub fn run() -> Result<(), JsValue> {
+    //let mut begin_ticking = false;
+    //let tick_after = 10;
+    //let mut tick_count = 0;
+
     panic::set_hook(Box::new(console_error_panic_hook::hook));
 
     let mouse_pos = hook_mouse_pos()?;
 
     let window_size = hook_window_size()?;
 
-    let mut circles = spawn_circles();
+    //let mut circles = spawn_circles();
+
+    let mut circles = spawn_circle_rows();
+
+    /*let mut circles = spawn_circles_with_props(vec![
+        (3000., (700., 600.)),
+        (3000., (600., 900.)),
+        (3000., (900., 820.)),
+    ]);*/
 
     let f = Rc::new(RefCell::new(None));
     let g = f.clone();
@@ -69,26 +85,7 @@ pub fn run() -> Result<(), JsValue> {
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
         let mouse_pos = mouse_pos.borrow();
 
-        let (info, _collision_occured) =
-            tick(&mut circles, mouse_pos.as_ref(), *window_size.borrow());
-
-        if LOG {
-            let energy = info.potential_energy + info.kinetic_energy;
-
-            let mut msg = format!(
-                "energy: {:.2}, potential: {:.2?}, kinetic: {:.2?}\n",
-                energy, info.potential_energy, info.kinetic_energy
-            );
-
-            for (i, circle) in info.circles.into_iter().enumerate() {
-                msg.push_str(&format!(
-                        "circle[{}]:\npos: {:?}\nvel: {:?}\ndist from other: {:?}\nforce: {:?}\nkin: {:.?}\npot: {:?}\nmass: {:?}\n\n",
-                        i, circle.position, circle.velocity, circle.dist_force_other, circle.force, circle.kin, circle.pot, circle.mass,
-                    ));
-            }
-            msg.push('\n');
-            log(&msg);
-        }
+        tick(&mut circles, mouse_pos.as_ref(), *window_size.borrow());
 
         request_animation_frame(f.borrow().as_ref().unwrap());
     }) as Box<dyn FnMut()>));
@@ -120,7 +117,7 @@ fn hook_mouse_pos() -> Result<Rc<RefCell<Option<Point>>>, JsValue> {
         let mouse_pos = mouse_pos.clone();
         let closure = Closure::wrap(Box::new(move |_: web_sys::MouseEvent| {
             mouse_pos.replace(None);
-            log("mouse_pos: None");
+            //log("mouse_pos: None");
         }) as Box<dyn FnMut(_)>);
         document()
             .document_element()
@@ -163,14 +160,17 @@ fn spawn_circles() -> Vec<DynamicElement<Circle>> {
 }
 
 #[allow(dead_code)]
-fn spawn_conjoined_circles() -> Vec<DynamicElement<Circle>> {
+fn spawn_circles_with_props(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<DynamicElement<Circle>> {
     let bg_el = document().get_element_by_id("background").unwrap();
 
-    let circle_one = DynamicElement::new(5., (100., 100.).into());
-    bg_el.append_child(&circle_one.el).unwrap();
-    let circle_two = DynamicElement::new(3., (100., 108.).into());
-    bg_el.append_child(&circle_two.el).unwrap();
-    vec![circle_one, circle_two]
+    circle_vals
+        .into_iter()
+        .map(|val| {
+            let circle = DynamicElement::new(val.0, val.1.into());
+            bg_el.append_child(&circle.el).unwrap();
+            circle
+        })
+        .collect::<Vec<_>>()
 }
 
 #[allow(dead_code)]
@@ -191,51 +191,100 @@ fn tick(
     circles: &mut [DynamicElement<Circle>],
     mouse_pos: Option<&Point>,
     window_size: (f64, f64),
-) -> (Information, bool) {
-    log(&format!("mouse_pos: {:?}", mouse_pos));
-    let mut start_tick = false;
+) {
+    let mut all_interactions = Vec::new();
 
-    let mut potential_energy = 0.;
-
-    let mut kinetic_energy = 0.;
-
-    let mut dists = Vec::new();
-
-    for index in 0..circles.len() {
-        let mut refframe_circle = unsafe {
-            std::mem::replace(
-                &mut circles[index],
-                std::mem::MaybeUninit::zeroed().assume_init(),
-            )
-        };
-
-        for (i, circle) in circles.iter().enumerate() {
-            if i == index {
+    let mut collisions: HashMap<usize, Vec<Vec2>> = HashMap::new();
+    for (i, refframe_circle) in circles.iter().enumerate() {
+        let mut interactions = Vec::new();
+        for (j, circle) in circles.iter().enumerate() {
+            if i == j {
                 continue;
             }
-            let (dist, force, begin_tick) = refframe_circle.apply_grav_force(&circle.matter);
-            dists.push((dist, force));
-            if begin_tick {
-                start_tick = true;
+            let interaction = refframe_circle.apply_grav_force(&circle.matter);
+
+            if interaction.distance.magnitude() < refframe_circle.radius() + circle.radius() {
+                match collisions.get_mut(&i) {
+                    Some(collisions) => {
+                        collisions.push(
+                            interaction.distance.normalize()
+                                * (refframe_circle.radius() + circle.radius()
+                                    - interaction.distance.magnitude())
+                                / 2.,
+                        );
+                    }
+                    None => {
+                        collisions.insert(
+                            i,
+                            vec![
+                                interaction.distance.normalize()
+                                    * (refframe_circle.radius() + circle.radius()
+                                        - interaction.distance.magnitude())
+                                    / 2.,
+                            ],
+                        );
+                    }
+                };
+            }
+
+            interactions.push(interaction);
+        }
+        if let Some(mouse_pos) = mouse_pos {
+            let interaction = refframe_circle.apply_grav_force_for_mass(mouse_pos);
+            //interactions.push(interaction);
+        }
+
+        all_interactions.push(interactions);
+    }
+
+    for (i, circle) in circles.iter_mut().enumerate() {
+        if let Some(collisions) = collisions.get(&i) {
+            let mut position_adj = Vec2::default();
+            for collision in collisions.iter() {
+                position_adj += collision.clone();
+            }
+            circle.apply_pos(position_adj);
+        }
+    }
+
+    //now apply the interactions to every cirlce
+    for ((_i, circle), interactions) in circles.iter_mut().enumerate().zip(all_interactions) {
+        let mut fake_object_momentum = Vec2::default();
+        let mut fake_object_mass = 0.;
+        let mut net_force = Vec2::default();
+        for Interaction {
+            distance: _,
+            force,
+            other_mass,
+        } in interactions
+        {
+            if let Some(force) = force {
+                net_force += force;
+            }
+            if let Some(momentum) = other_mass {
+                fake_object_mass += momentum.mass;
+                fake_object_momentum += momentum.mass * momentum.velocity;
             }
         }
 
-        if let Some(mouse_pos) = mouse_pos {
-            refframe_circle.apply_grav_force_for_mass(mouse_pos);
+        circle.set_force(net_force);
+
+        if fake_object_mass != 0. {
+            let fake_object_velocity = fake_object_momentum / fake_object_mass;
+            let el_vel = (circle.velocity() * (circle.mass() - fake_object_mass)
+                + (2. * fake_object_mass * fake_object_velocity))
+                / (circle.mass() + fake_object_mass);
+
+            circle.apply_velocity((el_vel - circle.velocity()) * ENERGY_CONSERVED_ON_COLLISION);
+            //circle.set_velocity(el_vel * ENERGY_CONSERVED_ON_COLLISION);
         }
 
-        //update_pos_given_mouse(&mut refframe_circle, mouse_pos, mouse_mass);
-        //todo
+        /*if net_velocity != Vec2::default() {
+            let normal = net_velocity.normalize();
+            let cur_v_mag = circle.velocity().magnitude();
+            circle.set_velocity(normal * cur_v_mag * ENERGY_CONSERVED_ON_COLLISION);
+        }*/
 
-        let _ = std::mem::replace(&mut circles[index], refframe_circle);
-    }
-
-    let mut circle_information: Vec<CircleInformation> = Vec::new();
-
-    let mut forces = Vec::new();
-
-    for circle in circles.iter_mut() {
-        forces.push(circle.force());
         circle.tick_forces();
         circle.reset_forces();
 
@@ -247,52 +296,40 @@ fn tick(
             || position.y + (radius + radius) < 0.
             || position.y > window_size.1
         {
-            circle.reset();
+            //circle.reset();
         }
 
         circle.draw();
     }
 
-    for (i, refframe_circle) in circles.iter().enumerate() {
-        let mut circle_potential_energy = 0.;
-        let circle_kinetic_energy =
-            0.5 * refframe_circle.mass() * refframe_circle.velocity().magnitude().powf(2.);
+    if LOG {
+        let mut potential_energy = 0.;
+        let mut kinetic_energy = 0.;
+        for (i, refframe_circle) in circles.iter().enumerate() {
+            let mut circle_potential_energy = 0.;
 
-        for (j, circle) in circles.iter().enumerate() {
-            if i == j {
-                continue;
+            for (j, circle) in circles.iter().enumerate() {
+                if i >= j {
+                    continue;
+                }
+
+                circle_potential_energy += refframe_circle.mass() * circle.mass() * GRAV_CONST
+                    / (refframe_circle.pos() - circle.pos()).magnitude();
             }
+            let circle_kinetic_energy =
+                0.5 * refframe_circle.mass() * refframe_circle.velocity().magnitude().powi(2);
 
-            circle_potential_energy += -1.0 * refframe_circle.mass() * circle.mass() * GRAV_CONST
-                / (refframe_circle.pos() - circle.pos()).magnitude();
+            potential_energy -= circle_potential_energy;
+            kinetic_energy += circle_kinetic_energy;
         }
 
-        //then calcualte the whole potential energy of the system
-        for circle in circles.iter().skip(i + 1) {
-            potential_energy += -1.0 * refframe_circle.mass() * circle.mass() * GRAV_CONST
-                / (refframe_circle.pos() - circle.pos()).magnitude();
-        }
-
-        circle_information.push(CircleInformation {
-            position: refframe_circle.matter.pos(),
-            velocity: refframe_circle.matter.velocity(),
-            force: forces[i].clone(),
-            dist_force_other: dists[i],
-            mass: refframe_circle.matter.mass(),
-            pot: circle_potential_energy,
-            kin: circle_kinetic_energy,
-        });
-        kinetic_energy += circle_kinetic_energy;
-    }
-
-    (
-        Information {
+        log(&format!(
+            "energy: {}\n, pot: {}\n, kin: {}",
+            kinetic_energy + potential_energy,
             potential_energy,
-            kinetic_energy,
-            circles: circle_information,
-        },
-        start_tick,
-    )
+            kinetic_energy
+        ));
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -311,4 +348,16 @@ pub struct CircleInformation {
     pub mass: f64,
     pub pot: f64,
     pub kin: f64,
+}
+
+fn spawn_circle_rows() -> Vec<DynamicElement<Circle>> {
+    let mut vals = Vec::new();
+
+    for i in 0..16 {
+        for j in 0..16 {
+            vals.push((16., (((i as f64 * 32.) + 1200.), ((j as f64 * 32.) + 400.))));
+        }
+    }
+
+    spawn_circles_with_props(vals)
 }

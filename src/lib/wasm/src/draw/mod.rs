@@ -2,7 +2,7 @@ use crate::{
     document,
     graph::Vec2,
     html,
-    physics::{matter::Circle, Dynamics, Kinematics, Matter},
+    physics::{matter::Circle, Dynamics, Interaction, Kinematics, Matter},
 };
 use std::fmt::Debug;
 use web_sys::Element;
@@ -19,14 +19,13 @@ impl Default for DynamicElement<Circle> {
 }
 
 impl DynamicElement<Circle> {
-    pub fn new(radius: f64, position: Vec2) -> Self {
+    pub fn new(mass: f64, position: Vec2) -> Self {
         let rand_color = (
             128. + rand::random::<f64>() * 127.,
             128. + rand::random::<f64>() * 127.,
             128. + rand::random::<f64>() * 127.,
         );
 
-        let mass = radius * radius;
         let matter: Circle = Circle::new(mass, position.clone());
 
         let radius = matter.radius();
@@ -67,7 +66,7 @@ impl DynamicElement<Circle> {
             rand::random::<f64>() * html().client_height() as f64,
         );
 
-        let rand_mass = 25. + rand::random::<f64>() * 100.;
+        let rand_mass = 25. + rand::random::<f64>() * 50.;
 
         let matter: Circle = Circle::new(rand_mass, rand_position.into());
 
@@ -164,11 +163,11 @@ impl<T> Dynamics for DynamicElement<T>
 where
     T: Dynamics,
 {
-    fn apply_grav_force_for_mass(&mut self, other: &impl Matter) {
-        self.matter.apply_grav_force_for_mass(other);
+    fn apply_grav_force_for_mass(&self, other: &impl Matter) -> Interaction {
+        self.matter.apply_grav_force_for_mass(other)
     }
 
-    fn apply_grav_force(&mut self, other: &(impl Dynamics + Debug)) -> (f64, f64, bool) {
+    fn apply_grav_force(&self, other: &(impl Dynamics + Debug)) -> Interaction {
         self.matter.apply_grav_force(other)
     }
 

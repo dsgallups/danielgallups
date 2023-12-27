@@ -48,9 +48,9 @@ pub trait Matter {
 }
 
 pub trait Dynamics: Matter + Kinematics {
-    fn apply_grav_force_for_mass(&mut self, other: &impl Matter);
+    fn apply_grav_force_for_mass(&self, other: &impl Matter) -> Interaction;
 
-    fn apply_grav_force(&mut self, other: &(impl Dynamics + Debug)) -> (f64, f64, bool);
+    fn apply_grav_force(&self, other: &(impl Dynamics + Debug)) -> Interaction;
 
     fn tick_forces(&mut self);
 
@@ -65,4 +65,17 @@ pub trait Dynamics: Matter + Kinematics {
                 .into(),
         );
     }
+}
+
+#[derive(Debug, Clone)]
+pub struct Interaction {
+    pub distance: Vec2,
+    pub force: Option<Vec2>,
+    pub other_mass: Option<Momentum>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct Momentum {
+    pub velocity: Vec2,
+    pub mass: f64,
 }

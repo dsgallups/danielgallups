@@ -1,7 +1,7 @@
 use crate::{
     graph::Vec2,
-    physics::{Dynamics, Kinematics, Matter},
-    ENERGY_CONSERVED_ON_COLLISION, GRAV_CONST,
+    physics::{Dynamics, Interaction, Kinematics, Matter, Momentum},
+    GRAV_CONST,
 };
 use std::fmt::Debug;
 
@@ -16,7 +16,7 @@ pub struct Circle {
 
 impl Circle {
     pub fn new(mass: f64, position: Vec2) -> Self {
-        let radius = mass.sqrt();
+        let radius = mass.sqrt() * 1.;
 
         Self {
             mass,
@@ -71,64 +71,50 @@ impl Matter for Circle {
 }
 
 impl Dynamics for Circle {
-    fn apply_grav_force_for_mass(&mut self, other: &impl Matter) {
+    fn apply_grav_force_for_mass(&self, other: &impl Matter) -> Interaction {
         let distance = self.pos() - other.pos();
 
         let normal = distance.normalize() * -1.;
 
         //for this one, distance is squared again
-        let force = GRAV_CONST * other.mass() * self.mass / distance.magnitude().sqrt();
+        let force = GRAV_CONST * other.mass() * self.mass / distance.magnitude();
         let force = normal * force;
 
-        self.apply_force(force);
+        //self.apply_force(force);
+        Interaction {
+            distance,
+            force: Some(force),
+            other_mass: None,
+        }
     }
 
-    fn apply_grav_force(&mut self, other: &(impl Dynamics + Debug)) -> (f64, f64, bool) {
+    fn apply_grav_force(&self, other: &(impl Dynamics + Debug)) -> Interaction {
         //let mut dist = self.position.distance_from(&other.pos());
         let distance = self.pos() - other.pos();
 
+        //this
         if distance.magnitude() < (self.radius() + other.radius()) {
-            let self_radius: f64 = self.radius();
-            let self_velocity: Vec2 = self.velocity();
-            let self_mass: f64 = self.mass();
+            Interaction {
+                distance,
+                force: None,
+                //velocity: Some(el_vel - self.velocity()),
+                other_mass: Some(Momentum {
+                    velocity: other.velocity(),
+                    mass: other.mass(),
+                }),
+            }
+        } else {
+            let force_magnitude =
+                GRAV_CONST * other.mass() * self.mass / distance.magnitude().powi(2);
+            let normal = distance.normalize() * -1.;
+            let force = normal * force_magnitude;
 
-            let other_radius: f64 = other.radius();
-            let other_velocity: Vec2 = other.velocity();
-            let other_mass: f64 = other.mass();
-            //determine the new velocity. Note that the other collider is a circle, so we can calculate the point of intersection
-            //and use that to determine the normal
-            let collision_distance = distance.magnitude();
-            let collision_normal = distance.normalize();
-
-            let relative_velocity = self_velocity.clone() - other_velocity;
-            let velocity_normal = relative_velocity.dot(collision_normal.clone());
-
-            let impulse =
-                2.0 * ENERGY_CONSERVED_ON_COLLISION * velocity_normal / (self_mass + other_mass);
-            let self_impulse = impulse * other_mass;
-
-            let self_new_velocity = self_velocity - collision_normal.clone() * self_impulse;
-
-            // Update velocities
-            self.set_velocity(self_new_velocity);
-
-            // correct the position to be just inside the outer circle for this logic to run again
-            let correction =
-                collision_normal * (self_radius + other_radius - collision_distance) / 2.;
-
-            self.apply_pos(correction);
+            Interaction {
+                distance,
+                force: Some(force),
+                other_mass: None,
+            }
         }
-        let force_magnitude = GRAV_CONST * other.mass() * self.mass / distance.magnitude().sqrt();
-
-        let normal = distance.normalize() * -1.;
-        let force = normal * force_magnitude;
-
-        self.apply_force(force);
-        (
-            distance.magnitude(),
-            force_magnitude,
-            distance.magnitude() < (self.radius + other.mass().sqrt()),
-        )
     }
 
     fn tick_forces(&mut self) {
@@ -143,48 +129,3 @@ impl Dynamics for Circle {
         self.apply_pos(velocity);
     }
 }
-
-/*
-impl Matter for Circle {
-    fn reset_forces(&mut self) {
-        self.force = (0., 0.).into();
-    }
-
-    fn pos(&self) -> Vec2 {
-        self.position
-    }
-
-    fn force(&self) -> Vec2 {
-        self.force
-    }
-
-    fn apply_force(&mut self, force: Vec2) {
-        self.force += force;
-    }
-
-    fn apply_grav_force(&mut self, other: impl Matter) {
-        let distance = self.pos() - other.pos();
-        let dist = self.position.distance_from(other.pos());
-
-        let normal = (distance.0 / dist, distance.1 / dist);
-
-        //for this one, distance is squared again
-        let force = GRAV_CONST * other.mass() * self.mass / dist.powf(2.);
-        let force = (normal.0 * force, normal.1 * force);
-    }
-
-    fn tick_forces(&mut self) {
-        //calculate the acceleration vector
-        let force = self.force();
-        let mass = self.mass();
-
-        let acceleration: Vec2 = (force.x / mass, force.y / mass).into();
-
-        self.apply_velocity(acceleration);
-        let velocity = self.velocity();
-        self.apply_pos(velocity);
-
-
-    }
-}
-*/
