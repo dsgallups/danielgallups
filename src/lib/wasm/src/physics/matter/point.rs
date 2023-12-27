@@ -16,17 +16,17 @@ impl Matter for Point {
     fn mass(&self) -> f64 {
         self.mass
     }
-    fn mutate_mass(&mut self, f: impl FnOnce(f64) -> f64) {
-        self.mass = f(self.mass);
+    fn mutate_mass(&mut self, f: impl FnOnce(&mut f64)) {
+        f(&mut self.mass);
     }
 
-    fn pos(&self) -> Vec2 {
-        self.position.clone()
+    fn pos(&self) -> &Vec2 {
+        &self.position
     }
-    fn mutate_pos(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
-        self.position = f(self.position.clone());
+    fn mutate_pos(&mut self, f: impl FnOnce(&mut Vec2)) {
+        f(&mut self.position);
     }
-    fn radius(&self) -> f64 {
-        0.
+    fn closest_point_on_edge(&self, _other_point: &Vec2) -> Vec2 {
+        self.position
     }
 }

@@ -26,7 +26,7 @@ impl DrawableElement<Circle> {
             128. + rand::random::<f64>() * 127.,
         );
 
-        let matter: Circle = Circle::new(mass, position.clone());
+        let matter: Circle = Circle::new(mass, position);
 
         let radius = matter.radius();
 
@@ -117,6 +117,10 @@ impl DrawableElement<Circle> {
             )
             .unwrap()
     }
+
+    pub fn radius(&self) -> f64 {
+        self.matter.radius()
+    }
 }
 
 impl<T> Kinematics for DrawableElement<T>
@@ -145,17 +149,17 @@ where
     fn mass(&self) -> f64 {
         self.matter.mass()
     }
-    fn mutate_mass(&mut self, f: impl FnOnce(f64) -> f64) {
+    fn mutate_mass(&mut self, f: impl FnOnce(&mut f64)) {
         self.matter.mutate_mass(f);
     }
-    fn pos(&self) -> Vec2 {
+    fn pos(&self) -> &Vec2 {
         self.matter.pos()
     }
-    fn mutate_pos(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
+    fn mutate_pos(&mut self, f: impl FnOnce(&mut Vec2)) {
         self.matter.mutate_pos(f);
     }
-    fn radius(&self) -> f64 {
-        self.matter.radius()
+    fn closest_point_on_edge(&self, other_point: &Vec2) -> Vec2 {
+        self.matter.closest_point_on_edge(other_point)
     }
 }
 

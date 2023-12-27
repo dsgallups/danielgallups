@@ -59,7 +59,31 @@ const RANDOM_BALLS_INVERSE_GRAV: Settings = Settings {
     },
 };
 
-pub const CONFIGS: [Settings; 2] = [SLOW_FIREWORKS_WITH_SMALL_BALLS, RANDOM_BALLS_INVERSE_GRAV];
+const TWO_INVERSE_GRAV: Settings = Settings {
+    mouse_grav: (0.00005, 0.5),
+    mouse_mass: 0.,
+    mass_grav: (0.00005, 0.5),
+    energy_conservation: 1.0,
+    //log: Some((60, 0)),
+    log: Some((60, 0)),
+    spawning_fn: |_| {
+        let bg_el = document().get_element_by_id("background").unwrap();
+
+        (0..2)
+            .map(|i| {
+                let circle = DrawableElement::new(4000., (1200., 400. * (i as f64 + 1.)).into());
+                bg_el.append_child(&circle.el).unwrap();
+                circle
+            })
+            .collect::<Vec<_>>()
+    },
+};
+
+pub const CONFIGS: [Settings; 3] = [
+    SLOW_FIREWORKS_WITH_SMALL_BALLS,
+    RANDOM_BALLS_INVERSE_GRAV,
+    TWO_INVERSE_GRAV,
+];
 
 #[allow(dead_code)]
 fn spawn_parallel_circles() -> Vec<DrawableElement<Circle>> {

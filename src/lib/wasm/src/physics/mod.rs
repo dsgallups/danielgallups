@@ -30,21 +30,20 @@ pub trait Kinematics {
 /// all matter should have a position
 pub trait Matter {
     fn mass(&self) -> f64;
-    fn mutate_mass(&mut self, f: impl FnOnce(f64) -> f64);
+    fn mutate_mass(&mut self, f: impl FnOnce(&mut f64));
     fn set_mass(&mut self, mass: f64) {
-        self.mutate_mass(|_| mass);
+        self.mutate_mass(|mass_to_set| *mass_to_set = mass);
     }
 
-    fn pos(&self) -> Vec2;
-    fn mutate_pos(&mut self, f: impl FnOnce(Vec2) -> Vec2);
+    fn pos(&self) -> &Vec2;
+    fn mutate_pos(&mut self, f: impl FnOnce(&mut Vec2));
     fn set_pos(&mut self, pos: Vec2) {
-        self.mutate_pos(|_| pos);
+        self.mutate_pos(|pos_to_set| *pos_to_set = pos);
     }
     fn apply_pos(&mut self, pos: Vec2) {
-        self.mutate_pos(|p| p + pos);
+        self.mutate_pos(|p| *p += pos);
     }
-    //this is temporary and should be removed
-    fn radius(&self) -> f64;
+    fn closest_point_on_edge(&self, other_point: &Vec2) -> Vec2;
 }
 
 pub trait Dynamics: Matter + Kinematics {

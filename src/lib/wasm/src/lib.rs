@@ -5,19 +5,17 @@ use physics::{Circle, Dynamics, Interaction, Kinematics, Matter, Point};
 use settings::{Settings, CONFIGS};
 use wasm_bindgen::prelude::*;
 use web_sys::HtmlElement;
+pub mod draw;
 mod graph;
 pub mod physics;
 mod settings;
-
-pub mod draw;
-
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
-const CFG: Settings = CONFIGS[1];
+const CFG: Settings = CONFIGS[2];
 
 #[wasm_bindgen]
 extern "C" {
@@ -210,7 +208,7 @@ fn tick(
         if let Some(collisions) = collisions.get(&i) {
             let mut position_adj = Vec2::default();
             for collision in collisions.iter() {
-                position_adj += collision.clone();
+                position_adj += *collision;
             }
             circle.apply_pos(position_adj);
         }
@@ -271,7 +269,7 @@ fn tick(
         circle.draw();
     }
 
-    if CFG.log.is_some() {
+    /*if CFG.log.is_some() {
         let mut potential_energy = 0.;
         let mut kinetic_energy = 0.;
         for (i, refframe_circle) in circles.iter().enumerate() {
@@ -298,7 +296,7 @@ fn tick(
             potential_energy,
             kinetic_energy
         ));
-    }
+    }*/
 }
 
 #[derive(Debug, Clone)]

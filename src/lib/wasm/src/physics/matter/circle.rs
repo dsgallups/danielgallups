@@ -30,21 +30,25 @@ impl Circle {
     pub fn reset_forces(&mut self) {
         self.force = (0., 0.).into();
     }
+
+    pub fn radius(&self) -> f64 {
+        self.radius
+    }
 }
 
 impl Kinematics for Circle {
     fn velocity(&self) -> Vec2 {
-        self.velocity.clone()
+        self.velocity
     }
     fn mutate_velocity(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
-        self.velocity = f(self.velocity.clone());
+        self.velocity = f(self.velocity);
     }
 
     fn force(&self) -> Vec2 {
-        self.force.clone()
+        self.force
     }
     fn mutate_force(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
-        self.force = f(self.force.clone());
+        self.force = f(self.force);
     }
 }
 
@@ -52,17 +56,20 @@ impl Matter for Circle {
     fn mass(&self) -> f64 {
         self.mass
     }
-    fn mutate_mass(&mut self, f: impl FnOnce(f64) -> f64) {
-        self.mass = f(self.mass);
+    fn mutate_mass(&mut self, f: impl FnOnce(&mut f64)) {
+        f(&mut self.mass);
     }
-    fn pos(&self) -> Vec2 {
-        self.position.clone()
+
+    fn pos(&self) -> &Vec2 {
+        &self.position
     }
-    fn mutate_pos(&mut self, f: impl FnOnce(Vec2) -> Vec2) {
-        self.position = f(self.position.clone());
+    fn mutate_pos(&mut self, f: impl FnOnce(&mut Vec2)) {
+        f(&mut self.position);
     }
-    fn radius(&self) -> f64 {
-        self.radius
+    fn closest_point_on_edge(&self, other_point: &Vec2) -> Vec2 {
+        let center_of_mass_distance = self.position - *other_point;
+        let normal = center_of_mass_distance.normalize();
+        *self.pos() + (normal * self.radius())
     }
 }
 
@@ -86,10 +93,35 @@ impl Dynamics for Circle {
     }
 
     fn apply_grav_force(&self, other: &(impl Dynamics + Debug)) -> Interaction {
+        let distance_from_com = self.pos() - other.pos();
+        let other_obj_closest_point = self.closest_point_on_edge(other.pos());
+        let distance_from_other_obj_closest_point = other_obj_closest_point - self.position;
+
+        if self.radius() < distance_from_other_obj_closest_point.magnitude() {
+            Interaction {
+                distance: distance_from_com,
+                force: None,
+                //velocity: Some(el_vel - self.velocity()),
+                other_mass: Some(Momentum {
+                    velocity: other.velocity(),
+                    mass: other.mass(),
+                }),
+            }
+        } else {
+            let force_magnitude = CFG.mass_grav.0 * other.mass() * self.mass
+                / distance_from_com.magnitude().powf(CFG.mass_grav.1);
+            let normal = distance_from_com.normalize() * -1.;
+            let force = normal * force_magnitude;
+
+            Interaction {
+                distance: distance_from_com,
+                force: Some(force),
+                other_mass: None,
+            }
+        }
+        /*
         //let mut dist = self.position.distance_from(&other.pos());
         let distance = self.pos() - other.pos();
-
-        //this
         if distance.magnitude() < (self.radius() + other.radius()) {
             Interaction {
                 distance,
@@ -112,6 +144,7 @@ impl Dynamics for Circle {
                 other_mass: None,
             }
         }
+        */
     }
 
     fn tick_forces(&mut self) {

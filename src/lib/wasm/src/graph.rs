@@ -1,6 +1,6 @@
 use std::ops::{Add, AddAssign, Div, Mul, Sub};
 
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct Vec2 {
     pub x: f64,
     pub y: f64,
@@ -21,6 +21,9 @@ impl Vec2 {
 
     pub fn dot(&self, other: Vec2) -> f64 {
         self.x * other.x + self.y * other.y
+    }
+    pub fn cross(&self, other: Vec2) -> f64 {
+        self.x * other.y - self.y * other.x
     }
 }
 
