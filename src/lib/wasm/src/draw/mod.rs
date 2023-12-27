@@ -8,12 +8,13 @@ use web_sys::Element;
 
 pub struct DrawableElement {
     pub el: Element,
+    pub name: String,
     pub color: (f64, f64, f64),
     pub matter: Box<dyn Dynamics>,
 }
 
 impl DrawableElement {
-    pub fn new_circle(mass: f64, position: Vec2) -> Self {
+    pub fn new_circle(mass: f64, position: Vec2, name: impl Into<String>) -> Self {
         let rand_color = (
             128. + rand::random::<f64>() * 127.,
             128. + rand::random::<f64>() * 127.,
@@ -23,10 +24,12 @@ impl DrawableElement {
         let matter: Circle = Circle::new(mass, position);
 
         let radius = matter.radius();
+        let name: String = name.into();
 
         let document = document();
         let circle = document.create_element("div").unwrap();
         circle.set_class_name("circle");
+        circle.set_id(&name);
         circle
             .set_attribute(
                 "style",
@@ -42,19 +45,15 @@ impl DrawableElement {
                 ),
             )
             .unwrap();
+        circle.set_inner_html(&name);
         Self {
             el: circle,
             color: rand_color,
+            name,
             matter: Box::new(matter),
         }
     }
-    pub fn new_rand_circle() -> Self {
-        let rand_color = (
-            128. + rand::random::<f64>() * 127.,
-            128. + rand::random::<f64>() * 127.,
-            128. + rand::random::<f64>() * 127.,
-        );
-
+    pub fn new_rand_circle(name: impl Into<String>) -> Self {
         let rand_position = (
             rand::random::<f64>() * html().client_width() as f64,
             rand::random::<f64>() * html().client_height() as f64,
@@ -62,33 +61,7 @@ impl DrawableElement {
 
         let rand_mass = 25. + rand::random::<f64>() * 50.;
 
-        let matter: Circle = Circle::new(rand_mass, rand_position.into());
-
-        let radius = matter.radius();
-
-        let document = document();
-        let circle = document.create_element("div").unwrap();
-        circle.set_class_name("circle");
-        circle
-            .set_attribute(
-                "style",
-                &format!(
-                    "top: {:.0}px; left: {:.2}px; background-color: rgb({:.0}, {:.0}, {:.0}); width: {:.2}px; height: {:.2}px;",
-                    rand_position.1 - radius,
-                    rand_position.0 - radius,
-                    rand_color.0,
-                    rand_color.1,
-                    rand_color.2,
-                    radius * 2.,
-                    radius * 2.,
-                ),
-            )
-            .unwrap();
-        Self {
-            el: circle,
-            color: rand_color,
-            matter: Box::new(matter),
-        }
+        Self::new_circle(rand_mass, rand_position.into(), name)
     }
     pub fn draw(&mut self) {
         let position = self.matter.pos();

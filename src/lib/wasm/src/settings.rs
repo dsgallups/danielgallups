@@ -56,8 +56,9 @@ const RANDOM_BALLS_INVERSE_GRAV: Settings = Settings {
         let bg_el = document().get_element_by_id("background").unwrap();
 
         (0..220)
-            .map(|_| {
-                let circle = DrawableElement::new_rand_circle();
+            .enumerate()
+            .map(|(i, _)| {
+                let circle = DrawableElement::new_rand_circle(i.to_string());
                 bg_el.append_child(&circle.el).unwrap();
                 circle
             })
@@ -81,23 +82,25 @@ const EXP_TWO_INVERSE_GRAV: Settings = Settings {
 
         let circle_presets = [
             //top
-            (400., (1000., 300.)),
+            //(400., (1000., 300.)),
             //left
             (400., (800., 500.)),
             //(400., (700., 500.)),
             //bottom
             (400., (1000., 700.)),
             //right
-            (400., (1200., 500.)),
+            //(400., (1200., 500.)),
             //(400., (1300., 500.)),
             //center
-            (400., (1000., 500.)),
+            (400., (1050., 520.)),
+            //(400., (1000., 500.)),
         ];
 
         circle_presets
             .iter()
-            .map(|(mass, pos)| {
-                let circle = DrawableElement::new_circle(*mass, (*pos).into());
+            .enumerate()
+            .map(|(i, (mass, pos))| {
+                let circle = DrawableElement::new_circle(*mass, (*pos).into(), i.to_string());
                 bg_el.append_child(&circle.el).unwrap();
                 circle
             })
@@ -116,8 +119,9 @@ const EXP_RANDOM_BALLS_INVERSE_GRAV: Settings = Settings {
         let bg_el = document().get_element_by_id("background").unwrap();
 
         (0..220)
-            .map(|_| {
-                let circle = DrawableElement::new_rand_circle();
+            .enumerate()
+            .map(|(i, _)| {
+                let circle = DrawableElement::new_rand_circle(i.to_string());
                 bg_el.append_child(&circle.el).unwrap();
                 circle
             })
@@ -136,11 +140,11 @@ pub const CONFIGS: [Settings; 4] = [
 fn spawn_parallel_circles() -> Vec<DrawableElement> {
     let bg_el = document().get_element_by_id("background").unwrap();
 
-    let circle_one = DrawableElement::new_circle(5., (200., 200.).into());
+    let circle_one = DrawableElement::new_circle(5., (200., 200.).into(), "circle_one");
     bg_el.append_child(&circle_one.el).unwrap();
-    let circle_two = DrawableElement::new_circle(3., (800., 200.).into());
+    let circle_two = DrawableElement::new_circle(3., (800., 200.).into(), "circle_two");
     bg_el.append_child(&circle_two.el).unwrap();
-    let circle_three = DrawableElement::new_circle(20., (1600., 200.).into());
+    let circle_three = DrawableElement::new_circle(20., (1600., 200.).into(), "circle_three");
     bg_el.append_child(&circle_three.el).unwrap();
     vec![circle_one, circle_two, circle_three]
 }
@@ -150,8 +154,9 @@ fn spawn_circles() -> Vec<DrawableElement> {
     let bg_el = document().get_element_by_id("background").unwrap();
 
     (0..100)
-        .map(|_| {
-            let circle = DrawableElement::new_rand_circle();
+        .enumerate()
+        .map(|(i, _)| {
+            let circle = DrawableElement::new_rand_circle(i.to_string());
             bg_el.append_child(&circle.el).unwrap();
             circle
         })

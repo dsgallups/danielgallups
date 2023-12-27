@@ -10,7 +10,6 @@ mod graph;
 pub mod physics;
 mod settings;
 use std::cell::RefCell;
-use std::collections::HashMap;
 use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
@@ -63,13 +62,13 @@ pub fn run() -> Result<(), JsValue> {
 
     let window_size = hook_window_size()?;
 
-    //let mut circles = spawn_circles();
+    //let mut elements = spawn_elements();
 
-    let mut circles = (CFG.spawning_fn)(spawn_circles_with_props);
+    let mut elements = (CFG.spawning_fn)(spawn_elements_with_props);
 
-    //let another = (CURRENT_CONFIG.spawning_fn)(spawn_circles_with_props);
+    //let another = (CURRENT_CONFIG.spawning_fn)(spawn_elements_with_props);
 
-    /*let mut circles = spawn_circles_with_props(vec![
+    /*let mut elements = spawn_elements_with_props(vec![
         (3000., (700., 600.)),
         (3000., (600., 900.)),
         (3000., (900., 820.)),
@@ -88,7 +87,7 @@ pub fn run() -> Result<(), JsValue> {
 
         let mouse_pos = mouse_pos.borrow();
 
-        tick(&mut circles, mouse_pos.as_ref(), *window_size.borrow());
+        tick(&mut elements, mouse_pos.as_ref(), *window_size.borrow());
 
         request_animation_frame(f.borrow().as_ref().unwrap());
     }) as Box<dyn FnMut()>));
@@ -150,13 +149,14 @@ fn hook_window_size() -> Result<Rc<RefCell<(f64, f64)>>, JsValue> {
     Ok(window_size)
 }
 
-fn spawn_circles_with_props(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<DrawableElement> {
+fn spawn_elements_with_props(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<DrawableElement> {
     let bg_el = document().get_element_by_id("background").unwrap();
 
     circle_vals
         .into_iter()
-        .map(|val| {
-            let circle = DrawableElement::new_circle(val.0, val.1.into());
+        .enumerate()
+        .map(|(i, val)| {
+            let circle = DrawableElement::new_circle(val.0, val.1.into(), i.to_string());
             bg_el.append_child(&circle.el).unwrap();
             circle
         })
@@ -164,54 +164,56 @@ fn spawn_circles_with_props(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<Drawable
 }
 
 #[allow(clippy::mem_replace_with_uninit)]
-fn tick(circles: &mut [DrawableElement], mouse_pos: Option<&Point>, window_size: (f64, f64)) {
+fn tick(elements: &mut [DrawableElement], mouse_pos: Option<&Point>, window_size: (f64, f64)) {
     let mut all_interactions = Vec::new();
 
-    let mut collisions: HashMap<usize, Vec<Vec2>> = HashMap::new();
-    for (i, refframe_circle) in circles.iter().enumerate() {
+    //contains groups of indices in elements in which collisions have occured.
+    let mut collision_groups: Vec<Vec<usize>> = Vec::new();
+
+    for (i, refframe_element) in elements.iter().enumerate() {
         let mut interactions = Vec::new();
-        for (j, circle) in circles.iter().enumerate() {
+        for (j, circle) in elements.iter().enumerate() {
             if i == j {
                 continue;
             }
-            let interaction = refframe_circle.apply_grav_force(circle.matter.as_ref());
+            let interaction = refframe_element.apply_grav_force(circle.matter.as_ref());
 
             if interaction.collision_occured {
-                match collisions.get_mut(&i) {
-                    Some(collisions) => {
-                        collisions.push(
-                            interaction.distance.normalize()
-                                * (refframe_circle.radius() + circle.radius()
-                                    - interaction.distance.magnitude())
-                                / 2.,
-                        );
+                if collision_groups.is_empty() {
+                    collision_groups.push(vec![i, j]);
+                }
+                for i in 0..collision_groups.len() {
+                    let collision_group = &mut collision_groups[i];
+
+                    match (collision_group.contains(&i), collision_group.contains(&j)) {
+                        (true, true) => {
+                            break;
+                        }
+                        (true, false) => {
+                            collision_group.push(j);
+                            break;
+                        }
+                        (false, true) => {
+                            collision_group.push(i);
+                            break;
+                        }
+                        (false, false) => collision_groups.push(vec![i, j]),
                     }
-                    None => {
-                        collisions.insert(
-                            i,
-                            vec![
-                                interaction.distance.normalize()
-                                    * (refframe_circle.radius() + circle.radius()
-                                        - interaction.distance.magnitude())
-                                    / 2.,
-                            ],
-                        );
-                    }
-                };
+                }
             }
 
             interactions.push(interaction);
         }
         if let Some(mouse_pos) = mouse_pos {
-            let interaction = refframe_circle.apply_grav_force_for_mass(mouse_pos);
+            let interaction = refframe_element.apply_grav_force_for_mass(mouse_pos);
             interactions.push(interaction);
         }
 
         all_interactions.push(interactions);
     }
     if let Some(log_opts) = CFG.log {
-        if !collisions.is_empty() {
-            log(&format!("collisions: \n{:#?}", collisions));
+        if !collision_groups.is_empty() {
+            log(&format!("collisions: \n{:#?}", collision_groups));
 
             unsafe {
                 if TICK_COUNT.is_none() {
@@ -233,7 +235,7 @@ fn tick(circles: &mut [DrawableElement], mouse_pos: Option<&Point>, window_size:
         }
     }
 
-    for (i, circle) in circles.iter_mut().enumerate() {
+    /*for (i, circle) in elements.iter_mut().enumerate() {
         if let Some(collisions) = collisions.get(&i) {
             let mut position_adj = Vec2::default();
             for collision in collisions.iter() {
@@ -241,10 +243,10 @@ fn tick(circles: &mut [DrawableElement], mouse_pos: Option<&Point>, window_size:
             }
             circle.apply_pos(position_adj);
         }
-    }
+    }*/
 
     //now apply the interactions to every cirlce
-    for ((_i, circle), interactions) in circles.iter_mut().enumerate().zip(all_interactions) {
+    for ((_i, circle), interactions) in elements.iter_mut().enumerate().zip(all_interactions) {
         let mut fake_object_momentum = Vec2::default();
         let mut fake_object_mass = 0.;
         let mut net_force = Vec2::default();
@@ -302,19 +304,19 @@ fn tick(circles: &mut [DrawableElement], mouse_pos: Option<&Point>, window_size:
     /*if CFG.log.is_some() {
         let mut potential_energy = 0.;
         let mut kinetic_energy = 0.;
-        for (i, refframe_circle) in circles.iter().enumerate() {
+        for (i, refframe_element) in elements.iter().enumerate() {
             let mut circle_potential_energy = 0.;
 
-            for (j, circle) in circles.iter().enumerate() {
+            for (j, circle) in elements.iter().enumerate() {
                 if i >= j {
                     continue;
                 }
 
-                circle_potential_energy += refframe_circle.mass() * circle.mass() * CFG.mass_grav.0
-                    / (refframe_circle.pos() - circle.pos()).magnitude();
+                circle_potential_energy += refframe_element.mass() * circle.mass() * CFG.mass_grav.0
+                    / (refframe_element.pos() - circle.pos()).magnitude();
             }
             let circle_kinetic_energy =
-                0.5 * refframe_circle.mass() * refframe_circle.velocity().magnitude().powi(2);
+                0.5 * refframe_element.mass() * refframe_element.velocity().magnitude().powi(2);
 
             potential_energy -= circle_potential_energy;
             kinetic_energy += circle_kinetic_energy;
@@ -333,7 +335,7 @@ fn tick(circles: &mut [DrawableElement], mouse_pos: Option<&Point>, window_size:
 pub struct Information {
     pub potential_energy: f64,
     pub kinetic_energy: f64,
-    pub circles: Vec<CircleInformation>,
+    pub elements: Vec<CircleInformation>,
 }
 
 #[derive(Debug, Clone)]
