@@ -1,14 +1,16 @@
 #![allow(dead_code)]
 use draw::DrawableElement;
 use graph::Vec2;
-use physics::{Force, Interaction, Point};
+use physics::{Dynamics, Force, Interaction, Point};
 use settings::{Settings, CONFIGS};
 use wasm_bindgen::prelude::*;
 use web_sys::HtmlElement;
+use world::World;
 pub mod draw;
 mod graph;
 pub mod physics;
 mod settings;
+mod world;
 use std::cell::RefCell;
 use std::panic;
 use std::rc::Rc;
@@ -64,7 +66,7 @@ pub fn run() -> Result<(), JsValue> {
 
     //let mut elements = spawn_elements();
 
-    let mut elements = (CFG.spawning_fn)(spawn_elements_with_props);
+    let mut world = World::new(CFG);
 
     //let another = (CURRENT_CONFIG.spawning_fn)(spawn_elements_with_props);
 
@@ -88,23 +90,8 @@ pub fn run() -> Result<(), JsValue> {
         let mouse_pos = mouse_pos.borrow();
         let window_size = *window_size.borrow();
 
-        //calculate
-        tick(&mut elements, mouse_pos.as_ref(), window_size);
-
-        //then draw
-        elements.iter_mut().for_each(|el| {
-            let position = el.matter.pos();
-            let radius = el.matter.mass().sqrt();
-
-            if position.x + (radius + radius) < 0.
-                || position.x > window_size.0
-                || position.y + (radius + radius) < 0.
-                || position.y > window_size.1
-            {
-                //circle.reset();
-            }
-            el.draw()
-        });
+        world.tick();
+        world.draw();
 
         request_animation_frame(f.borrow().as_ref().unwrap());
     }) as Box<dyn FnMut()>));
@@ -166,85 +153,8 @@ fn hook_window_size() -> Result<Rc<RefCell<(f64, f64)>>, JsValue> {
     Ok(window_size)
 }
 
-fn spawn_elements_with_props(circle_vals: Vec<(f64, (f64, f64))>) -> Vec<DrawableElement> {
-    let bg_el = document().get_element_by_id("background").unwrap();
-
-    circle_vals
-        .into_iter()
-        .enumerate()
-        .map(|(i, val)| {
-            let circle = DrawableElement::new_circle(val.0, val.1.into(), i.to_string());
-            bg_el.append_child(&circle.el).unwrap();
-            circle
-        })
-        .collect::<Vec<_>>()
-}
-
-fn get_forces_and_collisions(
-    elements: &mut [DrawableElement],
-) -> (Vec<Vec<Force>>, Vec<Vec<usize>>) {
-    let mut all_forces = Vec::new();
-
-    //contains groups of indices in elements in which collisions have occured.
-    let mut collision_groups: Vec<Vec<usize>> = Vec::new();
-    for (i, refframe_element) in elements.iter().enumerate() {
-        let mut forces = Vec::new();
-        for (j, element) in elements.iter().enumerate() {
-            if i == j {
-                continue;
-            }
-            let collision_occured = refframe_element
-                .matter
-                .collision_occured(element.matter.as_ref());
-            let force_due_to_gravity = refframe_element
-                .matter
-                .force_due_to_gravity(element.matter.as_ref());
-            //let interaction = refframe_element.apply_grav_force(circle.matter.as_ref());
-
-            if collision_occured {
-                let mut added = false;
-                for collision_group in collision_groups.iter_mut() {
-                    match (collision_group.contains(&i), collision_group.contains(&j)) {
-                        (true, true) => {
-                            added = true;
-                            break;
-                        }
-                        (true, false) => {
-                            collision_group.push(j);
-                            added = true;
-                            break;
-                        }
-                        (false, true) => {
-                            collision_group.push(i);
-                            added = true;
-                            break;
-                        }
-                        (false, false) => {}
-                    }
-                }
-                if !added {
-                    collision_groups.push(vec![i, j]);
-                }
-            }
-
-            forces.push(force_due_to_gravity);
-        }
-        /*if let Some(mouse_pos) = mouse_pos {
-            let force_due_to_gravity = refframe_element.matter.force_due_to_gravity(mouse_pos);
-            //let interaction = refframe_element.apply_grav_force_for_mass(mouse_pos);
-            forces.push(force_due_to_gravity);
-        }*/
-
-        all_forces.push(forces);
-    }
-    (all_forces, collision_groups)
-}
-
-#[allow(clippy::mem_replace_with_uninit)]
-fn tick(elements: &mut [DrawableElement], _mouse_pos: Option<&Point>, window_size: (f64, f64)) {
-    let (all_forces, collision_groups) = get_forces_and_collisions(elements);
-
-    // Logging for collision groups
+/*
+// Logging for collision groups
     if let Some(log_opts) = CFG.log {
         if !collision_groups.is_empty() {
             log(&format!("collisions: \n{:#?}", collision_groups));
@@ -267,8 +177,7 @@ fn tick(elements: &mut [DrawableElement], _mouse_pos: Option<&Point>, window_siz
                 }
             }
         }
-    }
-}
+    } */
 
 #[derive(Debug, Clone)]
 pub struct Information {
