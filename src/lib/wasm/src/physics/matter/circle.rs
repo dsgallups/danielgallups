@@ -1,7 +1,6 @@
 use crate::{
     graph::Vec2,
-    physics::{Dynamics, Force, Kinematics, Matter},
-    CFG,
+    physics::{Dynamics, Kinematics, Matter},
 };
 use std::fmt::Debug;
 
@@ -80,104 +79,11 @@ impl Matter for Circle {
 }
 
 impl Dynamics for Circle {
-    fn force_due_to_gravity(&self, other: &dyn Matter) -> Force {
-        let distance_from_com = self.pos() - other.pos();
-        let force_magnitude = CFG.mass_grav.0 * other.mass() * self.mass
-            / distance_from_com.magnitude().powf(CFG.mass_grav.1);
-        let normal = distance_from_com.normalize() * -1.;
-        let force = normal * force_magnitude;
-        //log(&format!("force_magnitude: {:?}", force_magnitude));
-        //log(&format!("force: {:?}", force));
-        Force(force)
-    }
     fn collision_occured(&self, other: &dyn Matter) -> bool {
         let other_obj_closest_point = other.closest_point_on_edge(self.pos());
         let distance_from_other_obj_closest_point = other_obj_closest_point - self.position;
         distance_from_other_obj_closest_point.magnitude() < self.radius()
     }
-    /*fn apply_grav_force_for_mass(&self, other: &dyn Matter) -> Interaction {
-        let distance = self.pos() - other.pos();
-
-        let normal = distance.normalize() * -1.;
-
-        //for this one, distance is squared again
-        let force = CFG.mouse_grav.0 * other.mass() * self.mass
-            / distance.magnitude().powf(CFG.mouse_grav.1);
-        let force = normal * force;
-
-        //self.apply_force(force);
-        Interaction {
-            collision_occured: false,
-            distance,
-            force: Some(force),
-            other_mass: None,
-        }
-    }
-
-    fn apply_grav_force(&self, other: &dyn Dynamics) -> Interaction {
-        let distance_from_com = self.pos() - other.pos();
-        let other_obj_closest_point = other.closest_point_on_edge(self.pos());
-        let distance_from_other_obj_closest_point = other_obj_closest_point - self.position;
-
-        if distance_from_other_obj_closest_point.magnitude() < self.radius() {
-            /*log(&format!(
-                "collision\nself.radius(): {:?}\ndistance_from_other_obj_closest_point: {:?}",
-                self.radius(),
-                distance_from_other_obj_closest_point
-            ));*/
-            Interaction {
-                collision_occured: true,
-                distance: distance_from_com,
-                force: None,
-                //velocity: Some(el_vel - self.velocity()),
-                other_mass: Some(Momentum {
-                    velocity: other.velocity(),
-                    mass: other.mass(),
-                }),
-            }
-        } else {
-            let force_magnitude = CFG.mass_grav.0 * other.mass() * self.mass
-                / distance_from_com.magnitude().powf(CFG.mass_grav.1);
-            let normal = distance_from_com.normalize() * -1.;
-            let force = normal * force_magnitude;
-            //log(&format!("force_magnitude: {:?}", force_magnitude));
-            //log(&format!("force: {:?}", force));
-
-            Interaction {
-                collision_occured: false,
-                distance: distance_from_com,
-                force: Some(force),
-                other_mass: None,
-            }
-        }
-        /*
-        //let mut dist = self.position.distance_from(&other.pos());
-        let distance = self.pos() - other.pos();
-        if distance.magnitude() < (self.radius() + other.radius()) {
-            Interaction {
-                distance,
-                force: None,
-                //velocity: Some(el_vel - self.velocity()),
-                other_mass: Some(Momentum {
-                    velocity: other.velocity(),
-                    mass: other.mass(),
-                }),
-            }
-        } else {
-            let force_magnitude = CFG.mass_grav.0 * other.mass() * self.mass
-                / distance.magnitude().powf(CFG.mass_grav.1);
-            let normal = distance.normalize() * -1.;
-            let force = normal * force_magnitude;
-
-            Interaction {
-                distance,
-                force: Some(force),
-                other_mass: None,
-            }
-        }
-        */
-    }
-    */
 
     fn tick_forces(&mut self) {
         //calculate the acceleration vector

@@ -1,7 +1,6 @@
 #![allow(dead_code)]
-use draw::DrawableElement;
 use graph::Vec2;
-use physics::{Dynamics, Force, Interaction, Point};
+use physics::Point;
 use settings::{Settings, CONFIGS};
 use wasm_bindgen::prelude::*;
 use web_sys::HtmlElement;

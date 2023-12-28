@@ -1,7 +1,7 @@
-use crate::{graph::Vec2, html};
+use crate::{graph::Vec2, html, CFG};
 pub mod matter;
 pub use matter::*;
-use std::{fmt::Debug, ops::Deref};
+use std::fmt::Debug;
 /// If an item doesnt have a velocity, then it can't be kinematic
 /// as a logical consequence, you cannot apply a force to an item without velocity
 pub trait Kinematics {
@@ -38,8 +38,23 @@ pub trait Matter {
 }
 
 pub trait Dynamics: Matter + Kinematics {
-    fn force_due_to_gravity(&self, other: &dyn Matter) -> Force;
-
+    fn interact(&self, other: &dyn Dynamics) -> Interaction {
+        if self.collision_occured(other) {
+            return Interaction::Collision(Momentum {
+                velocity: other.velocity(),
+                mass: other.mass(),
+            });
+        }
+        let force = self.force_due_to_gravity(other);
+        Interaction::Force(force)
+    }
+    fn force_due_to_gravity(&self, other: &dyn Matter) -> Vec2 {
+        let distance_from_com = self.pos() - other.pos();
+        let force_magnitude = CFG.mass_grav.0 * other.mass() * self.mass()
+            / distance_from_com.magnitude().powf(CFG.mass_grav.1);
+        let normal = distance_from_com.normalize() * -1.;
+        normal * force_magnitude
+    }
     fn collision_occured(&self, other: &dyn Matter) -> bool;
 
     fn tick_forces(&mut self);
@@ -57,21 +72,11 @@ pub trait Dynamics: Matter + Kinematics {
     }
 }
 
-pub struct Force(Vec2);
-impl Deref for Force {
-    type Target = Vec2;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct Interaction {
-    pub collision_occured: bool,
-    pub distance: Vec2,
-    pub force: Option<Vec2>,
-    pub other_mass: Option<Momentum>,
+// Obviously shortcutting here, which is that
+//if two objects have collided, they don't exert a force on each other.
+pub enum Interaction {
+    Force(Vec2),
+    Collision(Momentum),
 }
 
 #[derive(Debug, Clone, Default)]
