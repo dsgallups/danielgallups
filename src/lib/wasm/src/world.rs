@@ -131,9 +131,14 @@ impl World {
 
             if interactions.1.mass > 0. {
                 //hacky way to check if it's a double sided collision
-                if interactions.1.velocity.magnitude() < 0.000001 {
+                if interactions.1.velocity.magnitude() < 0.000000001 {
                     matter
                         .set_velocity(matter.velocity() * -1. * self.settings.energy_conservation);
+
+                    if matter.velocity().magnitude() < 0.001 {
+                        matter.set_velocity(Vec2::default());
+                    }
+
                     //todo: fix
                     matter.reset_forces();
 
@@ -156,6 +161,9 @@ impl World {
                 matter.apply_velocity(
                     (el_vel - matter.velocity()) * self.settings.energy_conservation,
                 );
+                if matter.velocity().magnitude() < 0.001 {
+                    matter.set_velocity(Vec2::default());
+                }
             }
 
             matter.tick_forces();
