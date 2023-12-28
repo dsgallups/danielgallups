@@ -20,10 +20,10 @@ wasm-bindgen = "0.2.89"
 # code size when deploying.
 console_error_panic_hook = { version = "0.1.7", optional = true }
 rand = { version = "0.8.5" }
-getrandom = { version = "0.2", features = ["js"] }
+getrandom = { version = "0.2.11", features = ["js"] }
 
 [dev-dependencies]
-wasm-bindgen-test = "0.3.34"
+wasm-bindgen-test = "0.3.39"
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.
@@ -31,7 +31,7 @@ opt-level = "s"
 lto = "fat"
 
 [dependencies.web-sys]
-version = "0.3.4"
+version = "0.3.66"
 features = [
     'CanvasRenderingContext2d',
     'CssStyleDeclaration',

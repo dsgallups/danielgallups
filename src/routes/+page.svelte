@@ -1,7 +1,7 @@
 <script lang="ts">
 </script>
 
-<div class="container h-full mx-auto flex flex-col pt-4" style="display: none;">
+<div class="container h-full mx-auto flex flex-col pt-4" style="">
 	<section>
 		<h1 class="text-4xl">Daniel Gallups</h1>
 		<h2 class="text-2xl font-bold">Software Developer</h2>

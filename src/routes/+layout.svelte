@@ -11,8 +11,7 @@
 
 <div class="page-container">
 	<div id="pagetext"></div>
-	<div id="background"></div>
-	<slot />
+	<div id="background"><slot /></div>
 </div>
 
 <style lang="scss">
