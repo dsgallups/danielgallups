@@ -4,8 +4,10 @@ use crate::{
     document,
     draw::DrawableElement,
     graph::Vec2,
+    log,
     physics::{Interaction, Momentum},
     settings::Settings,
+    TICK_COUNT,
 };
 
 pub struct World {
@@ -37,32 +39,54 @@ impl World {
             .collect::<Vec<_>>()
     }
 
-    pub fn flatten_interactions(all_interactions: Vec<Vec<Interaction>>) -> Vec<(Vec2, Momentum)> {
+    pub fn flatten_interactions_fix_positions(
+        &mut self,
+        all_interactions: Vec<Vec<Interaction>>,
+    ) -> Vec<(Vec2, Momentum)> {
         let mut flattened_interactions = Vec::new();
 
-        all_interactions.into_iter().for_each(|interactions| {
-            let mut net_force = Vec2::default();
-            let mut fake_object_velocity = Vec2::default();
-            let mut fake_object_mass = 0.;
-            interactions
-                .into_iter()
-                .for_each(|interaction| match interaction {
-                    Interaction::Force(force) => {
-                        net_force += force;
-                    }
-                    Interaction::Collision(momentum) => {
-                        fake_object_velocity += momentum.velocity;
-                        fake_object_mass += momentum.mass;
-                    }
-                });
-            flattened_interactions.push((
-                net_force,
-                Momentum {
-                    velocity: fake_object_velocity,
-                    mass: fake_object_mass,
-                },
-            ));
-        });
+        all_interactions
+            .into_iter()
+            .enumerate()
+            .for_each(|(i, interactions)| {
+                let mut net_force = Vec2::default();
+                let mut fake_object_velocity = Vec2::default();
+                let mut fake_object_mass = 0.;
+                //todo
+                let el_pos_to_correct = self.elements.get_mut(i).unwrap();
+                let mut pos_adj = Vec2::default();
+                interactions.into_iter().enumerate().for_each(
+                    |(j, interaction)| match interaction {
+                        Interaction::Force(force) => {
+                            net_force += force;
+                        }
+                        Interaction::Collision(colinfo) => {
+                            fake_object_velocity += colinfo.velocity;
+                            fake_object_mass += colinfo.mass;
+
+                            //Then, give it some slack to move out of the way as to not get stuck, so just on the edge of the other
+
+                            let own_closest_point_to_other_obj = el_pos_to_correct
+                                .matter
+                                .closest_point_on_edge(colinfo.other_obj_closest_point);
+                            pos_adj +=
+                                colinfo.other_obj_closest_point - own_closest_point_to_other_obj;
+                        }
+                    },
+                );
+                if pos_adj != Vec2::default() {
+                    log(&format!("pos_adj: {:?}", pos_adj));
+                }
+                el_pos_to_correct.matter.apply_pos(pos_adj);
+
+                flattened_interactions.push((
+                    net_force,
+                    Momentum {
+                        velocity: fake_object_velocity,
+                        mass: fake_object_mass,
+                    },
+                ));
+            });
 
         flattened_interactions
     }
@@ -70,7 +94,7 @@ impl World {
     pub fn tick(&mut self) {
         let interactions = self.calc_element_interactions();
 
-        let flat_interactions = Self::flatten_interactions(interactions);
+        let flat_interactions = self.flatten_interactions_fix_positions(interactions);
 
         self.apply_interactions(flat_interactions);
     }
@@ -99,10 +123,33 @@ impl World {
     pub fn apply_interactions(&mut self, flat_interactions: Vec<(Vec2, Momentum)>) {
         for ((_i, el), interactions) in self.elements.iter_mut().enumerate().zip(flat_interactions)
         {
+            if unsafe { TICK_COUNT.is_some() } {
+                log(&format!("{}: {:?}", el.name, interactions));
+            }
             let matter = el.matter.deref_mut();
             matter.set_force(interactions.0);
 
             if interactions.1.mass > 0. {
+                //hacky way to check if it's a double sided collision
+                if interactions.1.velocity.magnitude() < 0.000001 {
+                    matter
+                        .set_velocity(matter.velocity() * -1. * self.settings.energy_conservation);
+                    //todo: fix
+                    matter.reset_forces();
+
+                    matter.tick_forces();
+                    if unsafe { TICK_COUNT.is_some() } {
+                        log(&format!(
+                            "{}: double sided collision\n, new velocity: {:?}",
+                            el.name,
+                            matter.velocity()
+                        ));
+                    }
+                    continue;
+                }
+                if unsafe { TICK_COUNT.is_some() } {
+                    log(&format!("{}: single sided collision", el.name));
+                }
                 let el_vel = (matter.velocity() * (matter.mass() - interactions.1.mass)
                     + (2. * interactions.1.mass * interactions.1.velocity))
                     / (matter.mass() + interactions.1.mass);
@@ -116,7 +163,9 @@ impl World {
         }
     }
 
-    pub fn draw(&mut self) {}
+    pub fn draw(&mut self) {
+        self.elements.iter_mut().for_each(|el| el.draw())
+    }
 }
 
 /*

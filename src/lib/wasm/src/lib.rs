@@ -15,7 +15,7 @@ use std::panic;
 use std::rc::Rc;
 use wasm_bindgen::JsCast;
 
-const CFG: Settings = CONFIGS[0];
+const CFG: Settings = CONFIGS[2];
 
 static mut TICK_COUNT: Option<i32> = None;
 static mut STOP_TICKING: bool = false;
@@ -81,8 +81,10 @@ pub fn run() -> Result<(), JsValue> {
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
         unsafe {
             if STOP_TICKING {
-                f.borrow_mut().take();
-                return;
+                //f.borrow_mut().take();
+                STOP_TICKING = false;
+
+                //return;
             }
         }
 
@@ -90,6 +92,19 @@ pub fn run() -> Result<(), JsValue> {
         let window_size = *window_size.borrow();
 
         world.tick();
+        unsafe {
+            if let Some(log_opts) = CFG.log {
+                if let (Some(tick_count), Some(stop_tick_after)) =
+                    (TICK_COUNT.as_mut(), log_opts.stop_tick_after)
+                {
+                    *tick_count += 1;
+                    if *tick_count >= stop_tick_after {
+                        TICK_COUNT = None;
+                        STOP_TICKING = true;
+                    }
+                }
+            }
+        }
         world.draw();
 
         request_animation_frame(f.borrow().as_ref().unwrap());

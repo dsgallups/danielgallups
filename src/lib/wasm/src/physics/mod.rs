@@ -1,4 +1,4 @@
-use crate::{graph::Vec2, html, CFG};
+use crate::{graph::Vec2, html, log, CFG, TICK_COUNT};
 pub mod matter;
 pub use matter::*;
 use std::fmt::Debug;
@@ -40,9 +40,16 @@ pub trait Matter {
 pub trait Dynamics: Matter + Kinematics {
     fn interact(&self, other: &dyn Dynamics) -> Interaction {
         if self.collision_occured(other) {
-            return Interaction::Collision(Momentum {
+            unsafe {
+                if TICK_COUNT.is_none() {
+                    TICK_COUNT = Some(0);
+                }
+            }
+
+            return Interaction::Collision(CollisionInfo {
                 velocity: other.velocity(),
                 mass: other.mass(),
+                other_obj_closest_point: other.closest_point_on_edge(self.pos()),
             });
         }
         let force = self.force_due_to_gravity(other);
@@ -76,11 +83,26 @@ pub trait Dynamics: Matter + Kinematics {
 //if two objects have collided, they don't exert a force on each other.
 pub enum Interaction {
     Force(Vec2),
-    Collision(Momentum),
+    Collision(CollisionInfo),
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct DynamicsInfo {
+    pub mass: f64,
+    pub pos: Vec2,
+    pub velocity: Vec2,
+    pub force: Vec2,
 }
 
 #[derive(Debug, Clone, Default)]
 pub struct Momentum {
     pub velocity: Vec2,
     pub mass: f64,
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct CollisionInfo {
+    pub velocity: Vec2,
+    pub mass: f64,
+    pub other_obj_closest_point: Vec2,
 }

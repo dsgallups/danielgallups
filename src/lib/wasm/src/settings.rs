@@ -70,10 +70,10 @@ const EXP_TWO_INVERSE_GRAV: Settings = Settings {
     mouse_grav: (0.00005, 0.5),
     mouse_mass: 0.,
     mass_grav: (0.00005, 0.5),
-    energy_conservation: 1.,
+    energy_conservation: 0.8,
     //log: Some((60, 0)),
     log: Some(LogParams {
-        stop_tick_after: None,
+        stop_tick_after: Some(1),
         energy: false,
         collision: true,
     }),
@@ -82,18 +82,18 @@ const EXP_TWO_INVERSE_GRAV: Settings = Settings {
 
         let circle_presets = [
             //top
-            //(400., (1000., 300.)),
+            (400., (1000., 300.)),
             //left
             (400., (800., 500.)),
             //(400., (700., 500.)),
             //bottom
             (400., (1000., 700.)),
             //right
-            //(400., (1200., 500.)),
+            (400., (1200., 500.)),
             //(400., (1300., 500.)),
             //center
-            (400., (1050., 520.)),
-            //(400., (1000., 500.)),
+            //(400., (1050., 520.)),
+            (400., (1000., 500.)),
         ];
 
         circle_presets
